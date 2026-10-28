@@ -41,7 +41,7 @@ Return JSON with this schema:
                      "xp_view": "favorable|neutral|unfavorable", "profile_fit_pt": "string (max 18 words)"}],
     "assessment_pt": "string (max 90 words)",
     "attention_points": [{"fact_id": "string", "title_pt": "string (max 7 words)", "text_pt": "string (max 45 words)"}],
-    "outlook_pt": "string (max 60 words, no macro figures, no promise of returns)"
+    "outlook_pt": "string (max 60 words: what to watch for the classes this client holds, named, from the XP scenario; no macro figures, no promise of returns, nothing generic)"
   }
 }
 

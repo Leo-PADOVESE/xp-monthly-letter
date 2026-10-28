@@ -353,7 +353,7 @@ data:
                                    "xp_view": "favorable|neutral|unfavorable", "profile_fit_pt": "string (max 18 words)"}],
                   "assessment_pt": "string (max 90 words)",
                   "attention_points": [{"fact_id": "string", "title_pt": "string (max 7 words)", "text_pt": "string (max 45 words)"}],
-                  "outlook_pt": "string (max 60 words, no macro figures, no promise of returns)"
+                  "outlook_pt": "string (max 60 words: what to watch for the classes this client holds, named, from the XP scenario; no macro figures, no promise of returns, nothing generic)"
                 }
               }
 
@@ -459,7 +459,10 @@ data:
               per-asset table and right before the disclaimer (the PDF lays them
               out in that order). An outlook or closing that does not work as
               the ending, refers to content below it, or a sign-off or farewell
-              inside another section, is medium.
+              inside another section, is medium. An outlook that does not name
+              the client's own classes or assets, or a closing that does not
+              mention the attention points (generic text that would fit any
+              client), is high.
 
               - "linguagem": Brazilian Portuguese, formal and clear tone; no
               repeated ideas or figures between sections. Medium or low.
@@ -619,12 +622,23 @@ data:
               assessment, same order, fact_id copied; keep them as topics to
               discuss with the advisor;
 
-              7. outlook: what to watch, without promising returns;
+              7. outlook ("O que esperar", two or three sentences, specific to
+              this client): the one or two points of the XP scenario that matter
+              most for the classes this client actually holds, named (e.g. "com
+              a Selic alta no cenário da XP, os fundos de renda fixa e o CDB
+              vencido seguem em foco; nas ações, o consumo interno é o ponto a
+              acompanhar"), and what that means to watch in the coming months,
+              conditional and attributed to XP, without figures already quoted
+              and without promising returns. Never a generic sentence that would
+              fit any client ("o cenário apresenta desafios", "a diversificação
+              pode mitigar riscos");
 
-              8. closing: availability of the advisor for a conversation,
-              without promising "melhores estratégias" or results. No sign-off
-              and no name: the PDF adds "Atenciosamente" and the advisor's
-              signature.
+              8. closing (one or two sentences): invite the client to talk about
+              the attention points of this letter, naming them briefly (e.g. "o
+              valor do CDB vencido e o saldo parado em conta"), and the
+              advisor's availability. No "melhores estratégias", no promise of
+              results. No sign-off and no name: the PDF adds "Atenciosamente"
+              and the advisor's signature.
 
 
               Layout order (fixed by the PDF, mandatory): tiles, greeting,

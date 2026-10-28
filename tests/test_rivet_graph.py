@@ -31,7 +31,7 @@ LETTER = {"subject_pt": "Sua carta de abril", "greeting_pt": "Prezado Albert,", 
           "macro_pt": "A XP projeta a Selic em 15,50% ao fim de 2025.",
           "assessment_pt": "O portfólio de Albert está coerente com o perfil, segundo o digest macro da XP.",
           "attention_points": ANALYSIS["assessment"]["attention_points"],
-          "outlook_pt": "Acompanhar a inflação.", "closing_pt": "Estou à disposição."}
+          "outlook_pt": "Vale acompanhar a renda fixa no cenário da XP.", "closing_pt": "Estou à disposição."}
 
 
 class FakeOpenAI(BaseHTTPRequestHandler):

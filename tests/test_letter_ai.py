@@ -1,4 +1,4 @@
-from core.letter_ai import check_attention_points, check_matured_as_result, check_numbers, check_promises, check_scope, tidy
+from core.letter_ai import check_attention_points, check_matured_as_result, check_numbers, check_promises, check_specific_ending, check_scope, tidy
 
 
 def letter(text: str) -> dict:
@@ -51,3 +51,10 @@ def test_sign_off_is_left_to_the_pdf_and_matured_bond_is_not_a_result():
     facts = {"facts": [{"id": "matured:CDB C6 - SET/2024"}]}
     letter = {"performance_pt": ["O CDB C6 - SET/2024 teve o menor retorno, de +0,00%."]}
     assert check_matured_as_result(letter, facts) == ["CDB C6 - SET/2024"]
+
+
+def test_generic_outlook_is_flagged():
+    facts = {"facts": [{"id": "class_weights", "values": {"Ações": "15,59%", "Saldo em conta": "19,30%"}}]}
+    generic = {"outlook_pt": "O cenário econômico apresenta desafios, mas a diversificação pode mitigar riscos."}
+    specific = {"outlook_pt": "No cenário da XP, as ações ligadas ao consumo interno seguem como ponto a acompanhar."}
+    assert check_specific_ending(generic, facts) and not check_specific_ending(specific, facts)

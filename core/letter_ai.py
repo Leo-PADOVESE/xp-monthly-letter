@@ -192,6 +192,19 @@ def check_matured_as_result(letter: dict, facts: dict) -> list[str]:
     return [name for name in matured if name in text]
 
 
+GENERIC_TERMS = {"Ações": "ações", "Renda fixa (CDB)": "cdb", "Saldo em conta": "saldo", "Fundos de renda fixa": "renda fixa",
+                 "Fundos multimercado": "multimercado", "Fundos de ações": "fundos de ações"}
+
+
+def check_specific_ending(letter: dict, facts: dict) -> list[str]:
+    """The outlook must name something this client holds; generic endings ("a diversificação pode mitigar riscos")
+    fit any client and read as a template."""
+    weights = next((f["values"] for f in facts["facts"] if f["id"] == "class_weights"), {})
+    terms = [GENERIC_TERMS.get(c, c.lower()) for c in weights] + ["renda fixa", "fundo", "bolsa"]
+    outlook = letter.get("outlook_pt", "").lower()
+    return [] if any(t in outlook for t in terms) else ["'O que esperar' não cita nenhuma classe ou ativo da carteira"]
+
+
 def check_promises(letter: dict) -> list[str]:
     """Passages that read as a promise of returns, e.g. "pode melhorar a rentabilidade"."""
     return sorted({m.group(0) for m in PROMISE.finditer(letter_text(letter))})
@@ -275,7 +288,7 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         # promises it is advisory, since it blocked correct sentences in tests and the code check covers them.
         notes = critic.get("issues", [])
         issues: list[dict] = [{**n, "rule": n.get("rule", "fatos")} for n in notes
-                              if n.get("severity") == "high" and n.get("rule") in ("fatos", "período", "coerência", "nomes")]
+                              if n.get("severity") == "high" and n.get("rule") in ("fatos", "período", "coerência", "nomes", "estrutura")]
         if unknown:
             issues.append({"severity": "high", "rule": "números",
                            "problem": f"Valores que não existem nos dados: {', '.join(unknown)}",
@@ -284,6 +297,11 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         if wrong_points:
             issues.append({"severity": "high", "rule": "pontos de atenção", "problem": "; ".join(wrong_points),
                            "fix": "Use de 1 a 3 pontos, cada um com o fact_id de um fato da carteira."})
+        generic = check_specific_ending(letter, facts)
+        if generic:
+            issues.append({"severity": "high", "rule": "estrutura", "problem": "; ".join(generic),
+                           "fix": "Em 'O que esperar', diga o que acompanhar nas classes que o cliente tem, pelo cenário "
+                                  "da XP; no desfecho, convide para conversar sobre os pontos de atenção da carta."})
         quoted_matured = check_matured_as_result(letter, facts)
         if quoted_matured:
             issues.append({"severity": "high", "rule": "fatos",
