@@ -126,8 +126,8 @@ def download(label: str, path: Path, name: str, key: str) -> None:
     st.download_button(label, path.read_bytes(), name, "application/pdf", key=key, width="stretch")
 
 
-def mask_cpf(cpf: str | None) -> str:
-    return f"***.{cpf[3:6]}.{cpf[6:9]}-**" if cpf and len(cpf) == 11 else "—"
+def format_cpf(cpf: str | None) -> str:
+    return f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}" if cpf and len(cpf) == 11 else "—"
 
 
 # ------------------------------------------------------------------------ login
@@ -216,7 +216,7 @@ def edit_client(row: dict) -> None:
     with st.form("edit_client", border=False):
         account = st.text_input("Código da conta", row["account"] or "")
         st.text_input("Nome completo", row["name"], disabled=True)
-        cpf = st.text_input("CPF", "", placeholder="cadastrado (deixe em branco para manter)" if row["cpf"] else "")
+        cpf = st.text_input("CPF", format_cpf(row["cpf"]) if row["cpf"] else "")
         email = st.text_input("E-mail", row["email"] or "")
         suitability = st.file_uploader("Suitability (PDF)", type="pdf")
         if st.form_submit_button("Salvar", type="primary", width="stretch"):
@@ -280,7 +280,7 @@ if page == "Clientes":
 
     table = st.dataframe(
         [{"Conta": r["account"], "Cliente": r["name"], "Perfil": PROFILE_PT.get(r["profile"], "—"),
-          "CPF": mask_cpf(r["cpf"]), "E-mail": r["email"] or "—",
+          "CPF": format_cpf(r["cpf"]), "E-mail": r["email"] or "—",
           "Carta do mês": f"{STATUS_ICON[r['status']]} {crm.STATUS_PT[r['status']]}"} for r in rows],
         width="stretch", hide_index=True, on_select="rerun", selection_mode="single-row", key="clients_table")
     picked = table.selection.rows
