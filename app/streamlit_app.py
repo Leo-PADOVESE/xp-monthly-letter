@@ -380,39 +380,77 @@ def batch_progress() -> None:
             st.rerun(scope="app")
 
 
-def generate_tab() -> None:
-    ready = [r for r in rows if pipeline.has_statement(r["slug"], MONTH)]
-    missing = [r for r in rows if r not in ready]
+FILTERS = ["Todos", "Gerar carta", "Prontas para revisão", "Enviadas", "Pendentes"]
+
+
+def letter_stage(row: dict) -> tuple[str, list[str]]:
+    """Which filter a client falls in this month, and what is missing (to generate or to send)."""
+    missing = []
+    if not (crm.CLIENTS_DIR / row["slug"] / "risk_profile.pdf").exists():
+        missing.append("suitability")
+    if not pipeline.has_statement(row["slug"], MONTH):
+        missing.append(f"extrato de {month_label(PERIOD)}")
     if not PERIOD.macro_report.exists():
-        st.warning(f"Falta o macro research de {month_label(PERIOD)}. Anexe na tela **Macro** antes de gerar.")
+        missing.append("macro research do mês")
+    to_send = [label for value, label in [(row["cpf"], "CPF"), (row["email"], "e-mail")] if not value]
+    if row["status"] == "sent":
+        return "Enviadas", []
+    if row["status"] in ("generated", "needs_review", "approved"):
+        return "Prontas para revisão", to_send
     if missing:
-        with st.expander(f"Extrato de {month_label(PERIOD)} pendente: {len(missing)} cliente(s)"):
-            chosen = {r["name"]: r for r in missing}
-            row = chosen[st.selectbox("Cliente", list(chosen))]
-            statement = st.file_uploader("Extrato XP do mês (PDF)", type="pdf", key="statement")
-            if st.button("Ler extrato e calcular rentabilidade", type="primary", disabled=not statement):
-                with st.spinner("Lendo o extrato e buscando cotações (Yahoo, CVM, Banco Central)..."):
-                    try:
-                        info = pipeline.add_statement(row["slug"], statement.getvalue(), MONTH)
-                        st.success(f"Rentabilidade no mês: {info['return_pct']:+.2f}%.")
-                        st.rerun()
-                    except Exception as exc:
-                        st.error(str(exc))
-    if not ready:
-        st.info(f"Nenhum cliente com extrato de {month_label(PERIOD)}.")
-        return
-    names = {f"{STATUS_ICON[r['status']]} {r['name']}": r["slug"] for r in ready}
-    pending = [k for k, r in zip(names, ready) if r["status"] in ("pending", "error")]
-    selected = st.multiselect("Clientes", list(names), default=pending or list(names))
-    job = jobs()["current"]
-    running = bool(job and not job["end"])
-    if st.button(f"Gerar {len(selected)} carta(s)", type="primary",
-                 disabled=running or not selected or not PERIOD.macro_report.exists()):
-        start_batch([names[k] for k in selected], MONTH, pipeline.BATCH_WORKERS)
-        st.rerun()
-    if running:
-        st.caption("As cartas estão sendo escritas no servidor. Pode trocar de página: o lote continua.")
-    batch_progress()
+        return "Pendentes", missing + to_send
+    return "Gerar carta", to_send
+
+
+def generate_tab() -> None:
+    stages = {r["slug"]: letter_stage(r) for r in rows}
+    counts = {f: sum(1 for s, _ in stages.values() if f == "Todos" or s == f) for f in FILTERS}
+    choice = st.segmented_control("Filtro", FILTERS, default="Todos", format_func=lambda f: f"{f} ({counts[f]})",
+                                  label_visibility="collapsed", key="letters_filter") or "Todos"
+    shown = [r for r in rows if choice == "Todos" or stages[r["slug"]][0] == choice]
+    if not shown:
+        st.info("Nenhum cliente nesse filtro.")
+    else:
+        table = st.dataframe(
+            [{"Cliente": r["name"], "Conta": r["account"], "Perfil": PROFILE_PT.get(r["profile"], "—"),
+              "Carta": f"{STATUS_ICON[r['status']]} {crm.STATUS_PT[r['status']]}",
+              "O que falta": ", ".join(stages[r["slug"]][1]) or "—"} for r in shown],
+            width="stretch", hide_index=True, on_select="rerun", selection_mode="multi-row",
+            key=f"letters_table_{choice}")
+        picked = [shown[i] for i in table.selection.rows]
+
+        job = jobs()["current"]
+        running = bool(job and not job["end"])
+        can_generate = [r for r in (picked or shown) if stages[r["slug"]][0] in ("Gerar carta", "Prontas para revisão")
+                        and r["status"] != "generating"]
+        if choice in ("Gerar carta", "Todos", "Prontas para revisão"):
+            label = (f"Gerar {len(can_generate)} carta(s) selecionada(s)" if picked
+                     else f"Gerar {len([r for r in shown if stages[r['slug']][0] == 'Gerar carta'])} carta(s)")
+            targets = can_generate if picked else [r for r in shown if stages[r["slug"]][0] == "Gerar carta"]
+            if targets and st.button(label, type="primary", disabled=running):
+                start_batch([r["slug"] for r in targets], MONTH, pipeline.BATCH_WORKERS)
+                st.rerun()
+            st.caption("Selecione linhas para gerar só esses clientes, ou para refazer uma carta já pronta.")
+        if running:
+            st.caption("As cartas estão sendo escritas no servidor. Pode trocar de página: o lote continua.")
+        batch_progress()
+
+        waiting = [r for r in (picked or shown) if f"extrato de {month_label(PERIOD)}" in stages[r["slug"]][1]]
+        if choice == "Pendentes" and waiting:
+            with st.expander(f"Anexar extrato de {month_label(PERIOD)}", expanded=bool(picked)):
+                options = {r["name"]: r for r in waiting}
+                row = options[st.selectbox("Cliente", list(options))]
+                statement = st.file_uploader("Extrato XP do mês (PDF)", type="pdf", key="statement")
+                if st.button("Ler extrato e calcular rentabilidade", type="primary", disabled=not statement):
+                    with st.spinner("Lendo o extrato e buscando cotações (Yahoo, CVM, Banco Central)..."):
+                        try:
+                            info = pipeline.add_statement(row["slug"], statement.getvalue(), MONTH)
+                            st.success(f"Rentabilidade no mês: {info['return_pct']:+.2f}%.")
+                            st.rerun()
+                        except Exception as exc:
+                            st.error(str(exc))
+        if choice == "Pendentes":
+            st.caption("Suitability, CPF e e-mail: em Clientes › Editar. Macro research: na tela Macro.")
 
 
 def review_tab() -> None:
