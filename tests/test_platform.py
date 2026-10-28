@@ -53,3 +53,13 @@ def test_pdf_password_and_message(tmp_path: Path):
     pdf.write_bytes(b"%PDF-1.4")
     msg = build_message("ana@example.com", "Sua carta", "Ana", "Antonio", pdf, 6)
     assert msg["To"] == "ana@example.com" and "6 primeiros dígitos" in msg.get_body().get_content()
+
+
+def test_advisor_login_and_own_clients(tmp_path: Path):
+    db = tmp_path / "crm.db"
+    crm.set_advisor("Antonio@XPI.com.br", "Antonio Bicudo", "A7699", "segredo", path=db)
+    assert crm.login("antonio@xpi.com.br", "segredo", path=db)["code"] == "A7699"
+    assert crm.login("antonio@xpi.com.br", "errada", path=db) is None
+    crm.upsert_client("ana_souza", "Ana Souza", "123", advisor_code="A7699", path=db)
+    crm.upsert_client("joao_lima", "João Lima", "456", advisor_code="B1", path=db)
+    assert [c["slug"] for c in crm.clients("2025-05", "A7699", path=db)] == ["ana_souza"]

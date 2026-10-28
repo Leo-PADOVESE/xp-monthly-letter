@@ -1,15 +1,16 @@
-"""Advisor platform: clients, letter generation (single or batch), review, approval and e-mail.
+"""Advisor platform: login, client CRM, and the monthly reports (letter generation, review and e-mail).
 
     streamlit run app/streamlit_app.py
 
-On the server the OpenAI key, the SMTP credentials and APP_PASSWORD (access to the demo) come
-from environment variables set as secrets; locally they come from .env.
+On the server the OpenAI key, the SMTP credentials and the advisor login (ADVISOR_EMAIL, APP_PASSWORD)
+come from environment variables set as secrets; locally they come from .env.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import threading
 import time
@@ -28,39 +29,54 @@ load_env()
 SETTINGS = load_settings()
 MONTH = pipeline.current_month()
 PROFILE_PT = {"conservative": "Conservador", "moderate": "Moderado", "aggressive": "Arrojado"}
-STATUS_ICON = {"pending": "⚪", "generating": "⏳", "generated": "🟢", "needs_review": "🟠", "approved": "✅", "sent": "📨", "error": "🔴"}
+STATUS_ICON = {"pending": "⚪", "generating": "⏳", "generated": "🟢", "needs_review": "🟠", "approved": "✅",
+               "sent": "📨", "error": "🔴"}
+ADVISOR_EMAIL = os.environ.get("ADVISOR_EMAIL", "assessor@xpi.com.br")
+# Locally (no APP_PASSWORD in .env) the demo password is xp123; on Render APP_PASSWORD is required.
+APP_PASSWORD = os.environ.get("APP_PASSWORD") or ("" if os.environ.get("RENDER") else "xp123")
 
-st.set_page_config(page_title="Carta Mensal XP · Assessor", page_icon="📈", layout="wide")
+st.set_page_config(page_title="XP · Assessor", page_icon="📈", layout="wide")
 st.markdown("""
 <style>
-  [data-testid="stSidebar"] {background: #141414;}
-  [data-testid="stSidebar"] * {color: #F2F2F2;}
-  .xp-band {background:#141414; border-left:6px solid #FFC709; padding:14px 18px; border-radius:4px; margin-bottom:12px}
-  .xp-band h2 {color:#fff; margin:0; font-size:1.35rem}
-  .xp-band p {color:#cfcfcf; margin:2px 0 0 0; font-size:.9rem}
-  div.stButton > button[kind="primary"] {background:#FFC709; color:#141414; border:0; font-weight:600}
+  :root {--xp-black:#141414; --xp-yellow:#FFC709; --xp-grey:#9A9A9A;}
+  .stApp, [data-testid="stSidebar"] {background: var(--xp-black);}
+  [data-testid="stSidebar"] {border-right: 3px solid var(--xp-yellow);}
+  header[data-testid="stHeader"] {background: transparent;}
+  .block-container {padding-top: 2.2rem;}
+  .xp-logo {font-weight: 900; color: #fff; letter-spacing: -2px; line-height: 1;
+      font-family: "Arial Black", Arial, sans-serif;}
+  .xp-logo small {display: block; font-size: .22em; letter-spacing: 4px; font-weight: 600; color: #fff;
+      margin-top: 6px;}
+  .xp-advisor {font-weight: 800 !important; color: #fff; font-size: 2rem !important; line-height: 1.2;
+      margin: 0 !important;}
+  .xp-advisor-sub {color: var(--xp-grey); font-size: .85rem; margin: 2px 0 8px 0;}
+  .xp-title {font-weight: 800; color: #fff; font-size: 1.25rem; margin: 18px 0 4px 0;}
+  .xp-rule {height: 2px; background: var(--xp-yellow); width: 48px; margin: 0 0 14px 0;}
+  button[kind^="primary"] {background: var(--xp-yellow) !important; border: 0 !important;}
+  button[kind^="primary"], button[kind^="primary"] p {color: var(--xp-black) !important; font-weight: 700;}
+  button[kind^="secondary"], div.stDownloadButton > button {background: transparent; color: #fff;
+      border: 1px solid #3A3A3A;}
+  /* sidebar menu: plain text items, the selected one in yellow with a bar */
+  [data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div:first-child {display: none;}
+  [data-testid="stSidebar"] [data-testid="stRadioOption"] {padding: 10px 14px; border-left: 3px solid transparent;
+      margin: 2px 0; width: 100%;}
+  [data-testid="stSidebar"] [data-testid="stRadioOption"] p {font-size: 1.05rem; font-weight: 600; color: #fff;}
+  [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] {border-left-color: var(--xp-yellow);
+      background: #1F1F1F;}
+  [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] p {color: var(--xp-yellow);}
+  [data-testid="stSidebar"] [role="radiogroup"], [data-testid="stSidebar"] [role="radiogroup"] > div,
+  [data-testid="stSidebar"] [data-testid="stRadio"] > div {width: 100%;}
 </style>""", unsafe_allow_html=True)
 
 
-def gate() -> None:
-    """Optional password so a public demo link does not spend the OpenAI key or send e-mails freely."""
-    expected = os.environ.get("APP_PASSWORD")
-    if not expected or st.session_state.get("auth"):
-        return
-    st.markdown('<div class="xp-band"><h2>Carta Mensal XP</h2><p>Acesso do assessor</p></div>', unsafe_allow_html=True)
-    typed = st.text_input("Senha de acesso", type="password")
-    if typed:
-        if typed == expected:
-            st.session_state.auth = True
-            st.rerun()
-        st.error("Senha incorreta")
-    st.stop()
-
+# ------------------------------------------------------------------ server state
 
 @st.cache_resource
 def boot() -> int:
-    """Register the clients already in data/clients (the demo clients) once per server start."""
+    """Once per server start: the demo advisor's login, and the clients already in data/clients."""
     crm.reset_interrupted()
+    if APP_PASSWORD:
+        pipeline.ensure_demo_advisor(ADVISOR_EMAIL, APP_PASSWORD)
     return pipeline.sync_clients()
 
 
@@ -83,25 +99,6 @@ def start_batch(slugs: list[str], workers: int) -> None:
     threading.Thread(target=run, daemon=True).start()
 
 
-@st.fragment(run_every=3)
-def batch_progress() -> None:
-    job = jobs()["current"]
-    if not job:
-        return
-    done, total = job["done"], job["total"]
-    elapsed = (job["end"] or time.time()) - job["start"]
-    st.progress(len(done) / total, f"{len(done)} de {total} prontas · {elapsed:.0f} s")
-    for r in done:
-        st.write(f"{STATUS_ICON[r['status']]} {crm.client(r['slug'])['name']}: {crm.STATUS_PT[r['status']]}"
-                 + (f" em {r['seconds']} s" if r.get("seconds") else "")
-                 + (f" — {r['error'][:200]}" if r.get("error") else ""))
-    if job["end"]:
-        st.success("Lote concluído. Revise em **Revisão e envio**.")
-        if not st.session_state.get(f"seen_{job['start']}"):
-            st.session_state[f"seen_{job['start']}"] = True
-            st.rerun(scope="app")
-
-
 def pdf_pages(path: Path) -> list:
     import pypdfium2 as pdfium
 
@@ -117,79 +114,175 @@ def letter_doc(slug: str) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
-gate()
-boot()
-with st.sidebar:
-    st.markdown("### 📈 Carta Mensal XP")
-    st.caption(f"Referência: **{SETTINGS['period_end']:%m/%Y}** · carta de {SETTINGS['letter_date']:%d/%m/%Y}")
-    page = st.radio("Menu", ["Clientes", "Gerar cartas", "Revisão e envio", "Como funciona"], label_visibility="collapsed")
-    st.divider()
-    st.caption("Rivet decide, Python executa: os números vêm de código e dados de mercado; "
-               "a IA analisa e escreve; o assessor aprova antes de enviar.")
+def title(text: str) -> None:
+    st.markdown(f'<p class="xp-title">{text}</p><div class="xp-rule"></div>', unsafe_allow_html=True)
 
-rows = crm.clients(MONTH)
 
-# ------------------------------------------------------------------ Clientes
-if page == "Clientes":
-    st.markdown('<div class="xp-band"><h2>Clientes</h2><p>Carteira de clientes do assessor e status da carta do mês'
-                '</p></div>', unsafe_allow_html=True)
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Clientes", len(rows))
-    c2.metric("Cartas geradas", sum(r["status"] not in ("pending", "error") for r in rows))
-    c3.metric("Enviadas", sum(r["status"] == "sent" for r in rows))
-    c4.metric("Custo de IA no mês", f"US$ {sum(r['cost_usd'] or 0 for r in rows):.2f}")
+def mask_cpf(cpf: str | None) -> str:
+    return f"***.{cpf[3:6]}.{cpf[6:9]}-**" if cpf and len(cpf) == 11 else "—"
 
-    st.dataframe(
-        [{"Cliente": r["name"], "Conta": r["account"], "Perfil": PROFILE_PT.get(r["profile"], r["profile"]),
-          "E-mail": r["email"] or "—", "CPF": "cadastrado" if r["cpf"] else "—",
-          "Carta do mês": f"{STATUS_ICON[r['status']]} {crm.STATUS_PT[r['status']]}"} for r in rows],
-        width="stretch", hide_index=True)
 
-    with st.expander("➕ Adicionar cliente (extrato XP + perfil de investidor em PDF)"):
-        with st.form("add"):
-            statement = st.file_uploader("Extrato da carteira (PDF)", type="pdf")
-            profile = st.file_uploader("Perfil de investidor / suitability (PDF)", type="pdf")
-            email = st.text_input("E-mail do cliente")
-            cpf = st.text_input("CPF (usado só como senha do PDF)")
-            if st.form_submit_button("Cadastrar e calcular rentabilidade", type="primary"):
-                if not (statement and profile):
-                    st.error("Envie os dois PDFs.")
-                else:
-                    with st.spinner("Lendo o extrato e buscando cotações (Yahoo, CVM, Banco Central)..."):
-                        try:
-                            info = pipeline.add_client(statement.getvalue(), profile.getvalue(), email, cpf)
-                            st.success(f"{info['name']} cadastrado ({info['profile']}). Rentabilidade no mês: "
-                                       f"{info['return_pct']:+.2f}%. Leitura do extrato: "
-                                       f"{'código' if info['reader'] == 'code' else 'IA (conferir)'}.")
-                            for w in info["warnings"]:
-                                st.caption(f"⚠️ {w}")
-                        except Exception as exc:
-                            st.error(f"Não foi possível cadastrar: {exc}")
+# ------------------------------------------------------------------------ login
 
-    with st.expander("✏️ Atualizar e-mail e CPF"):
-        if rows:
-            names = {r["name"]: r for r in rows}
-            chosen = names[st.selectbox("Cliente", list(names))]
-            with st.form("contact"):
-                email = st.text_input("E-mail", chosen["email"] or "")
-                cpf = st.text_input("CPF", "", placeholder="cadastrado" if chosen["cpf"] else "")
-                if st.form_submit_button("Salvar"):
-                    crm.update_contact(chosen["slug"], email, cpf or chosen["cpf"] or "")
-                    st.success("Salvo.")
+def login_page() -> None:
+    st.markdown("<style>[data-testid='stSidebar'], [data-testid='stSidebarCollapsedControl'] {display:none;}"
+                ".stTextInput input {background:#fff; color:#141414; height:46px;}"
+                ".stTextInput input::placeholder {color:#8A8A8A;}"
+                ".stTextInput [data-baseweb='input'] > div, .stTextInput button {background:#fff; color:#141414;}"
+                ".stTextInput [data-baseweb='input'], .stTextInput [data-baseweb='base-input'] {background:#fff;"
+                " border:0; border-radius:4px;}</style>", unsafe_allow_html=True)
+    _, center, _ = st.columns([1.3, 1, 1.3])
+    with center:
+        st.markdown('<div style="height:14vh"></div><div class="xp-logo" style="font-size:5.5rem; text-align:center">'
+                    'XP<small>INVESTIMENTOS</small></div><div style="height:40px"></div>', unsafe_allow_html=True)
+        with st.form("login", border=False):
+            email = st.text_input("E-mail", placeholder="E-mail", label_visibility="collapsed")
+            password = st.text_input("Senha", placeholder="Senha", type="password", label_visibility="collapsed")
+            if st.form_submit_button("Entrar", type="primary", width="stretch"):
+                advisor = crm.login(email, password)
+                if advisor:
+                    st.session_state.advisor = advisor
                     st.rerun()
+                st.error("E-mail ou senha incorretos.")
+        if not APP_PASSWORD:
+            st.error("Login não configurado no servidor (APP_PASSWORD).")
 
-# ------------------------------------------------------------- Gerar cartas
-elif page == "Gerar cartas":
-    st.markdown('<div class="xp-band"><h2>Gerar cartas</h2><p>Um cliente ou o lote inteiro, em paralelo</p></div>',
-                unsafe_allow_html=True)
-    names = {f"{STATUS_ICON[r['status']]} {r['name']}": r["slug"] for r in rows}
-    pending = [k for k, r in zip(names, rows) if r["status"] in ("pending", "error")]
+
+boot()
+if "advisor" not in st.session_state:
+    login_page()
+    st.stop()
+
+ADVISOR = st.session_state.advisor
+rows = crm.clients(MONTH, ADVISOR["code"])
+
+with st.sidebar:
+    st.markdown('<div class="xp-logo" style="font-size:2.4rem">XP<small>INVESTIMENTOS</small></div>'
+                '<div style="height:28px"></div>', unsafe_allow_html=True)
+    page = st.radio("Menu", ["Clientes", "Relatórios"], label_visibility="collapsed")
+    st.markdown('<div style="height:40vh"></div>', unsafe_allow_html=True)
+    if st.button("Sair", width="stretch"):
+        del st.session_state.advisor
+        st.rerun()
+
+st.markdown(f'<div class="xp-advisor">{ADVISOR["name"]}</div><div class="xp-advisor-sub">Assessor de investimentos · '
+            f'{ADVISOR["code"]}</div>', unsafe_allow_html=True)
+
+
+# --------------------------------------------------------------------- clientes
+
+@st.dialog("Cadastrar novo cliente")
+def new_client() -> None:
+    with st.form("new_client", border=False):
+        account = st.text_input("Código da conta")
+        name = st.text_input("Nome completo")
+        cpf = st.text_input("CPF")
+        email = st.text_input("E-mail")
+        suitability = st.file_uploader("Suitability (PDF, opcional)", type="pdf")
+        if st.form_submit_button("Cadastrar", type="primary", width="stretch"):
+            checks = [(account.strip(), "o código da conta"), (name.strip(), "o nome"),
+                      (len(re.sub(r"\D", "", cpf)) == 11, "um CPF com 11 dígitos"),
+                      (re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email.strip()), "um e-mail válido")]
+            problems = [message for ok, message in checks if not ok]
+            if problems:
+                st.error("Informe " + ", ".join(problems) + ".")
+                return
+            if crm.client(crm.slugify(name)):
+                st.error("Já existe um cliente com esse nome.")
+                return
+            try:
+                pipeline.register_client(account, name, cpf, email, ADVISOR,
+                                         suitability.getvalue() if suitability else None)
+            except Exception as exc:
+                st.error(f"Não foi possível ler o suitability: {exc}")
+                return
+            st.rerun()
+
+
+@st.dialog("Editar cliente")
+def edit_client(row: dict) -> None:
+    with st.form("edit_client", border=False):
+        account = st.text_input("Código da conta", row["account"] or "")
+        st.text_input("Nome completo", row["name"], disabled=True)
+        cpf = st.text_input("CPF", "", placeholder="cadastrado (deixe em branco para manter)" if row["cpf"] else "")
+        email = st.text_input("E-mail", row["email"] or "")
+        suitability = st.file_uploader("Suitability (PDF)", type="pdf")
+        if st.form_submit_button("Salvar", type="primary", width="stretch"):
+            crm.update_contact(row["slug"], email, cpf or row["cpf"] or "", account.strip() or None)
+            if suitability:
+                try:
+                    pipeline.register_client(account or row["account"], row["name"], cpf or row["cpf"] or "",
+                                             email, ADVISOR, suitability.getvalue())
+                except Exception as exc:
+                    st.error(f"Não foi possível ler o suitability: {exc}")
+                    return
+            st.rerun()
+
+
+if page == "Clientes":
+    head, button = st.columns([4, 1], vertical_alignment="bottom")
+    with head:
+        title("Clientes")
+    if button.button("Cadastrar novo cliente", type="primary", width="stretch"):
+        new_client()
+
+    table = st.dataframe(
+        [{"Conta": r["account"], "Cliente": r["name"], "Perfil": PROFILE_PT.get(r["profile"], "—"),
+          "CPF": mask_cpf(r["cpf"]), "E-mail": r["email"] or "—",
+          "Carta do mês": f"{STATUS_ICON[r['status']]} {crm.STATUS_PT[r['status']]}"} for r in rows],
+        width="stretch", hide_index=True, on_select="rerun", selection_mode="single-row", key="clients_table")
+    picked = table.selection.rows
+    st.caption(f"{len(rows)} clientes · selecione uma linha para editar")
+    if picked and st.button(f"Editar {rows[picked[0]]['name']}"):
+        edit_client(rows[picked[0]])
+
+
+# ------------------------------------------------------------------- relatórios
+
+@st.fragment(run_every=3)
+def batch_progress() -> None:
+    job = jobs()["current"]
+    if not job:
+        return
+    done, total = job["done"], job["total"]
+    elapsed = (job["end"] or time.time()) - job["start"]
+    st.progress(len(done) / total, f"{len(done)} de {total} prontas · {elapsed:.0f} s")
+    for r in done:
+        st.write(f"{STATUS_ICON[r['status']]} {crm.client(r['slug'])['name']}: {crm.STATUS_PT[r['status']]}"
+                 + (f" em {r['seconds']} s" if r.get("seconds") else "")
+                 + (f" — {r['error'][:200]}" if r.get("error") else ""))
+    if job["end"]:
+        st.success("Lote concluído. Revise na aba **Revisar e enviar**.")
+        if not st.session_state.get(f"seen_{job['start']}"):
+            st.session_state[f"seen_{job['start']}"] = True
+            st.rerun(scope="app")
+
+
+def generate_tab() -> None:
+    ready = [r for r in rows if pipeline.has_statement(r["slug"], MONTH)]
+    missing = [r for r in rows if r not in ready]
+    if missing:
+        with st.expander(f"Extrato do mês pendente: {len(missing)} cliente(s)"):
+            chosen = {r["name"]: r for r in missing}
+            row = chosen[st.selectbox("Cliente", list(chosen))]
+            statement = st.file_uploader("Extrato XP do mês (PDF)", type="pdf", key="statement")
+            if st.button("Ler extrato e calcular rentabilidade", type="primary", disabled=not statement):
+                with st.spinner("Lendo o extrato e buscando cotações (Yahoo, CVM, Banco Central)..."):
+                    try:
+                        info = pipeline.add_statement(row["slug"], statement.getvalue(), MONTH)
+                        st.success(f"Rentabilidade no mês: {info['return_pct']:+.2f}%.")
+                        st.rerun()
+                    except Exception as exc:
+                        st.error(str(exc))
+    if not ready:
+        st.info("Nenhum cliente com extrato do mês.")
+        return
+    names = {f"{STATUS_ICON[r['status']]} {r['name']}": r["slug"] for r in ready}
+    pending = [k for k, r in zip(names, ready) if r["status"] in ("pending", "error")]
     selected = st.multiselect("Clientes", list(names), default=pending or list(names))
     workers = st.slider("Cartas em paralelo", 1, 16, pipeline.BATCH_WORKERS,
-                        help="Cada carta leva de 1 a 2 minutos esperando a IA; em paralelo, 20 cartas levam quase o "
-                             "mesmo tempo que uma. O limite é a cota da OpenAI.")
-    st.caption("No servidor, o lote do mês também roda sozinho no fechamento (python -m app.batch), e o assessor "
-               "encontra as cartas na fila de revisão.")
+                        help="Cada carta espera a IA; em paralelo, 20 cartas levam quase o mesmo tempo que uma. "
+                             "O limite é a cota da OpenAI.")
     job = jobs()["current"]
     running = bool(job and not job["end"])
     if st.button(f"Gerar {len(selected)} carta(s)", type="primary", disabled=running or not selected):
@@ -199,14 +292,12 @@ elif page == "Gerar cartas":
         st.caption("As cartas estão sendo escritas no servidor. Pode trocar de página: o lote continua.")
     batch_progress()
 
-# ---------------------------------------------------------- Revisão e envio
-elif page == "Revisão e envio":
-    st.markdown('<div class="xp-band"><h2>Revisão e envio</h2><p>Nenhuma carta sai sem a aprovação do assessor</p>'
-                '</div>', unsafe_allow_html=True)
+
+def review_tab() -> None:
     ready = [r for r in rows if r["status"] in ("generated", "needs_review", "approved", "sent")]
     if not ready:
-        st.info("Nenhuma carta gerada ainda. Use **Gerar cartas**.")
-        st.stop()
+        st.info("Nenhuma carta gerada ainda.")
+        return
     labels = {f"{STATUS_ICON[r['status']]} {r['name']} · {crm.STATUS_PT[r['status']]}": r for r in ready}
     row = labels[st.selectbox("Carta", list(labels))]
     folder = pipeline.month_dir(row["slug"], MONTH)
@@ -217,7 +308,7 @@ elif page == "Revisão e envio":
         for image in pdf_pages(folder / "letter.pdf"):
             st.image(image, width="stretch")
     with right:
-        st.download_button("⬇️ Baixar PDF", (folder / "letter.pdf").read_bytes(), f"carta_{row['slug']}_{MONTH}.pdf",
+        st.download_button("Baixar PDF", (folder / "letter.pdf").read_bytes(), f"carta_{row['slug']}_{MONTH}.pdf",
                            "application/pdf", width="stretch")
         notes = doc.get("advisor_notes", [])
         st.markdown(f"**Observações do revisor (IA):** {len(notes) or 'nenhuma'}")
@@ -227,7 +318,7 @@ elif page == "Revisão e envio":
         st.caption(f"Checagens automáticas: números conferidos com os dados, sem promessa de retorno, sugestões "
                    f"dentro das regras. Custo: US$ {row['cost_usd'] or 0:.3f}.")
 
-        with st.expander("✏️ Editar texto da carta"):
+        with st.expander("Editar texto da carta"):
             letter = doc["letter"]
             with st.form("edit"):
                 letter["opening_pt"] = st.text_area("Abertura", letter.get("opening_pt", ""))
@@ -243,7 +334,7 @@ elif page == "Revisão e envio":
 
         st.divider()
         if row["status"] in ("generated", "needs_review"):
-            if st.button("✅ Aprovar carta", type="primary", width="stretch"):
+            if st.button("Aprovar carta", type="primary", width="stretch"):
                 crm.set_letter(row["slug"], MONTH, "approved")
                 st.rerun()
         else:
@@ -251,7 +342,7 @@ elif page == "Revisão e envio":
                                                          if row["status"] == "sent" else ""))
         if row["status"] in ("approved", "sent"):
             to = st.text_input("Enviar para", row["email"] or "")
-            if st.button("📨 Enviar por e-mail", width="stretch", disabled=not to):
+            if st.button("Enviar por e-mail", width="stretch", disabled=not to):
                 try:
                     with st.spinner("Protegendo o PDF com o CPF e enviando..."):
                         send_letter(folder, to, row["cpf"] or "", doc["letter"].get("subject_pt", "Sua carta mensal"),
@@ -262,22 +353,11 @@ elif page == "Revisão e envio":
                 except (MailError, OSError) as exc:
                     st.error(str(exc))
 
-# ------------------------------------------------------------ Como funciona
-else:
-    st.markdown('<div class="xp-band"><h2>Como funciona</h2><p>Rivet decide, Python executa</p></div>',
-                unsafe_allow_html=True)
-    st.markdown("""
-1. **Leitura do extrato** — o código lê o extrato padrão XP e confere todas as somas. Se o layout for
-   desconhecido, um agente do Rivet extrai os dados e eles passam pelas mesmas conferências.
-2. **Rentabilidade** — cotações diárias do Yahoo Finance (ações), cotas da CVM (fundos) e CDI/IPCA do
-   Banco Central. Resultado por ativo, classe e carteira, contra CDI, Ibovespa e o benchmark do perfil.
-3. **Fatos e sugestões candidatas** — regras objetivas (saldo parado, CDB vencido, concentração, falta
-   de renda fixa, peso de renda variável) geram as sugestões possíveis para o perfil.
-4. **Agente no Rivet** — o *Analista* resume o perfil, analisa o mês à luz do relatório macro da XP e
-   escolhe 2 ou 3 sugestões; o *Redator* escreve a carta; o *Revisor* deixa observações para o assessor.
-5. **Travas em código** — todo número da carta precisa existir nos dados; frases de promessa de retorno
-   e sugestões fora das candidatas reprovam a versão, que é reescrita.
-6. **PDF e envio** — carta de 2 páginas com gráficos; o assessor revisa, edita se quiser, aprova e
-   envia por e-mail, com o PDF protegido pelo CPF do cliente.
-""")
-    st.caption("Código, prompts e grafo do Rivet em inglês; carta em português.")
+
+if page == "Relatórios":
+    title(f"Relatórios · carta de {SETTINGS['letter_date']:%d/%m/%Y}")
+    generate, review = st.tabs(["Gerar cartas", "Revisar e enviar"])
+    with generate:
+        generate_tab()
+    with review:
+        review_tab()

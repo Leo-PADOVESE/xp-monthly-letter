@@ -58,28 +58,54 @@ def read_statement(pdf: Path) -> tuple[object, str]:
                                  f"{fallback_error}") from fallback_error
 
 
-def add_client(statement_pdf: bytes, risk_profile_pdf: bytes, email: str = "", cpf: str = "") -> dict:
-    """Save a new client's documents, read them and compute the month's profitability."""
+def add_statement(slug: str, statement_pdf: bytes, month: str | None = None) -> dict:
+    """The month's statement of a registered client: read it, check it and compute the profitability."""
     import tempfile
 
+    row = crm.client(slug)
+    if not (row and row["profile"]):
+        raise IngestionError("Anexe o suitability do cliente antes do extrato: o perfil define o benchmark")
     with tempfile.TemporaryDirectory() as tmp:
         tmp_pdf = Path(tmp) / "portfolio.pdf"
         tmp_pdf.write_bytes(statement_pdf)
         portfolio, reader = read_statement(tmp_pdf)
-    slug = crm.slugify(portfolio.client_name)
-    folder = month_dir(slug)
+    if row["account"] and portfolio.account and str(portfolio.account) != str(row["account"]):
+        raise IngestionError(f"O extrato é da conta {portfolio.account}, mas o cliente está cadastrado na conta "
+                             f"{row['account']}")
+    folder = month_dir(slug, month)
     folder.mkdir(parents=True, exist_ok=True)
     (folder / "portfolio.pdf").write_bytes(statement_pdf)
-    (folder.parent / "risk_profile.pdf").write_bytes(risk_profile_pdf)
     (folder / "portfolio.json").write_text(json.dumps(portfolio.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
     (folder / "portfolio.txt").write_text(portfolio_to_text(portfolio), encoding="utf-8")
+    report, _ = run_profitability(folder, "market", row["profile"])
+    return {"reader": reader, "return_pct": report.return_pct, "warnings": portfolio.warnings + report.warnings}
 
-    profile = parse_risk_profile_label(pdf_to_text(folder.parent / "risk_profile.pdf"))
-    report, _ = run_profitability(folder, "market", profile)
-    crm.upsert_client(slug, portfolio.client_name, portfolio.account, profile, email, cpf,
-                      f"{portfolio.advisor_name} ({portfolio.advisor_code})")
-    return {"slug": slug, "name": portfolio.client_name, "profile": PROFILE_PT.get(profile, profile), "reader": reader,
-            "return_pct": report.return_pct, "warnings": portfolio.warnings + report.warnings}
+
+def has_statement(slug: str, month: str | None = None) -> bool:
+    return (month_dir(slug, month) / "portfolio.pdf").exists()
+
+
+def register_client(account: str, name: str, cpf: str, email: str, advisor: dict,
+                    risk_profile_pdf: bytes | None = None) -> dict:
+    """New client in the advisor's CRM; the suitability PDF is optional and can come later."""
+    slug = crm.slugify(name)
+    profile = ""
+    if risk_profile_pdf:
+        folder = crm.CLIENTS_DIR / slug
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "risk_profile.pdf").write_bytes(risk_profile_pdf)
+        profile = parse_risk_profile_label(pdf_to_text(folder / "risk_profile.pdf"))
+    crm.upsert_client(slug, name.strip(), account.strip(), profile, email, cpf,
+                      f"{advisor['name']} ({advisor['code']})", advisor["code"])
+    return {"slug": slug, "profile": PROFILE_PT.get(profile, profile)}
+
+
+def ensure_demo_advisor(email: str, password: str) -> None:
+    """The advisor of the demo clients, with the login given by the server's settings."""
+    pdf = next(iter(sorted(crm.CLIENTS_DIR.glob("*/*/portfolio.pdf"))), None)
+    if pdf:
+        portfolio = load_portfolio(pdf.parent)
+        crm.set_advisor(email, portfolio.advisor_name, portfolio.advisor_code, password)
 
 
 def sync_clients() -> int:
@@ -91,7 +117,8 @@ def sync_clients() -> int:
             continue
         portfolio = load_portfolio(folder.parent)
         crm.upsert_client(slug, portfolio.client_name, portfolio.account, parse_risk_profile_label(pdf_to_text(risk)),
-                          advisor=f"{portfolio.advisor_name} ({portfolio.advisor_code})")
+                          advisor=f"{portfolio.advisor_name} ({portfolio.advisor_code})",
+                          advisor_code=portfolio.advisor_code)
         letter = folder.parent / "letter.json"
         if letter.exists() and (folder.parent / "letter.pdf").exists():
             doc = json.loads(letter.read_text(encoding="utf-8"))
