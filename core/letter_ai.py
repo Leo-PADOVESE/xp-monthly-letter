@@ -321,9 +321,9 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         # +0,41 p.p.") and blocked every letter. Structure and style stay as notes for the advisor; the outlook is
         # checked in code.
         text = _plain(letter_text(letter))
-        issues: list[dict] = [{**n, "rule": n.get("rule", "fatos")} for n in notes
-                              if n.get("severity") == "high" and n.get("rule") in BLOCKING_RULES
-                              and _quoted(n.get("quote", ""), text)]
+        flagged = [{**n, "rule": n.get("rule", "fatos")} for n in notes
+                   if n.get("severity") == "high" and n.get("rule") in BLOCKING_RULES and _quoted(n.get("quote", ""), text)]
+        issues: list[dict] = list(flagged)
         if unknown:
             issues.append({"severity": "high", "rule": "números",
                            "problem": f"Valores que não existem nos dados: {', '.join(unknown)}",
@@ -360,7 +360,11 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         if not 300 <= words <= 600:
             issues.append({"severity": "high", "rule": "tamanho", "problem": f"{words} palavras",
                            "fix": "Ajuste o texto para ficar entre 330 e 480 palavras."})
-        approved = not issues
+        # Code checks are the gate. After the last rewrite, findings left only by the critic go to the advisor as
+        # notes (the advisor reviews every letter): in tests it kept flagging correct sentences ("ARZZ3 teve o melhor
+        # desempenho" when LREN3 contributed more in reais) and held every letter.
+        last = attempt == max_rewrites
+        approved = not issues or (last and len(issues) == len(flagged))
         attempts.append({"attempt": attempt + 1, "usage": usage, "words": words, "unknown_numbers": unknown,
                          "critic": critic, "issues": issues, "advisor_notes": notes})
         if approved:

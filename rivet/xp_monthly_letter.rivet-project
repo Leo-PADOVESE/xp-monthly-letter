@@ -484,8 +484,12 @@ data:
               as medium at most, as a note for the advisor.
 
 
-              Not issues: explaining the top contributor in reais by its larger
-              weight when "positions" shows a larger weight than the best
+              Not issues: calling the asset with the highest return in % the
+              best performer while another asset contributed more in reais (both
+              are true, they measure different things); saying the month was
+              driven by the class with the largest contribution in
+              class_contribution; explaining the top contributor in reais by its
+              larger weight when "positions" shows a larger weight than the best
               performer's; a matured CDB at +0,00% does not make statements
               about fixed income funds wrong; describing a class as the XP
               digest does; leaving a portfolio fact out of the attention points
