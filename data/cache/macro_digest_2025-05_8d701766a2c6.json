@@ -1,0 +1,104 @@
+{
+  "report_date": "6 de fevereiro de 2025",
+  "report_title": "Brasil Macro Mensal",
+  "projections": [
+    {
+      "indicator": "Crescimento do PIB",
+      "value": "2,0%",
+      "horizon": "2025"
+    },
+    {
+      "indicator": "Crescimento do PIB",
+      "value": "1,0%",
+      "horizon": "2026"
+    },
+    {
+      "indicator": "IPCA",
+      "value": "6,1%",
+      "horizon": "2025"
+    },
+    {
+      "indicator": "IPCA",
+      "value": "4,5%",
+      "horizon": "2026"
+    },
+    {
+      "indicator": "SELIC",
+      "value": "15,50%",
+      "horizon": "2025"
+    },
+    {
+      "indicator": "Taxa de Câmbio",
+      "value": "R$ 6,20",
+      "horizon": "2025"
+    },
+    {
+      "indicator": "Taxa de Câmbio",
+      "value": "R$ 6,40",
+      "horizon": "2026"
+    },
+    {
+      "indicator": "Resultado primário do governo central",
+      "value": "-0,7%",
+      "horizon": "2025"
+    },
+    {
+      "indicator": "Dívida bruta - DBGG",
+      "value": "80,3%",
+      "horizon": "2025"
+    },
+    {
+      "indicator": "Dívida bruta - DBGG",
+      "value": "83,9%",
+      "horizon": "2026"
+    }
+  ],
+  "sentiment": "O ambiente econômico apresenta sinais de desaceleração, mas com algumas bases de recuperação.",
+  "risks": [
+    "Incertezas políticas e fiscais podem impactar a confiança do mercado.",
+    "A inflação pode permanecer acima da meta, afetando o poder de compra.",
+    "A volatilidade externa pode influenciar a taxa de câmbio e os ativos brasileiros."
+  ],
+  "asset_class_implications": [
+    {
+      "asset_class": "Renda fixa pós-fixada",
+      "view": "favorável",
+      "why": "Taxa Selic alta pode beneficiar os rendimentos."
+    },
+    {
+      "asset_class": "Títulos atrelados à inflação",
+      "view": "favorável",
+      "why": "Expectativa de inflação elevada pode impulsionar esses ativos."
+    },
+    {
+      "asset_class": "Crédito",
+      "view": "neutro",
+      "why": "Cenário de desaceleração pode afetar a qualidade do crédito."
+    },
+    {
+      "asset_class": "Fundos multimercado",
+      "view": "neutro",
+      "why": "Ambiente volátil pode trazer oportunidades e riscos."
+    },
+    {
+      "asset_class": "Ações brasileiras",
+      "view": "neutro",
+      "why": "Setores de commodities podem se beneficiar, mas a incerteza persiste."
+    },
+    {
+      "asset_class": "Ações internacionais",
+      "view": "neutro",
+      "why": "Dependência do cenário global e da política monetária dos EUA."
+    }
+  ],
+  "sector_notes": [
+    "Setores de commodities devem se recuperar, especialmente a agricultura.",
+    "Setores de consumo e serviços podem enfrentar desafios devido à inflação e desaceleração econômica."
+  ],
+  "summary_pt": "O cenário econômico brasileiro apresenta sinais de desaceleração, com projeções de crescimento do PIB de 2,0% para 2025 e inflação elevada de 6,1%. A taxa Selic deve permanecer alta em 15,50%, refletindo a necessidade de controle inflacionário. Setores de commodities podem se beneficiar, enquanto a volatilidade política e fiscal continua a ser um risco significativo.",
+  "_usage": {
+    "requestTokens": 13506,
+    "responseTokens": 755,
+    "cost": 0.0025921499999999997
+  }
+}
