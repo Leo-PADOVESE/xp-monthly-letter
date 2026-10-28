@@ -12,3 +12,5 @@ rivet/node_modules/
 # Generated per run
 data/clients/*/*/portfolio_raw.txt
 data/clients/*/*/validation_*.xlsx
+data/clients/*/*/letter.json
+data/clients/*/*/letter.pdf
