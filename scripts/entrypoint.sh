@@ -2,13 +2,14 @@
 # Container start. On Render, data/ lives on the persistent disk at /var/data. Usually only files
 # missing on the disk are copied from the image, so the CRM and the letters generated on the
 # platform are kept across deploys. When data/SEED_VERSION changes (new demo letters shipped),
-# the demo files are overwritten and the CRM is rebuilt from them on boot.
+# the demo clients' folders are replaced and the CRM is rebuilt from them on boot.
 set -e
 if [ -n "$RENDER" ] && [ -d /var/data ]; then
   if cmp -s /app/data/SEED_VERSION /var/data/SEED_VERSION; then
     cp -rn /app/data/. /var/data/
   else
     rm -f /var/data/crm.db
+    for client in /app/data/clients/*/; do rm -rf "/var/data/clients/$(basename "$client")"; done
     cp -r /app/data/. /var/data/
   fi
   rm -rf /app/data

@@ -18,7 +18,9 @@ def _copy(client: str, tmp_path: Path) -> Path:
 
 
 def test_letters_fit_in_two_pages(tmp_path):
-    for client in ("albert_da_silva", "carla_mendes", "bruno_tavares"):
+    shipped = sorted(p.parents[1].name for p in CLIENTS.glob("*/2025-05/letter.json"))
+    assert "albert_da_silva" in shipped
+    for client in shipped:
         out, pages = build_pdf(_copy(client, tmp_path))
         assert pages <= MAX_PAGES, client
         text = "".join(page.extract_text() for page in PdfReader(out).pages)
