@@ -11,163 +11,231 @@
     "reference_month": "abril de 2025"
   },
   "letter": {
-    "subject_pt": "Relatório Mensal - Abril de 2025",
+    "subject_pt": "Resumo Mensal - Abril de 2025",
     "greeting_pt": "Prezado Albert,",
-    "opening_pt": "Em abril de 2025, apresentamos o desempenho da sua carteira e discutimos as estratégias para os próximos meses.",
+    "opening_pt": "Abril foi um mês positivo para sua carteira, impulsionado principalmente pelo desempenho das ações.",
     "performance_pt": [
-      "O retorno da carteira foi de +3,95%, superando o CDI em +2,90 p.p. e o benchmark do perfil em +2,11 p.p. O destaque positivo foi a ação ARZZ3, com um retorno de +29,96%, enquanto o fundo Trend Investback FIC FIRF Simples teve o menor retorno, de +1,03%. A ação LREN3 foi a maior contribuinte em reais, com uma contribuição de R$ 4.530,64, devido ao seu peso maior na carteira.",
-      "A classe de ações teve um retorno positivo de +19,40%, mas os CDBs e o saldo em conta não apresentaram retorno, ambos com +0,00%. Atenção especial ao CDB BANCO C6 CONSIGNADO S.A. - SET/2024, que está disponível para reinvestimento, e ao saldo em conta de R$ 74.672,62, que gerou um custo de oportunidade de R$ 788,45. O cenário desfavorável para ações brasileiras pode explicar a volatilidade observada."
+      "No mês de abril de 2025, sua carteira apresentou um retorno de +3,95%, superando o CDI em 2,90 p.p. (+1,06%) e o benchmark do perfil em 2,11 p.p. (+1,85%). O retorno real foi de +3,51%, considerando a inflação de +0,43%.",
+      "O resultado positivo do mês foi impulsionado principalmente pela classe de Ações, que contribuiu com R$ 9.797,32 (+2,63 p.p.). Dentro das ações, o destaque foi ARZZ3, com um retorno de +29,96%. O ativo que mais contribuiu em reais foi a LREN3, com R$ 4.530,64, devido ao seu peso maior na carteira. O pior desempenho foi do fundo Trend Investback FIC FIRF Simples, que teve um retorno de +1,03%."
     ],
-    "macro_pt": "O cenário econômico brasileiro, conforme projetado pela XP, apresenta desafios com inflação alta e crescimento desacelerado. A taxa Selic elevada, projetada em 15,50% ao fim de 2025, tende a favorecer investimentos em renda fixa pós-fixada. No entanto, a incerteza política e fiscal traz riscos, e setores ligados ao consumo interno podem enfrentar dificuldades. É importante considerar essas projeções ao avaliar a estratégia de investimentos.",
-    "suggestions_intro_pt": "Com base na análise atual, sugerimos discutir com seu assessor as seguintes possibilidades:",
-    "suggestions": [
+    "consolidated_pt": "Nos últimos 12 meses, a carteira rendeu +7,61%, ficando 3,84 p.p. abaixo do CDI (+11,45%) e 2,77 p.p. abaixo do benchmark do perfil (+10,38%). Desde a primeira aplicação em 22/04/2021, o retorno acumulado é de -2,03%, considerando as posições atuais.",
+    "macro_pt": "O cenário econômico brasileiro, segundo o relatório da XP, apresenta desafios com inflação alta projetada em 6,1% para 2025 e crescimento desacelerado do PIB em 2,0%. A taxa Selic elevada, projetada em 15,50% até o final de 2025, tende a favorecer investimentos em renda fixa pós-fixada. Ações brasileiras enfrentam um cenário desfavorável devido a incertezas políticas, o que requer atenção na exposição a esse setor.",
+    "assessment_pt": "O portfólio está bem diversificado, mas a exposição a ações (15,59%) merece atenção devido ao cenário desfavorável. Fundos de renda fixa e multimercado estão bem posicionados para equilíbrio e diversificação.",
+    "attention_points": [
       {
-        "candidate_id": "idle_cash",
-        "type": "opportunity",
-        "title_pt": "Aplicar saldo parado em conta",
-        "text_pt": "Discutir com o assessor a possibilidade de aplicar parte do saldo parado em conta (R$ 74.672,62) em renda fixa pós-fixada de liquidez diária, mantendo a reserva que o perfil pede. O saldo parado não gera rendimento e representa um custo de oportunidade."
+        "fact_id": "idle_cash",
+        "title_pt": "Saldo parado",
+        "text_pt": "Vale conversar com seu assessor sobre o saldo parado de R$ 74.672,62 para melhorar a alocação."
       },
       {
-        "candidate_id": "matured:CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
-        "type": "opportunity",
-        "title_pt": "Reinvestir CDB vencido",
-        "text_pt": "Discutir com o assessor a possibilidade de reinvestir os R$ 40.478,75 do CDB BANCO C6 CONSIGNADO S.A. - SET/2024, que já venceu, em renda fixa compatível com o perfil moderado, para manter o crescimento sustentável do patrimônio."
+        "fact_id": "matured:CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
+        "title_pt": "CDB vencido",
+        "text_pt": "Reinvestir o valor do CDB vencido (R$ 40.478,75) pode diversificar o portfólio."
       },
       {
-        "candidate_id": "concentration:Riza Lotus Plus Advisory FIC FIRF REF DI CP",
-        "type": "protection",
-        "title_pt": "Reduzir concentração em fundo",
-        "text_pt": "Discutir com o assessor a possibilidade de reduzir aos poucos a posição em Riza Lotus Plus Advisory FIC FIRF REF DI CP (24,86% do patrimônio), distribuindo entre outros ativos da mesma classe, para diversificar o risco."
+        "fact_id": "concentration:Riza Lotus Plus Advisory FIC FIRF REF DI CP",
+        "title_pt": "Concentração em fundo",
+        "text_pt": "A concentração de 24,86% em um único fundo pode ser revisada para reduzir riscos."
       }
     ],
-    "outlook_pt": "Nos próximos meses, é importante monitorar a inflação e a política fiscal no Brasil, que podem impactar o cenário econômico. A taxa Selic elevada oferece oportunidades em renda fixa, mas a incerteza política e fiscal requer cautela. Mantenha-se atento às discussões com seu assessor para ajustar a estratégia conforme necessário.",
-    "closing_pt": "Estamos à disposição para conversar sobre essas estratégias e qualquer outra dúvida que você tenha. Entre em contato com seu assessor, Antonio Bicudo.",
-    "charts": [
-      "benchmarks",
-      "contribution"
+    "outlook_pt": "Com a taxa Selic elevada, a renda fixa pós-fixada segue em foco; em ações, é importante acompanhar as incertezas políticas que podem impactar o setor. A XP sugere atenção especial a essas classes nos próximos meses.",
+    "closing_pt": "Convido você a discutir com o assessor Antonio Bicudo sobre o saldo parado, o CDB vencido e a concentração em fundo, para ajustar a alocação conforme necessário.",
+    "class_views": [
+      {
+        "asset_class": "Fundos de renda fixa",
+        "weight": "24,94%",
+        "xp_view": "neutral",
+        "profile_fit_pt": "Equilíbrio entre segurança e retorno"
+      },
+      {
+        "asset_class": "Fundos multimercado",
+        "weight": "21,76%",
+        "xp_view": "neutral",
+        "profile_fit_pt": "Diversificação em cenário incerto"
+      },
+      {
+        "asset_class": "Saldo em conta",
+        "weight": "19,30%",
+        "xp_view": "neutral",
+        "profile_fit_pt": "Liquidez imediata"
+      },
+      {
+        "asset_class": "Ações",
+        "weight": "15,59%",
+        "xp_view": "unfavorable",
+        "profile_fit_pt": "Potencial de crescimento com risco"
+      },
+      {
+        "asset_class": "Renda fixa (CDB)",
+        "weight": "10,46%",
+        "xp_view": "neutral",
+        "profile_fit_pt": "Vencido, disponível para reinvestir"
+      },
+      {
+        "asset_class": "Fundos de ações",
+        "weight": "7,95%",
+        "xp_view": "unfavorable",
+        "profile_fit_pt": "Exposição a crescimento com risco"
+      }
     ]
   },
   "steps": {
-    "profile_summary": {
-      "profile": "moderate",
-      "profile_pt": "Moderado",
-      "horizon": "médio a longo prazo",
-      "volatility_tolerance": "aceita flutuações de mercado e possíveis variações nos retornos",
-      "objectives": [
-        "preservar poder de compra",
-        "incrementar marginalmente o patrimônio",
-        "crescimento sustentável do patrimônio"
-      ],
-      "compatible_products": [
-        "Ações de Empresas Consolidadas com Dividendos",
-        "Instrumentos de Renda Fixa com Classificação BB+ ou Superior"
-      ],
-      "restrictions": [],
-      "summary_pt": "Albert tem perfil moderado, equilibrando segurança e risco para crescimento sustentável a médio e longo prazo."
+    "analysis": {
+      "profile": {
+        "profile_pt": "Moderado",
+        "horizon": "médio a longo prazo",
+        "volatility_tolerance": "moderada",
+        "objectives": [
+          "preservar e incrementar o poder de compra",
+          "crescimento sustentável do patrimônio"
+        ],
+        "restrictions": [
+          "ações de empresas consolidadas com dividendos",
+          "instrumentos de renda fixa com classificação BB+ ou superior"
+        ],
+        "summary_pt": "Perfil moderado: equilíbrio entre segurança e retorno, aceitando riscos moderados."
+      },
+      "performance": {
+        "headline_pt": "Em abril de 2025, o portfólio teve um retorno de +3,95%, superando o CDI em +2,90 p.p. (+1,06%) e o benchmark do perfil em +2,11 p.p. (+1,85%). O retorno real foi de +3,51%.",
+        "attribution_pt": "A classe de Ações contribuiu com R$ 9.797,32 (+2,63 p.p.), enquanto os Fundos de ações adicionaram R$ 2.604,02 (+0,70 p.p.). Fundos de renda fixa e multimercado contribuíram com R$ 1.156,55 (+0,31 p.p.) e R$ 1.154,08 (+0,31 p.p.), respectivamente.",
+        "window_pt": "Nos últimos 12 meses, o portfólio rendeu +7,61%, abaixo do CDI (+11,45%) e do benchmark do perfil (+10,38%). Desde a primeira aplicação em 22/04/2021, o retorno foi de -2,03%, considerando as posições atuais.",
+        "movers_pt": "O melhor desempenho foi da ARZZ3 com +29,96%, enquanto o pior foi do Trend Investback FIC FIRF Simples com +1,03%. O ativo que mais contribuiu em reais foi a LREN3, com R$ 4.530,64.",
+        "attention_points_pt": [
+          "Saldo em conta de R$ 74.672,62 sem rendimento.",
+          "CDB vencido de R$ 40.478,75 disponível para reinvestir.",
+          "Concentração em Riza Lotus Plus Advisory FIC FIRF REF DI CP (24,86% do patrimônio)."
+        ],
+        "macro_links_pt": [
+          "Ações subiram +19,40% apesar da visão desfavorável da XP sobre ações brasileiras devido a incertezas políticas."
+        ]
+      },
+      "assessment": {
+        "class_views": [
+          {
+            "asset_class": "Fundos de renda fixa",
+            "weight": "24,94%",
+            "xp_view": "neutral",
+            "profile_fit_pt": "Equilíbrio entre segurança e retorno"
+          },
+          {
+            "asset_class": "Fundos multimercado",
+            "weight": "21,76%",
+            "xp_view": "neutral",
+            "profile_fit_pt": "Diversificação em cenário incerto"
+          },
+          {
+            "asset_class": "Saldo em conta",
+            "weight": "19,30%",
+            "xp_view": "neutral",
+            "profile_fit_pt": "Liquidez imediata"
+          },
+          {
+            "asset_class": "Ações",
+            "weight": "15,59%",
+            "xp_view": "unfavorable",
+            "profile_fit_pt": "Potencial de crescimento com risco"
+          },
+          {
+            "asset_class": "Renda fixa (CDB)",
+            "weight": "10,46%",
+            "xp_view": "neutral",
+            "profile_fit_pt": "Vencido, disponível para reinvestir"
+          },
+          {
+            "asset_class": "Fundos de ações",
+            "weight": "7,95%",
+            "xp_view": "unfavorable",
+            "profile_fit_pt": "Exposição a crescimento com risco"
+          }
+        ],
+        "assessment_pt": "O portfólio está bem diversificado, mas a exposição a ações (15,59%) merece atenção devido ao cenário desfavorável. Fundos de renda fixa e multimercado estão bem posicionados para equilíbrio e diversificação.",
+        "attention_points": [
+          {
+            "fact_id": "idle_cash",
+            "title_pt": "Saldo parado",
+            "text_pt": "Vale conversar com seu assessor sobre o saldo parado de R$ 74.672,62 para melhorar a alocação."
+          },
+          {
+            "fact_id": "matured:CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
+            "title_pt": "CDB vencido",
+            "text_pt": "Reinvestir o valor do CDB vencido (R$ 40.478,75) pode diversificar o portfólio."
+          },
+          {
+            "fact_id": "concentration:Riza Lotus Plus Advisory FIC FIRF REF DI CP",
+            "title_pt": "Concentração em fundo",
+            "text_pt": "A concentração de 24,86% em um único fundo pode ser revisada para reduzir riscos."
+          }
+        ],
+        "outlook_pt": "Acompanhe ações e fundos de ações devido ao cenário desfavorável. Considere oportunidades em renda fixa pós-fixada."
+      }
     },
-    "performance_analysis": {
-      "headline_pt": "O retorno da carteira foi de +3,95%, superando o CDI em +2,90 p.p. e o benchmark do perfil em +2,11 p.p.",
-      "best_performer": {
-        "asset": "ARZZ3",
-        "return": "+29,96%"
-      },
-      "worst_performer": {
-        "asset": "Trend Investback FIC FIRF Simples",
-        "return": "+1,03%"
-      },
-      "top_contributor": {
-        "asset": "LREN3",
-        "contribution": "R$ 4.530,64"
-      },
-      "bottom_contributor": {
-        "asset": "CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
-        "contribution": "R$ 0,00"
-      },
-      "class_comments_pt": [
+    "letter": {
+      "subject_pt": "Resumo Mensal - Abril de 2025",
+      "greeting_pt": "Prezado Albert,",
+      "opening_pt": "Abril foi um mês positivo para sua carteira, impulsionado principalmente pelo desempenho das ações.",
+      "performance_pt": [
+        "No mês de abril de 2025, sua carteira apresentou um retorno de +3,95%, superando o CDI em 2,90 p.p. (+1,06%) e o benchmark do perfil em 2,11 p.p. (+1,85%). O retorno real foi de +3,51%, considerando a inflação de +0,43%.",
+        "O resultado positivo do mês foi impulsionado principalmente pela classe de Ações, que contribuiu com R$ 9.797,32 (+2,63 p.p.). Dentro das ações, o destaque foi ARZZ3, com um retorno de +29,96%. O ativo que mais contribuiu em reais foi a LREN3, com R$ 4.530,64, devido ao seu peso maior na carteira. O pior desempenho foi do fundo Trend Investback FIC FIRF Simples, que teve um retorno de +1,03%."
+      ],
+      "consolidated_pt": "Nos últimos 12 meses, a carteira rendeu +7,61%, ficando 3,84 p.p. abaixo do CDI (+11,45%) e 2,77 p.p. abaixo do benchmark do perfil (+10,38%). Desde a primeira aplicação em 22/04/2021, o retorno acumulado é de -2,03%, considerando as posições atuais.",
+      "macro_pt": "O cenário econômico brasileiro, segundo o relatório da XP, apresenta desafios com inflação alta projetada em 6,1% para 2025 e crescimento desacelerado do PIB em 2,0%. A taxa Selic elevada, projetada em 15,50% até o final de 2025, tende a favorecer investimentos em renda fixa pós-fixada. Ações brasileiras enfrentam um cenário desfavorável devido a incertezas políticas, o que requer atenção na exposição a esse setor.",
+      "assessment_pt": "O portfólio está bem diversificado, mas a exposição a ações (15,59%) merece atenção devido ao cenário desfavorável. Fundos de renda fixa e multimercado estão bem posicionados para equilíbrio e diversificação.",
+      "attention_points": [
         {
-          "asset_class": "Ações",
-          "comment": "A classe de ações teve um retorno positivo de +19,40%."
+          "fact_id": "idle_cash",
+          "title_pt": "Saldo parado",
+          "text_pt": "Vale conversar com seu assessor sobre o saldo parado de R$ 74.672,62 para melhorar a alocação."
         },
         {
-          "asset_class": "Renda fixa (CDB)",
-          "comment": "Os CDBs não apresentaram retorno, com +0,00%."
+          "fact_id": "matured:CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
+          "title_pt": "CDB vencido",
+          "text_pt": "Reinvestir o valor do CDB vencido (R$ 40.478,75) pode diversificar o portfólio."
+        },
+        {
+          "fact_id": "concentration:Riza Lotus Plus Advisory FIC FIRF REF DI CP",
+          "title_pt": "Concentração em fundo",
+          "text_pt": "A concentração de 24,86% em um único fundo pode ser revisada para reduzir riscos."
+        }
+      ],
+      "outlook_pt": "Com a taxa Selic elevada, a renda fixa pós-fixada segue em foco; em ações, é importante acompanhar as incertezas políticas que podem impactar o setor. A XP sugere atenção especial a essas classes nos próximos meses.",
+      "closing_pt": "Convido você a discutir com o assessor Antonio Bicudo sobre o saldo parado, o CDB vencido e a concentração em fundo, para ajustar a alocação conforme necessário.",
+      "class_views": [
+        {
+          "asset_class": "Fundos de renda fixa",
+          "weight": "24,94%",
+          "xp_view": "neutral",
+          "profile_fit_pt": "Equilíbrio entre segurança e retorno"
+        },
+        {
+          "asset_class": "Fundos multimercado",
+          "weight": "21,76%",
+          "xp_view": "neutral",
+          "profile_fit_pt": "Diversificação em cenário incerto"
         },
         {
           "asset_class": "Saldo em conta",
-          "comment": "O saldo em conta também não apresentou retorno, com +0,00%."
+          "weight": "19,30%",
+          "xp_view": "neutral",
+          "profile_fit_pt": "Liquidez imediata"
+        },
+        {
+          "asset_class": "Ações",
+          "weight": "15,59%",
+          "xp_view": "unfavorable",
+          "profile_fit_pt": "Potencial de crescimento com risco"
+        },
+        {
+          "asset_class": "Renda fixa (CDB)",
+          "weight": "10,46%",
+          "xp_view": "neutral",
+          "profile_fit_pt": "Vencido, disponível para reinvestir"
+        },
+        {
+          "asset_class": "Fundos de ações",
+          "weight": "7,95%",
+          "xp_view": "unfavorable",
+          "profile_fit_pt": "Exposição a crescimento com risco"
         }
-      ],
-      "attention_points_pt": [
-        "O CDB BANCO C6 CONSIGNADO S.A. - SET/2024 está disponível para reinvestimento, pois não gerou retorno.",
-        "O saldo disponível em conta de R$ 74.672,62 gerou um custo de oportunidade de R$ 788,45."
-      ],
-      "macro_links_pt": [
-        "Ações: O cenário desfavorável para ações brasileiras pode explicar a volatilidade observada.",
-        "Fundos multimercado: O cenário de incerteza e volatilidade pode ter impactado os retornos."
-      ],
-      "paragraph_pt": "Em abril de 2025, a carteira de Albert da Silva apresentou um retorno de +3,95%, superando tanto o CDI quanto o benchmark do perfil moderado. O destaque positivo foi a ação ARZZ3, com retorno de +29,96%, enquanto o fundo Trend Investback FIC FIRF Simples teve o menor retorno, de +1,03%. A ação LREN3 foi a maior contribuinte em reais. Atenção para o CDB disponível para reinvestimento e o saldo em conta, que gerou um custo de oportunidade. Discuta com seu assessor, Antonio Bicudo, as melhores estratégias para o cenário atual."
-    },
-    "recommendations": {
-      "suggestions": [
-        {
-          "candidate_id": "idle_cash",
-          "type": "opportunity",
-          "title_pt": "Aplicar saldo parado em conta",
-          "action_pt": "Aplicar parte do saldo parado em conta (R$ 74.672,62) em renda fixa pós-fixada de liquidez diária, mantendo a reserva que o perfil pede",
-          "rationale_pt": "O saldo parado em conta de R$ 74.672,62 não gera rendimento e representa um custo de oportunidade. Com a Selic projetada em 15,50% para 2025, discutir com o assessor a possibilidade de aplicar em renda fixa pós-fixada pode ser uma estratégia alinhada ao perfil moderado."
-        },
-        {
-          "candidate_id": "matured:CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
-          "type": "opportunity",
-          "title_pt": "Reinvestir CDB vencido",
-          "action_pt": "Reinvestir os R$ 40.478,75 do CDB BANCO C6 CONSIGNADO S.A. - SET/2024, que já venceu, em renda fixa compatível com o perfil",
-          "rationale_pt": "O CDB BANCO C6 CONSIGNADO S.A. - SET/2024 venceu e não gerou retorno. Reinvestir o valor em renda fixa compatível com o perfil moderado pode ajudar a manter o crescimento sustentável do patrimônio."
-        },
-        {
-          "candidate_id": "concentration:Riza Lotus Plus Advisory FIC FIRF REF DI CP",
-          "type": "protection",
-          "title_pt": "Reduzir concentração em fundo",
-          "action_pt": "Reduzir aos poucos a posição em Riza Lotus Plus Advisory FIC FIRF REF DI CP (24,86% do patrimônio), distribuindo entre outros ativos da mesma classe",
-          "rationale_pt": "A posição no fundo Riza Lotus Plus Advisory FIC FIRF REF DI CP está acima do limite recomendado. Reduzir a concentração pode diversificar o risco, alinhando-se ao perfil moderado e aos objetivos de crescimento sustentável."
-        }
-      ],
-      "outlook_pt": "Nos próximos meses, é importante monitorar a inflação e a política fiscal no Brasil, que podem impactar o cenário econômico. A taxa Selic elevada oferece oportunidades em renda fixa, mas a incerteza política e fiscal requer cautela. Mantenha-se atento às discussões com seu assessor para ajustar a estratégia conforme necessário."
-    },
-    "letter": {
-      "subject_pt": "Relatório Mensal - Abril de 2025",
-      "greeting_pt": "Prezado Albert,",
-      "opening_pt": "Em abril de 2025, apresentamos o desempenho da sua carteira e discutimos as estratégias para os próximos meses.",
-      "performance_pt": [
-        "O retorno da carteira foi de +3,95%, superando o CDI em +2,90 p.p. e o benchmark do perfil em +2,11 p.p. O destaque positivo foi a ação ARZZ3, com um retorno de +29,96%, enquanto o fundo Trend Investback FIC FIRF Simples teve o menor retorno, de +1,03%. A ação LREN3 foi a maior contribuinte em reais, com uma contribuição de R$ 4.530,64, devido ao seu peso maior na carteira.",
-        "A classe de ações teve um retorno positivo de +19,40%, mas os CDBs e o saldo em conta não apresentaram retorno, ambos com +0,00%. Atenção especial ao CDB BANCO C6 CONSIGNADO S.A. - SET/2024, que está disponível para reinvestimento, e ao saldo em conta de R$ 74.672,62, que gerou um custo de oportunidade de R$ 788,45. O cenário desfavorável para ações brasileiras pode explicar a volatilidade observada."
-      ],
-      "macro_pt": "O cenário econômico brasileiro, conforme projetado pela XP, apresenta desafios com inflação alta e crescimento desacelerado. A taxa Selic elevada, projetada em 15,50% ao fim de 2025, tende a favorecer investimentos em renda fixa pós-fixada. No entanto, a incerteza política e fiscal traz riscos, e setores ligados ao consumo interno podem enfrentar dificuldades. É importante considerar essas projeções ao avaliar a estratégia de investimentos.",
-      "suggestions_intro_pt": "Com base na análise atual, sugerimos discutir com seu assessor as seguintes possibilidades:",
-      "suggestions": [
-        {
-          "candidate_id": "idle_cash",
-          "type": "opportunity",
-          "title_pt": "Aplicar saldo parado em conta",
-          "text_pt": "Discutir com o assessor a possibilidade de aplicar parte do saldo parado em conta (R$ 74.672,62) em renda fixa pós-fixada de liquidez diária, mantendo a reserva que o perfil pede. O saldo parado não gera rendimento e representa um custo de oportunidade."
-        },
-        {
-          "candidate_id": "matured:CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
-          "type": "opportunity",
-          "title_pt": "Reinvestir CDB vencido",
-          "text_pt": "Discutir com o assessor a possibilidade de reinvestir os R$ 40.478,75 do CDB BANCO C6 CONSIGNADO S.A. - SET/2024, que já venceu, em renda fixa compatível com o perfil moderado, para manter o crescimento sustentável do patrimônio."
-        },
-        {
-          "candidate_id": "concentration:Riza Lotus Plus Advisory FIC FIRF REF DI CP",
-          "type": "protection",
-          "title_pt": "Reduzir concentração em fundo",
-          "text_pt": "Discutir com o assessor a possibilidade de reduzir aos poucos a posição em Riza Lotus Plus Advisory FIC FIRF REF DI CP (24,86% do patrimônio), distribuindo entre outros ativos da mesma classe, para diversificar o risco."
-        }
-      ],
-      "outlook_pt": "Nos próximos meses, é importante monitorar a inflação e a política fiscal no Brasil, que podem impactar o cenário econômico. A taxa Selic elevada oferece oportunidades em renda fixa, mas a incerteza política e fiscal requer cautela. Mantenha-se atento às discussões com seu assessor para ajustar a estratégia conforme necessário.",
-      "closing_pt": "Estamos à disposição para conversar sobre essas estratégias e qualquer outra dúvida que você tenha. Entre em contato com seu assessor, Antonio Bicudo.",
-      "charts": [
-        "benchmarks",
-        "contribution"
       ]
     },
     "critic": {
@@ -176,22 +244,23 @@
         {
           "severity": "high",
           "rule": "fatos",
-          "quote": "O cenário desfavorável para ações brasileiras pode explicar a volatilidade observada.",
-          "problem": "A afirmação de que o cenário desfavorável para ações brasileiras explica a volatilidade não é suportada pelos dados, já que a classe de ações teve um retorno positivo de +19,40%.",
-          "fix": "Remover ou ajustar a frase para refletir que, apesar do cenário desfavorável, as ações tiveram um bom desempenho."
+          "quote": "O pior desempenho foi do fundo Trend Investback FIC FIRF Simples, que teve um retorno de +1,03%.",
+          "problem": "A frase sugere que o fundo Trend Investback FIC FIRF Simples teve o pior desempenho, mas na verdade foi o ativo com a menor contribuição em reais, não necessariamente o pior desempenho em termos de retorno percentual.",
+          "fix": "Corrigir para: 'O fundo Trend Investback FIC FIRF Simples teve a menor contribuição em reais, com R$ 3,13.'"
         },
         {
           "severity": "medium",
-          "rule": "linguagem",
-          "quote": "A classe de ações teve um retorno positivo de +19,40%, mas os CDBs e o saldo em conta não apresentaram retorno, ambos com +0,00%.",
-          "problem": "A frase pode ser mais clara ao explicar que o saldo em conta não gera retorno e representa um custo de oportunidade.",
-          "fix": "A classe de ações teve um retorno positivo de +19,40%, enquanto os CDBs e o saldo em conta não geraram retorno, ambos com +0,00%, sendo que o saldo em conta representa um custo de oportunidade."
+          "rule": "estrutura",
+          "quote": "A XP sugere atenção especial a essas classes nos próximos meses.",
+          "problem": "O outlook não menciona as classes ou ativos específicos do cliente, tornando-o genérico.",
+          "fix": "Incluir referências específicas às classes ou ativos do cliente, como a exposição a ações e fundos de renda fixa pós-fixada."
         }
       ]
     }
   },
   "briefing": {
     "results": {
+      "scope": "Tudo em 'results', exceto 'consolidated_window', é do mês de referência apenas; 'consolidated_window' é o acumulado da janela de 12 meses (ou desde a primeira aplicação).",
       "period": "abril de 2025 (fechamento de 31/03/2025 a 30/04/2025)",
       "formatted": {
         "portfolio_return": "+3,95%",
@@ -222,8 +291,8 @@
           "contribution": "R$ 4.530,64"
         },
         "bottom_contributor": {
-          "asset": "CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
-          "contribution": "R$ 0,00"
+          "asset": "Trend Investback FIC FIRF Simples",
+          "contribution": "R$ 3,13"
         },
         "assets_with_negative_return": []
       },
@@ -236,12 +305,12 @@
         {
           "class": "Renda fixa (CDB)",
           "weight": "10,46%",
-          "return": "+0,00%"
+          "return": "vencido: já pago, não é resultado do mês (valor disponível para reinvestir)"
         },
         {
           "class": "Saldo em conta",
           "weight": "19,30%",
-          "return": "+0,00%"
+          "return": "não se aplica (saldo sem rendimento)"
         }
       ],
       "fund_types": [
@@ -272,6 +341,28 @@
           ],
           "weight": "7,95%",
           "return": "+9,25%"
+        }
+      ],
+      "class_contribution": [
+        {
+          "class": "Ações",
+          "contribution": "R$ 9.797,32",
+          "contribution_pp": "+2,63 p.p."
+        },
+        {
+          "class": "Fundos de ações",
+          "contribution": "R$ 2.604,02",
+          "contribution_pp": "+0,70 p.p."
+        },
+        {
+          "class": "Fundos de renda fixa",
+          "contribution": "R$ 1.156,55",
+          "contribution_pp": "+0,31 p.p."
+        },
+        {
+          "class": "Fundos multimercado",
+          "contribution": "R$ 1.154,08",
+          "contribution_pp": "+0,31 p.p."
         }
       ],
       "positions": [
@@ -379,7 +470,7 @@
           "class": "Renda fixa (CDB)",
           "weight": "10,46%",
           "value_end": "R$ 40.478,75",
-          "return": "+0,00%",
+          "return": "vencido: já pago, não é resultado do mês (valor disponível para reinvestir)",
           "contribution": "R$ 0,00",
           "contribution_pp": "+0,00 p.p."
         },
@@ -388,11 +479,31 @@
           "class": "Saldo em conta",
           "weight": "19,30%",
           "value_end": "R$ 74.672,62",
-          "return": "+0,00%",
+          "return": "não se aplica (saldo sem rendimento)",
           "contribution": "R$ 0,00",
           "contribution_pp": "+0,00 p.p."
         }
-      ]
+      ],
+      "consolidated_window": {
+        "window": "últimos 12 meses, de 30/04/2024 a 30/04/2025",
+        "portfolio": "+7,61%",
+        "gain": "R$ 27.357,13",
+        "cdi": "+11,45%",
+        "ibovespa": "+7,26%",
+        "inflation_ipca15": "+5,49%",
+        "profile_benchmark": "+10,38%",
+        "excess_vs_cdi": "-3,84 p.p.",
+        "excess_vs_profile_benchmark": "-2,77 p.p.",
+        "how_it_was_built": "Simulação com as posições atuais do extrato e as cotações históricas de cada ativo, a partir da data de aplicação; aportes e resgates do período não constam do extrato.",
+        "since_purchase": {
+          "invested": "R$ 318.650,59",
+          "current_value": "R$ 312.186,20",
+          "result": "-R$ 6.464,39",
+          "return": "-2,03%",
+          "first_investment": "22/04/2021",
+          "basis": "preço médio das ações e valor aplicado nos fundos e títulos, contra o valor atual do extrato"
+        }
+      }
     },
     "facts": {
       "profile": "moderate",
@@ -433,66 +544,22 @@
           "fact": "Rentabilidade estimada por índice de referência (sem cota diária pública): Brave I FIC FIM CP"
         }
       ]
-    },
-    "suggestion_candidates": [
-      {
-        "id": "idle_cash",
-        "type": "opportunity",
-        "action_pt": "Aplicar parte do saldo parado em conta (R$ 74.672,62) em renda fixa pós-fixada de liquidez diária, mantendo a reserva que o perfil pede",
-        "basis_pt": "Saldo parado em conta de R$ 74.672,62 (19,30% do patrimônio), sem rendimento; custo de oportunidade no mês de R$ 788,45"
-      },
-      {
-        "id": "matured:CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
-        "type": "opportunity",
-        "action_pt": "Reinvestir os R$ 40.478,75 do CDB BANCO C6 CONSIGNADO S.A. - SET/2024, que já venceu, em renda fixa compatível com o perfil",
-        "basis_pt": "CDB BANCO C6 CONSIGNADO S.A. - SET/2024 venceu em 05/09/2024 e ainda aparece na carteira (R$ 40.478,75); o valor está disponível para reinvestir"
-      },
-      {
-        "id": "concentration:Riza Lotus Plus Advisory FIC FIRF REF DI CP",
-        "type": "protection",
-        "action_pt": "Reduzir aos poucos a posição em Riza Lotus Plus Advisory FIC FIRF REF DI CP (24,86% do patrimônio), distribuindo entre outros ativos da mesma classe",
-        "basis_pt": "Riza Lotus Plus Advisory FIC FIRF REF DI CP representa 24,86% do patrimônio (acima de 15,00% em um único ativo)"
-      },
-      {
-        "id": "concentration:Brave I FIC FIM CP",
-        "type": "protection",
-        "action_pt": "Reduzir aos poucos a posição em Brave I FIC FIM CP (18,76% do patrimônio), distribuindo entre outros ativos da mesma classe",
-        "basis_pt": "Brave I FIC FIM CP representa 18,76% do patrimônio (acima de 15,00% em um único ativo)"
-      },
-      {
-        "id": "equity_below_profile",
-        "type": "opportunity",
-        "action_pt": "Discutir a possibilidade de aumentar posições de renda variável que você já tem, como LREN3 e ARZZ3, dentro do perfil",
-        "basis_pt": "Renda variável é 23,54% da carteira; a carteira de referência do perfil usa 30,00% em Ibovespa"
-      },
-      {
-        "id": "macro:inflation_linked",
-        "type": "opportunity",
-        "action_pt": "Incluir títulos atrelados à inflação para diversificar os indexadores da renda fixa",
-        "basis_pt": "Usar somente se o resumo macro da XP for favorável a essa classe"
-      },
-      {
-        "id": "macro:multimarket",
-        "type": "opportunity",
-        "action_pt": "Incluir fundos multimercado diversificados",
-        "basis_pt": "Usar somente se o resumo macro da XP for favorável a essa classe"
-      }
-    ]
+    }
   },
   "advisor_notes": [
     {
       "severity": "high",
       "rule": "fatos",
-      "quote": "O cenário desfavorável para ações brasileiras pode explicar a volatilidade observada.",
-      "problem": "A afirmação de que o cenário desfavorável para ações brasileiras explica a volatilidade não é suportada pelos dados, já que a classe de ações teve um retorno positivo de +19,40%.",
-      "fix": "Remover ou ajustar a frase para refletir que, apesar do cenário desfavorável, as ações tiveram um bom desempenho."
+      "quote": "O pior desempenho foi do fundo Trend Investback FIC FIRF Simples, que teve um retorno de +1,03%.",
+      "problem": "A frase sugere que o fundo Trend Investback FIC FIRF Simples teve o pior desempenho, mas na verdade foi o ativo com a menor contribuição em reais, não necessariamente o pior desempenho em termos de retorno percentual.",
+      "fix": "Corrigir para: 'O fundo Trend Investback FIC FIRF Simples teve a menor contribuição em reais, com R$ 3,13.'"
     },
     {
       "severity": "medium",
-      "rule": "linguagem",
-      "quote": "A classe de ações teve um retorno positivo de +19,40%, mas os CDBs e o saldo em conta não apresentaram retorno, ambos com +0,00%.",
-      "problem": "A frase pode ser mais clara ao explicar que o saldo em conta não gera retorno e representa um custo de oportunidade.",
-      "fix": "A classe de ações teve um retorno positivo de +19,40%, enquanto os CDBs e o saldo em conta não geraram retorno, ambos com +0,00%, sendo que o saldo em conta representa um custo de oportunidade."
+      "rule": "estrutura",
+      "quote": "A XP sugere atenção especial a essas classes nos próximos meses.",
+      "problem": "O outlook não menciona as classes ou ativos específicos do cliente, tornando-o genérico.",
+      "fix": "Incluir referências específicas às classes ou ativos do cliente, como a exposição a ações e fundos de renda fixa pós-fixada."
     }
   ],
   "macro_digest": {
@@ -594,11 +661,11 @@
     {
       "attempt": 1,
       "usage": {
-        "requestTokens": 16702,
-        "responseTokens": 2406,
-        "cost": 0.11960000000000001
+        "requestTokens": 20377,
+        "responseTokens": 2160,
+        "cost": 0.134285
       },
-      "words": 439,
+      "words": 380,
       "unknown_numbers": [],
       "critic": {
         "approved": false,
@@ -606,34 +673,150 @@
           {
             "severity": "high",
             "rule": "fatos",
-            "quote": "O cenário desfavorável para ações brasileiras pode explicar a volatilidade observada.",
-            "problem": "A afirmação de que o cenário desfavorável para ações brasileiras explica a volatilidade não é suportada pelos dados, já que a classe de ações teve um retorno positivo de +19,40%.",
-            "fix": "Remover ou ajustar a frase para refletir que, apesar do cenário desfavorável, as ações tiveram um bom desempenho."
+            "quote": "O melhor desempenho foi da ARZZ3, com +29,96%, enquanto o pior foi do Trend Investback FIC FIRF Simples, com +1,03%.",
+            "problem": "A frase sugere que o Trend Investback FIC FIRF Simples teve o pior desempenho, mas na verdade ele foi o ativo com menor retorno, não necessariamente o pior desempenho.",
+            "fix": "O ativo com menor retorno foi o Trend Investback FIC FIRF Simples, com +1,03%."
           },
           {
             "severity": "medium",
-            "rule": "linguagem",
-            "quote": "A classe de ações teve um retorno positivo de +19,40%, mas os CDBs e o saldo em conta não apresentaram retorno, ambos com +0,00%.",
-            "problem": "A frase pode ser mais clara ao explicar que o saldo em conta não gera retorno e representa um custo de oportunidade.",
-            "fix": "A classe de ações teve um retorno positivo de +19,40%, enquanto os CDBs e o saldo em conta não geraram retorno, ambos com +0,00%, sendo que o saldo em conta representa um custo de oportunidade."
+            "rule": "estrutura",
+            "quote": "Com a Selic elevada, a renda fixa pós-fixada segue em foco; em ações, a incerteza política é um ponto a acompanhar. A XP projeta que esses fatores podem influenciar a performance das classes nos próximos meses.",
+            "problem": "O outlook não menciona as classes ou ativos específicos do cliente, tornando-o genérico.",
+            "fix": "Com a Selic elevada, a renda fixa pós-fixada, como seus fundos de renda fixa, segue em foco; em ações, a incerteza política é um ponto a acompanhar, especialmente para suas ações brasileiras."
           }
         ]
       },
-      "issues": [],
+      "issues": [
+        {
+          "severity": "high",
+          "rule": "fatos",
+          "quote": "O melhor desempenho foi da ARZZ3, com +29,96%, enquanto o pior foi do Trend Investback FIC FIRF Simples, com +1,03%.",
+          "problem": "A frase sugere que o Trend Investback FIC FIRF Simples teve o pior desempenho, mas na verdade ele foi o ativo com menor retorno, não necessariamente o pior desempenho.",
+          "fix": "O ativo com menor retorno foi o Trend Investback FIC FIRF Simples, com +1,03%."
+        }
+      ],
       "advisor_notes": [
         {
           "severity": "high",
           "rule": "fatos",
-          "quote": "O cenário desfavorável para ações brasileiras pode explicar a volatilidade observada.",
-          "problem": "A afirmação de que o cenário desfavorável para ações brasileiras explica a volatilidade não é suportada pelos dados, já que a classe de ações teve um retorno positivo de +19,40%.",
-          "fix": "Remover ou ajustar a frase para refletir que, apesar do cenário desfavorável, as ações tiveram um bom desempenho."
+          "quote": "O melhor desempenho foi da ARZZ3, com +29,96%, enquanto o pior foi do Trend Investback FIC FIRF Simples, com +1,03%.",
+          "problem": "A frase sugere que o Trend Investback FIC FIRF Simples teve o pior desempenho, mas na verdade ele foi o ativo com menor retorno, não necessariamente o pior desempenho.",
+          "fix": "O ativo com menor retorno foi o Trend Investback FIC FIRF Simples, com +1,03%."
         },
         {
           "severity": "medium",
-          "rule": "linguagem",
-          "quote": "A classe de ações teve um retorno positivo de +19,40%, mas os CDBs e o saldo em conta não apresentaram retorno, ambos com +0,00%.",
-          "problem": "A frase pode ser mais clara ao explicar que o saldo em conta não gera retorno e representa um custo de oportunidade.",
-          "fix": "A classe de ações teve um retorno positivo de +19,40%, enquanto os CDBs e o saldo em conta não geraram retorno, ambos com +0,00%, sendo que o saldo em conta representa um custo de oportunidade."
+          "rule": "estrutura",
+          "quote": "Com a Selic elevada, a renda fixa pós-fixada segue em foco; em ações, a incerteza política é um ponto a acompanhar. A XP projeta que esses fatores podem influenciar a performance das classes nos próximos meses.",
+          "problem": "O outlook não menciona as classes ou ativos específicos do cliente, tornando-o genérico.",
+          "fix": "Com a Selic elevada, a renda fixa pós-fixada, como seus fundos de renda fixa, segue em foco; em ações, a incerteza política é um ponto a acompanhar, especialmente para suas ações brasileiras."
+        }
+      ]
+    },
+    {
+      "attempt": 2,
+      "usage": {
+        "requestTokens": 20723,
+        "responseTokens": 2198,
+        "cost": 0.13658499999999998
+      },
+      "words": 383,
+      "unknown_numbers": [],
+      "critic": {
+        "approved": false,
+        "issues": [
+          {
+            "severity": "high",
+            "rule": "fatos",
+            "quote": "O ativo que mais se destacou foi a LREN3, contribuindo com R$ 4.530,64.",
+            "problem": "A frase sugere que LREN3 foi o ativo com melhor desempenho, mas o melhor desempenho foi da ARZZ3 com +29,96%. LREN3 foi o maior contribuinte em reais, não o de melhor desempenho.",
+            "fix": "Corrigir para: 'O ativo que mais contribuiu em reais foi a LREN3, com R$ 4.530,64.'"
+          },
+          {
+            "severity": "medium",
+            "rule": "estrutura",
+            "quote": "O cenário projetado pela XP tende a favorecer a diversificação em fundos multimercado, dada a volatilidade esperada.",
+            "problem": "O outlook não menciona as classes ou ativos específicos do cliente, tornando-o genérico.",
+            "fix": "Incluir referência às classes ou ativos específicos do cliente, como a exposição a ações e fundos multimercado."
+          }
+        ]
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "rule": "fatos",
+          "quote": "O ativo que mais se destacou foi a LREN3, contribuindo com R$ 4.530,64.",
+          "problem": "A frase sugere que LREN3 foi o ativo com melhor desempenho, mas o melhor desempenho foi da ARZZ3 com +29,96%. LREN3 foi o maior contribuinte em reais, não o de melhor desempenho.",
+          "fix": "Corrigir para: 'O ativo que mais contribuiu em reais foi a LREN3, com R$ 4.530,64.'"
+        }
+      ],
+      "advisor_notes": [
+        {
+          "severity": "high",
+          "rule": "fatos",
+          "quote": "O ativo que mais se destacou foi a LREN3, contribuindo com R$ 4.530,64.",
+          "problem": "A frase sugere que LREN3 foi o ativo com melhor desempenho, mas o melhor desempenho foi da ARZZ3 com +29,96%. LREN3 foi o maior contribuinte em reais, não o de melhor desempenho.",
+          "fix": "Corrigir para: 'O ativo que mais contribuiu em reais foi a LREN3, com R$ 4.530,64.'"
+        },
+        {
+          "severity": "medium",
+          "rule": "estrutura",
+          "quote": "O cenário projetado pela XP tende a favorecer a diversificação em fundos multimercado, dada a volatilidade esperada.",
+          "problem": "O outlook não menciona as classes ou ativos específicos do cliente, tornando-o genérico.",
+          "fix": "Incluir referência às classes ou ativos específicos do cliente, como a exposição a ações e fundos multimercado."
+        }
+      ]
+    },
+    {
+      "attempt": 3,
+      "usage": {
+        "requestTokens": 20709,
+        "responseTokens": 2173,
+        "cost": 0.13614
+      },
+      "words": 402,
+      "unknown_numbers": [],
+      "critic": {
+        "approved": false,
+        "issues": [
+          {
+            "severity": "high",
+            "rule": "fatos",
+            "quote": "O pior desempenho foi do fundo Trend Investback FIC FIRF Simples, que teve um retorno de +1,03%.",
+            "problem": "A frase sugere que o fundo Trend Investback FIC FIRF Simples teve o pior desempenho, mas na verdade foi o ativo com a menor contribuição em reais, não necessariamente o pior desempenho em termos de retorno percentual.",
+            "fix": "Corrigir para: 'O fundo Trend Investback FIC FIRF Simples teve a menor contribuição em reais, com R$ 3,13.'"
+          },
+          {
+            "severity": "medium",
+            "rule": "estrutura",
+            "quote": "A XP sugere atenção especial a essas classes nos próximos meses.",
+            "problem": "O outlook não menciona as classes ou ativos específicos do cliente, tornando-o genérico.",
+            "fix": "Incluir referências específicas às classes ou ativos do cliente, como a exposição a ações e fundos de renda fixa pós-fixada."
+          }
+        ]
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "rule": "fatos",
+          "quote": "O pior desempenho foi do fundo Trend Investback FIC FIRF Simples, que teve um retorno de +1,03%.",
+          "problem": "A frase sugere que o fundo Trend Investback FIC FIRF Simples teve o pior desempenho, mas na verdade foi o ativo com a menor contribuição em reais, não necessariamente o pior desempenho em termos de retorno percentual.",
+          "fix": "Corrigir para: 'O fundo Trend Investback FIC FIRF Simples teve a menor contribuição em reais, com R$ 3,13.'"
+        }
+      ],
+      "advisor_notes": [
+        {
+          "severity": "high",
+          "rule": "fatos",
+          "quote": "O pior desempenho foi do fundo Trend Investback FIC FIRF Simples, que teve um retorno de +1,03%.",
+          "problem": "A frase sugere que o fundo Trend Investback FIC FIRF Simples teve o pior desempenho, mas na verdade foi o ativo com a menor contribuição em reais, não necessariamente o pior desempenho em termos de retorno percentual.",
+          "fix": "Corrigir para: 'O fundo Trend Investback FIC FIRF Simples teve a menor contribuição em reais, com R$ 3,13.'"
+        },
+        {
+          "severity": "medium",
+          "rule": "estrutura",
+          "quote": "A XP sugere atenção especial a essas classes nos próximos meses.",
+          "problem": "O outlook não menciona as classes ou ativos específicos do cliente, tornando-o genérico.",
+          "fix": "Incluir referências específicas às classes ou ativos do cliente, como a exposição a ações e fundos de renda fixa pós-fixada."
         }
       ]
     }
