@@ -454,6 +454,13 @@ data:
               letter speaks to the client as "você" (not in the third person).
               High.
 
+              - "estrutura": the letter ends with the outlook ("O que esperar"),
+              the closing and the advisor's signature, placed after the
+              per-asset table and right before the disclaimer (the PDF lays them
+              out in that order). An outlook or closing that does not work as
+              the ending, refers to content below it, or a sign-off or farewell
+              inside another section, is medium.
+
               - "linguagem": Brazilian Portuguese, formal and clear tone; no
               repeated ideas or figures between sections. Medium or low.
 
@@ -484,7 +491,7 @@ data:
 
               {
                 "approved": true,
-                "issues": [{"severity": "high|medium|low", "rule": "fatos|período|coerência|nomes|linguagem|promessa", "quote": "exact passage from the letter", "problem": "string", "fix": "string"}]
+                "issues": [{"severity": "high|medium|low", "rule": "fatos|período|coerência|nomes|estrutura|linguagem|promessa", "quote": "exact passage from the letter", "problem": "string", "fix": "string"}]
               }
 
               Write "problem" and "fix" in Brazilian Portuguese, for the
@@ -612,7 +619,18 @@ data:
 
               7. outlook: what to watch, without promising returns;
 
-              8. closing: availability of the advisor for a conversation.
+              8. closing: availability of the advisor for a conversation,
+              without promising "melhores estratégias" or results.
+
+
+              Layout order (fixed by the PDF, mandatory): tiles, greeting,
+              opening, month performance, consolidated performance with the
+              chart, highlights, macro with the class table, assessment,
+              attention points, the per-asset table of the month, and only then
+              the outlook ("O que esperar"), the closing and the advisor's
+              signature, right before the disclaimer. So the outlook and the
+              closing are the last words of the letter: they must not refer to
+              anything "abaixo" and must read as its ending.
 
 
               Quote figures exactly as they appear in the analyses and attribute

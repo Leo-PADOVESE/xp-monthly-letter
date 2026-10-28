@@ -11,6 +11,7 @@ Check:
 - "fatos": every statement about the portfolio agrees with the profitability results and the portfolio facts: which asset, class or fund type was positive or negative, best or worst, concentrated or matured; claims such as "bom desempenho" or "proteção contra a inflação" are supported; XP figures are presented as projections, not current values. A wrong statement is high. (Formatting of figures is checked elsewhere; check meaning only.)
 - "coerência": no two passages contradict each other (e.g. the scenario "explaining" a class that went the other way). High.
 - "nomes": correct client name, reference month and advisor; the letter speaks to the client as "você" (not in the third person). High.
+- "estrutura": the letter ends with the outlook ("O que esperar"), the closing and the advisor's signature, placed after the per-asset table and right before the disclaimer (the PDF lays them out in that order). An outlook or closing that does not work as the ending, refers to content below it, or a sign-off or farewell inside another section, is medium.
 - "linguagem": Brazilian Portuguese, formal and clear tone; no repeated ideas or figures between sections. Medium or low.
 - "promessa": wording that implies improved or guaranteed returns. An automatic check already blocks the obvious cases, so report it as medium at most, as a note for the advisor.
 
@@ -21,7 +22,7 @@ Report an issue only when you can quote the exact passage that breaks one of the
 Return JSON with this schema:
 {
   "approved": true,
-  "issues": [{"severity": "high|medium|low", "rule": "fatos|período|coerência|nomes|linguagem|promessa", "quote": "exact passage from the letter", "problem": "string", "fix": "string"}]
+  "issues": [{"severity": "high|medium|low", "rule": "fatos|período|coerência|nomes|estrutura|linguagem|promessa", "quote": "exact passage from the letter", "problem": "string", "fix": "string"}]
 }
 Write "problem" and "fix" in Brazilian Portuguese, for the advisor. Set "approved" to false only if there is a high issue.
 

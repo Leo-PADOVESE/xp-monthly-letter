@@ -411,12 +411,13 @@ def build_story(letter_doc: dict, report: dict, layout: Layout, width: float, hi
     if letter.get("attention_points"):
         story += [Paragraph("Pontos para conversarmos", st["h2"])]
     story += _attention_cards(letter, st, width)
-    story += [Paragraph("O que esperar", st["h2"]), body(letter.get("outlook_pt", "")),
+    # Fixed order: the per-asset table, then the outlook, the closing and the signature, then the disclaimer.
+    story += [Paragraph("Resultado por ativo no mês", st["h2"]), _results_table(report, st, width),
+              Paragraph("O que esperar", st["h2"]), body(letter.get("outlook_pt", "")),
               body(letter.get("closing_pt", "")),
               Paragraph(f"Atenciosamente,<br/><b>{_esc(client['advisor_name'])}</b><br/>"
                         f"Assessor de Investimentos · XP Investimentos", st["body"]),
-              Spacer(1, 3 * mm), Paragraph("Resultado por ativo no mês", st["h2"]),
-              _results_table(report, st, width), Spacer(1, 3 * mm), Paragraph(DISCLAIMER, st["small"])]
+              Spacer(1, 3 * mm), Paragraph(DISCLAIMER, st["small"])]
     return story
 
 

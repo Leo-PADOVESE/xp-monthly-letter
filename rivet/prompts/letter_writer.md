@@ -11,7 +11,9 @@ Structure:
 5. assessment: the analysis' assessment_pt, tightened if needed, keeping its balance (what is well placed and what is exposed);
 6. attention points: exactly the points in the analysis' assessment, same order, fact_id copied; keep them as topics to discuss with the advisor;
 7. outlook: what to watch, without promising returns;
-8. closing: availability of the advisor for a conversation.
+8. closing: availability of the advisor for a conversation, without promising "melhores estratégias" or results.
+
+Layout order (fixed by the PDF, mandatory): tiles, greeting, opening, month performance, consolidated performance with the chart, highlights, macro with the class table, assessment, attention points, the per-asset table of the month, and only then the outlook ("O que esperar"), the closing and the advisor's signature, right before the disclaimer. So the outlook and the closing are the last words of the letter: they must not refer to anything "abaixo" and must read as its ending.
 
 Quote figures exactly as they appear in the analyses and attribute them only to what they measure (a class return is not the return of one fund type or one asset).
 
