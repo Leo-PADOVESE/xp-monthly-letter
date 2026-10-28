@@ -171,7 +171,7 @@ rows = crm.clients(MONTH, ADVISOR["code"])
 with st.sidebar:
     st.markdown('<div class="xp-logo" style="font-size:2.4rem">XP<small>INVESTIMENTOS</small></div>'
                 '<div style="height:28px"></div>', unsafe_allow_html=True)
-    page = st.radio("Menu", ["Macro", "Clientes", "Relatórios"], index=1, label_visibility="collapsed")
+    page = st.radio("Menu", ["Macro", "Clientes", "Relatórios"], label_visibility="collapsed")
     st.markdown('<div style="height:40vh"></div>', unsafe_allow_html=True)
     if st.button("Sair", width="stretch"):
         del st.session_state.advisor
