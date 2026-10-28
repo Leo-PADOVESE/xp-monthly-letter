@@ -7,10 +7,12 @@ Flow (Rivet decides, Python executes):
 3. Graph ``monthly_letter``, with ``briefing.json`` (every figure already calculated) as its only data
    input: the Analyst (profile, performance and an assessment of the portfolio against the client's
    profile and the XP scenario, no buy/sell orders), the Writer and the Reviewer.
-4. Checks, deterministic: every figure in the letter must exist in the briefing, no promise of returns,
-   every attention point cites a portfolio fact, the length fits; plus the critic's high-severity findings
-   on facts, coherence and names. If any fails, the letter is rewritten (up to twice) with the issues as
-   revision notes; if it still fails it is saved as ``needs_review`` for the advisor.
+4. Checks, deterministic: every figure in the letter must exist in the briefing; the month and the 12-month
+   window are not mixed; the portfolio is compared with the CDI and the profile benchmark in p.p.; a matured
+   bond is not quoted as a result; no promise of returns; every attention point cites a portfolio fact; the
+   outlook names the client's own classes; the length fits. Plus the critic's high-severity findings on facts,
+   time frames, coherence, names and structure. If any fails, the letter is rewritten (up to twice) with the
+   issues as revision notes; if it still fails it is saved as ``needs_review`` for the advisor.
 
 CLI:
     python -m core.letter_ai data/clients/albert_da_silva/2025-05

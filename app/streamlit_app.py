@@ -482,8 +482,9 @@ def review_tab() -> None:
         for n in notes:
             st.warning(f"**{n.get('rule', '')}** · “{n.get('quote', '')}”\n\n{n.get('problem', '')}\n\n"
                        f"*Sugestão:* {n.get('fix', '')}")
-        st.caption(f"Checagens automáticas: números conferidos com os dados, sem promessa de retorno, pontos de "
-                   f"atenção ligados a fatos da carteira. Custo: US$ {row['cost_usd'] or 0:.3f}.")
+        st.caption(f"Checagens automáticas: números conferidos com os dados, mês e 12 meses separados, comparação "
+                   f"com CDI e benchmark em p.p., sem promessa de retorno, pontos de atenção ligados a fatos da "
+                   f"carteira. Custo: US$ {row['cost_usd'] or 0:.3f}.")
 
         with st.expander("Editar texto da carta"):
             letter = doc["letter"]

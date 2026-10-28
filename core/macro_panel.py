@@ -33,7 +33,7 @@ def index_series(name: str, start: date, end: date) -> pd.Series | None:
 def month_change(series: pd.Series, start: date, end: date) -> float | None:
     try:
         return market_data.price_on(series, end) / market_data.price_on(series, start) - 1
-    except MarketDataError:
+    except market_data.MarketDataError:
         return None
 
 

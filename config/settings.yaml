@@ -19,17 +19,12 @@ benchmarks:
 
 # LLM used by the Rivet graphs (OpenAI key in .env, see .env.example).
 llm:
-  model: gpt-4o             # macro digest, profile, performance analysis, assessment (gpt-4o-mini misread
+  model: gpt-4o             # macro digest and the Analyst (gpt-4o-mini misread
                             # signs and attributions in tests: "resultados mistos" for two positive fund types)
-  writer_model: gpt-4o      # letter writer and critic
+  writer_model: gpt-4o      # Writer and Reviewer
 
 delivery:
-  require_advisor_approval: true   # scheduled batches wait in the approval queue
-  pdf_password_cpf_digits: 6
-
-language:
-  prompts_and_code: en
-  letter: pt-BR
+  pdf_password_cpf_digits: 6       # the PDF opens with the first digits of the client's CPF
 
 # Statement ticker -> ticker to price on Yahoo. ARZZ3 was merged into AZZA3 (2024);
 # Marfrig (MRFG3) now trades as MBRF3 and Yahoo keeps MRFG3's history under it.

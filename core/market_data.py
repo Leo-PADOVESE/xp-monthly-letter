@@ -37,7 +37,7 @@ SGS_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{series}/dados"
 CVM_DAILY_URL = "https://dados.cvm.gov.br/dados/FI/DOC/INF_DIARIO/DADOS/inf_diario_fi_{yyyymm}.zip"
 CVM_REGISTRY_URL = "https://dados.cvm.gov.br/dados/FI/CAD/DADOS/cad_fi.csv"
 CVM_CLASS_REGISTRY_URL = "https://dados.cvm.gov.br/dados/FI/CAD/DADOS/registro_fundo_classe.zip"
-SGS_CDI, SGS_IPCA, SGS_IPCA15 = 12, 433, 7478
+SGS_CDI, SGS_IPCA15 = 12, 7478
 IBOV = "^BVSP"
 
 
@@ -163,11 +163,6 @@ def cdi_return(start: date, end: date) -> float:
     return float((1 + daily / 100).prod() - 1)
 
 
-def ipca_monthly(start: date, end: date) -> pd.Series:
-    """Monthly IPCA in %, indexed by the first day of the reference month."""
-    return sgs_series(SGS_IPCA, start.replace(day=1), end)
-
-
 def ipca_for_period(start: date, end: date) -> float:
     """Inflation (decimal) for the month that ends the period, as known on the letter date.
 
@@ -222,10 +217,6 @@ def cvm_daily_report(yyyymm: str) -> pd.DataFrame:
     frame["CNPJ"] = frame["CNPJ"].map(format_cnpj)
     frame.to_csv(path, index=False)
     return frame
-
-
-def fund_quota(cnpj: str, day: date) -> float:
-    return fund_quota_point(cnpj, day)[1]
 
 
 def fund_quota_point(cnpj: str, day: date) -> tuple[date, float]:

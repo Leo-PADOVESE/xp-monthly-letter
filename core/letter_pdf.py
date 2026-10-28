@@ -5,11 +5,13 @@ Input: ``letter.json`` (text written by the Rivet agent) and ``profitability_mar
 the charts, tiles and table comes from the profitability report, never from the LLM.
 
 Layout
-- Header, key figures, greeting, performance, the main chart (the consolidated portfolio over the last
-  12 months, or since the first investment, against its benchmarks; without that history, the month
-  against its benchmarks and where the result came from by class) and the highlights; then the XP scenario and how the
-  portfolio sits in it for the client's profile, points to discuss, outlook, closing, the per-asset
-  results table and the disclaimer, flowing over the two pages.
+- Header; key figures in two labelled rows, the month and the 12-month window (return, result in reais,
+  and the difference to the CDI and to the profile benchmark in p.p.); greeting and opening; the month's
+  performance; the consolidated performance with the main chart (portfolio vs CDI, Ibovespa, inflation and
+  the profile benchmark over 12 months, or since the first investment; without that history, the month's
+  benchmarks and attribution charts); highlights; the XP scenario with the class table; assessment; points
+  to discuss; the per-asset table of the month; and, always last, the outlook, closing and signature,
+  right before the disclaimer.
 If the content does not fit in two pages, the layout is tightened (smaller type and table)
 and, failing that, the result is reported so the advisor can ask for a shorter letter.
 
@@ -42,7 +44,7 @@ from reportlab.platypus import (  # noqa: E402
     Image, KeepTogether, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle,
 )
 
-from core.briefing import CLASS_LABELS_PT, brl, class_contribution, pct, pp  # noqa: E402
+from core.briefing import brl, class_contribution, pct, pp  # noqa: E402
 
 MAX_PAGES = 2
 
@@ -344,9 +346,12 @@ def _results_table(report: dict, st: dict, width: float) -> Table:
     positions = sorted(report["positions"], key=lambda p: -p["end_value"])
     for p in positions:
         color = GAIN if p["monthly_return_pct"] > 0 else LOSS if p["monthly_return_pct"] < 0 else "#333333"
+        # Cash and a matured bond have no return of the month: a 0,00% read as a bad result.
+        shown = ("—" if p["asset_class"] == "cash" else "vencido" if "matured" in p.get("note", "")
+                 else f'<font color="{color}">{pct(p["monthly_return_pct"])}</font>')
         rows.append([Paragraph(_esc(p["name"]), st["cell"]),
                      Paragraph(pct(p["weight_pct"], signed=False), st["cell"]),
-                     Paragraph(f'<font color="{color}">{pct(p["monthly_return_pct"])}</font>', st["cell"]),
+                     Paragraph(shown, st["cell"]),
                      Paragraph(brl(p["contribution_brl"]), st["cell"])])
     rows.append([Paragraph("<b>Total da carteira</b>", st["cell"]), Paragraph("100,00%", st["cell"]),
                  Paragraph(f"<b>{pct(report['return_pct'])}</b>", st["cell"]),
@@ -479,7 +484,7 @@ def main() -> None:
     parser.add_argument("--password", help="e.g. the first 6 digits of the client's CPF")
     args = parser.parse_args()
     out, pages = build_pdf(args.month_dir, args.password)
-    status = "ok" if pages <= MAX_PAGES else f"too long: ask the agent for a shorter letter"
+    status = "ok" if pages <= MAX_PAGES else "too long: ask the agent for a shorter letter"
     print(f"{out}: {pages} page(s), {status}")
 
 

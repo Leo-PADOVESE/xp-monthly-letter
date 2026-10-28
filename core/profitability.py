@@ -200,8 +200,6 @@ class ProfitabilityReport:
     cash_opportunity_cost_brl: float
     classes: list[ClassResult] = field(default_factory=list)
     positions: list[PositionResult] = field(default_factory=list)
-    top_contributors: list[str] = field(default_factory=list)
-    top_detractors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
@@ -249,7 +247,6 @@ def compute(portfolio: Portfolio, source: PriceSource, start: date, end: date,
     ret = total_end / total_start - 1
     profile = sum(weight * benchmarks[name] for name, weight in profile_weights.items())
     bench_pct = {name: value * 100 for name, value in benchmarks.items()} | {"PROFILE": profile * 100}
-    ranked = sorted(invested, key=lambda r: r.contribution_brl, reverse=True)
 
     return ProfitabilityReport(
         client_name=portfolio.client_name,
@@ -267,8 +264,6 @@ def compute(portfolio: Portfolio, source: PriceSource, start: date, end: date,
         cash_opportunity_cost_brl=cash * benchmarks["CDI"],
         classes=classes,
         positions=rows,
-        top_contributors=[r.name for r in ranked[:3] if r.contribution_brl > 0],
-        top_detractors=[r.name for r in ranked[::-1][:3] if r.contribution_brl < 0],
         warnings=portfolio.warnings + warnings,
     )
 

@@ -276,10 +276,11 @@ data:
               never "explain" a class by a scenario that points the other way.
 
               - Points of attention from the data: idle cash and its opportunity
-              cost, a matured bond (+0,00% because it already paid out: an
-              amount available to reinvest, never "sem retorno"), a fund priced
-              by proxy. Never quote the 0,00% of cash or of a matured bond as a
-              class result.
+              cost, a matured bond (already paid out: an amount available to
+              reinvest, never "sem retorno" nor a result of the month), a fund
+              priced by proxy. Cash and matured bonds have no return of the
+              month (their "return" in the briefing says so): never quote them
+              as a result.
 
               - Attribution: "classes" are whole classes; funds appear only by
               type in "fund_types"; one asset is in "positions". Never present
@@ -322,7 +323,9 @@ data:
               stocks in them. Balanced: what is well placed and what is exposed.
 
               - "attention_points": 1 to 3 objective facts worth a conversation,
-              each citing the id of a portfolio fact. Phrase each as a topic to
+              each citing the id of a portfolio fact and quoting its figure (the
+              amount, the weight or the opportunity cost written in that fact),
+              so the client sees what it is about. Phrase each as a topic to
               discuss ("vale conversar com seu assessor sobre..."), never as an
               order; never say where the money must go or name a product;
               describe what a change would do (diversify, reduce concentration,
@@ -643,21 +646,20 @@ data:
 
               7. outlook ("O que esperar", two or three sentences, specific to
               this client): the one or two points of the XP scenario that matter
-              most for the classes this client actually holds, named (e.g. "com
-              a Selic alta no cenário da XP, os fundos de renda fixa e o CDB
-              vencido seguem em foco; nas ações, o consumo interno é o ponto a
-              acompanhar"), and what that means to watch in the coming months,
-              conditional and attributed to XP, without figures already quoted
-              and without promising returns. Never a generic sentence that would
-              fit any client ("o cenário apresenta desafios", "a diversificação
-              pode mitigar riscos");
+              most for the classes this client actually holds, named (shape
+              only, fill it with this client's classes: "com [ponto do cenário
+              da XP], [classe que o cliente tem] segue em foco; em [outra
+              classe], [o ponto a acompanhar]"), and what that means to watch in
+              the coming months, conditional and attributed to XP, without
+              figures already quoted and without promising returns. Never a
+              generic sentence that would fit any client ("o cenário apresenta
+              desafios", "a diversificação pode mitigar riscos");
 
               8. closing (one or two sentences): invite the client to talk about
-              the attention points of this letter, naming them briefly (e.g. "o
-              valor do CDB vencido e o saldo parado em conta"), and the
-              advisor's availability. No "melhores estratégias", no promise of
-              results. No sign-off and no name: the PDF adds "Atenciosamente"
-              and the advisor's signature.
+              the attention points of this letter, naming them briefly, from
+              this letter's attention points, and the advisor's availability. No
+              "melhores estratégias", no promise of results. No sign-off and no
+              name: the PDF adds "Atenciosamente" and the advisor's signature.
 
 
               Layout order (fixed by the PDF, mandatory): tiles, greeting,
