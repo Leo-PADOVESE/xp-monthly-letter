@@ -488,9 +488,12 @@ data:
               digest does; leaving a portfolio fact out of the attention points
               (there are at most 3, chosen by the Analyst); a 12-month result
               different from the result since the first investment (they measure
-              different periods); saying that a class rose in the month despite
-              an unfavorable XP view (that contrast is required, it is not a
-              contradiction).
+              different periods); giving a class's contribution in reais and
+              p.p. without its return (the return is in the table); mentioning
+              the Ibovespa next to the CDI and the profile benchmark in the
+              window (it is one of the chart's references); saying that a class
+              rose in the month despite an unfavorable XP view (that contrast is
+              required, it is not a contradiction).
 
 
               Report an issue only when you can quote the exact passage that

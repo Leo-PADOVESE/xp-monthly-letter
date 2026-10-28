@@ -71,7 +71,7 @@ def fake_openai(monkeypatch):
 def test_letter_graph_reads_one_briefing(fake_openai, tmp_path):
     month = tmp_path / "albert" / "2025-05"
     shutil.copytree(ROOT / "data" / "clients" / "albert_da_silva" / "2025-05", month,
-                    ignore=shutil.ignore_patterns("letter*", "briefing.json"))
+                    ignore=shutil.ignore_patterns("letter*", "briefing.json", "history.json"))
     shutil.copy(ROOT / "data" / "clients" / "albert_da_silva" / "risk_profile.pdf", month.parent)
     doc = generate(month, max_rewrites=0)
 
