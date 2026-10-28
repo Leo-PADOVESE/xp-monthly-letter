@@ -56,6 +56,10 @@ from this repository and set the secrets `OPENAI_API_KEY`, `APP_PASSWORD` and, t
 e-mail, `SMTP_USER` and `SMTP_PASSWORD`. Keys live only in the server's secrets, never
 in the repository.
 
+The service runs on the Starter plan with a persistent disk at `/var/data`. On start,
+`scripts/entrypoint.sh` seeds the disk with the data shipped in the image (only files that are
+missing) and links `data/` to it, so the CRM and the generated letters survive redeploys.
+
 ## Data layout
 
 ```

@@ -4,12 +4,18 @@ services:
   - type: web
     name: xp-monthly-letter
     runtime: docker
-    plan: free
+    plan: starter  # always on; persistent disks need a paid plan
     healthCheckPath: /_stcore/health
+    disk:
+      name: xp-data
+      mountPath: /var/data  # scripts/entrypoint.sh links data/ here
+      sizeGB: 1
     envVars:
       - key: OPENAI_API_KEY
         sync: false
       - key: APP_PASSWORD
+        sync: false
+      - key: ADVISOR_EMAIL
         sync: false
       - key: SMTP_USER
         sync: false
