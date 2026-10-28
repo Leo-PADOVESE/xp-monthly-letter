@@ -27,7 +27,7 @@ from typing import Protocol
 import openpyxl
 import yaml
 
-from core import market_data
+from core import market_data, periods
 from core.ingestion import load_portfolio, parse_number, parse_risk_profile_label, pdf_to_text
 from core.models import CASH, FIXED_INCOME, FUNDS, STOCKS, Portfolio, Position
 
@@ -200,8 +200,6 @@ class ProfitabilityReport:
     cash_opportunity_cost_brl: float
     classes: list[ClassResult] = field(default_factory=list)
     positions: list[PositionResult] = field(default_factory=list)
-    top_contributors: list[str] = field(default_factory=list)
-    top_detractors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
@@ -249,7 +247,6 @@ def compute(portfolio: Portfolio, source: PriceSource, start: date, end: date,
     ret = total_end / total_start - 1
     profile = sum(weight * benchmarks[name] for name, weight in profile_weights.items())
     bench_pct = {name: value * 100 for name, value in benchmarks.items()} | {"PROFILE": profile * 100}
-    ranked = sorted(invested, key=lambda r: r.contribution_brl, reverse=True)
 
     return ProfitabilityReport(
         client_name=portfolio.client_name,
@@ -267,8 +264,6 @@ def compute(portfolio: Portfolio, source: PriceSource, start: date, end: date,
         cash_opportunity_cost_brl=cash * benchmarks["CDI"],
         classes=classes,
         positions=rows,
-        top_contributors=[r.name for r in ranked[:3] if r.contribution_brl > 0],
-        top_detractors=[r.name for r in ranked[::-1][:3] if r.contribution_brl < 0],
         warnings=portfolio.warnings + warnings,
     )
 
@@ -299,7 +294,7 @@ def write_validation_workbook(report: ProfitabilityReport, path: Path) -> None:
     links = {
         "CDI": "https://www3.bcb.gov.br/sgspub (series 12, daily CDI, compounded)",
         "IBOV": "https://finance.yahoo.com/quote/%5EBVSP/history",
-        "IPCA": "https://www3.bcb.gov.br/sgspub (series 433, monthly IPCA)",
+        "IPCA": "https://www3.bcb.gov.br/sgspub (series 7478, IPCA-15 of the month, known on the letter date)",
         "PROFILE": "weighted mix from config/settings.yaml",
     }
     for name, value in report.benchmarks_pct.items():
@@ -321,7 +316,8 @@ def run(month_dir: Path, source_name: str = "market", profile: str | None = None
     """Compute and save profitability_<source>.json and validation_<source>.xlsx for one client month."""
     profile = profile or parse_risk_profile_label(pdf_to_text(month_dir.parent / "risk_profile.pdf"))
     settings = load_settings()
-    start, end = settings["period_start"], settings["period_end"]
+    period = periods.from_folder(month_dir.name)
+    start, end = period.start, period.end
     portfolio = load_portfolio(month_dir)
     market = MarketSource(settings.get("ticker_map"))
     source: PriceSource = (DocumentedSource(month_dir / "profitability_calc_wip.xlsx", fallback=market)

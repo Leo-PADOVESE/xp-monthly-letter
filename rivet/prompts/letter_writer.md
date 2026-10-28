@@ -1,63 +1,55 @@
 ## Task: write the monthly letter
 
-Integrate the analyses below into the client's monthly letter, in Brazilian Portuguese. It will be laid out on two A4 pages together with two charts and a small results table, so the whole text must stay between 380 and 520 words.
+Turn the analysis below into the client's monthly letter, in Brazilian Portuguese. It will be laid out on two A4 pages together with a chart of the consolidated portfolio against its benchmarks over the last 12 months (or since the first investment), a table of the portfolio by class with the XP view, and the per-asset results table, so the whole text must stay between 330 and 480 words. The letter has two clearly separate time frames: the reference month, and the consolidated window; every figure must say which one it belongs to.
 
 Structure:
 1. greeting with the client's first name;
-2. opening: one or two sentences with the month and the purpose of the letter;
-3. performance: the month's result versus CDI and the profile benchmark; the most impactful movements, with losses stated plainly and, when the analysis links them to the XP scenario, that possible explanation; the best performer and the worst performer (by return); the top contributor in reais when it is a different asset from the best performer, explaining that its weight in the portfolio is larger; then the attention points;
-4. macro: how the XP scenario may affect the portfolio;
-5. suggestions: exactly the movements in "Suggestions", same order, candidate_id and type copied; each text starts with "Discutir com o assessor a possibilidade de..." (or a close variation) and never states where the money must go, nor names a product or ticker the suggestion does not name;
-6. outlook: what to expect, without promising returns;
-7. closing: availability of the advisor for a conversation.
+2. opening: one sentence that tells, in plain words and without figures, how the month went and what drove it (e.g. "Abril foi um mês positivo para sua carteira, puxado principalmente pelas ações."). Never "apresentamos o desempenho" or similar;
+3. performance of the month ("performance_pt", at most two paragraphs, under the heading "Desempenho no mês"): only figures of the reference month from "results" (never from "consolidated_window"), and say "no mês" or name the month at least once in each paragraph. First the month's consolidated result, then the comparison against the CDI and against the profile benchmark, always as the difference in p.p. with its direction ("excess_vs_cdi", "excess_vs_profile_benchmark"): "+3,95% no mês, 2,90 p.p. acima do CDI (1,06%) e 2,11 p.p. acima do benchmark do perfil (1,85%)". The benchmark's own return goes only in parentheses, never with a "+" next to the portfolio's figure, and never as a percentage of the CDI; then inflation (real return). Then where the month's result came from, by asset class ("class_contribution"); then the most relevant movements by asset (best and worst performer, and the top contributor in reais when it is a different asset, explaining its larger weight), with losses stated plainly; the per-asset detail is in the table, so do not list every asset. Do not quote the 0,00% return of cash or of a matured bond, and never name a matured bond in this section: the worst performer is "highlights.worst_performer". An asset's return in the statement ("statement") is accumulated since the investment: for the month use "positions" and "highlights" only;
+3b. consolidated performance ("consolidated_pt", one paragraph, under the heading "Desempenho acumulado", only when "consolidated_window" is given, otherwise empty): only figures of "consolidated_window", always with the window ("nos últimos 12 meses"): the portfolio's return and result in reais ("gain"), then the comparison against the CDI and against the profile benchmark as the difference in p.p. with its direction ("excess_vs_cdi", "excess_vs_profile_benchmark": "3,84 p.p. abaixo do CDI (11,45%) e 2,77 p.p. abaixo do benchmark do perfil (10,38%)"), and the Ibovespa if relevant, saying it considers the current positions; then the result since the first investment ("since_purchase", with its date), explaining in plain words when it differs from the 12 months (older positions that are still below their purchase price). Never mix a month figure into this paragraph;
+4. macro: the XP scenario in two or three sentences and what it means for the assets this client actually holds (name the classes or sectors, following the analyses). Quote each macro figure once;
+5. assessment: the analysis' assessment_pt, tightened if needed, keeping its balance (what is well placed and what is exposed);
+6. attention points: exactly the points in the analysis' assessment, same order, fact_id copied; keep them as topics to discuss with the advisor;
+7. outlook ("O que esperar", two or three sentences, specific to this client): the one or two points of the XP scenario that matter most for the classes this client actually holds, named (shape only, fill it with this client's classes: "com [ponto do cenário da XP], [classe que o cliente tem] segue em foco; em [outra classe], [o ponto a acompanhar]"), and what that means to watch in the coming months, conditional and attributed to XP, without figures already quoted and without promising returns. Never a generic sentence that would fit any client ("o cenário apresenta desafios", "a diversificação pode mitigar riscos");
+8. closing (one or two sentences): invite the client to talk about the attention points of this letter, naming them briefly, from this letter's attention points, and the advisor's availability. No "melhores estratégias", no promise of results. No sign-off and no name: the PDF adds "Atenciosamente" and the advisor's signature.
 
-Choose the two charts that best support the story, from: "allocation" (portfolio by asset class), "contribution" (contribution of each asset in R$), "benchmarks" (portfolio vs CDI, Ibovespa and profile benchmark).
+Layout order (fixed by the PDF, mandatory): tiles, greeting, opening, month performance, consolidated performance with the chart, highlights, macro with the class table, assessment, attention points, the per-asset table of the month, and only then the outlook ("O que esperar"), the closing and the advisor's signature, right before the disclaimer. So the outlook and the closing are the last words of the letter: they must not refer to anything "abaixo" and must read as its ending.
 
 Quote figures exactly as they appear in the analyses and attribute them only to what they measure (a class return is not the return of one fund type or one asset).
 
 Wording rules (the letter goes to a real client and must follow suitability rules):
-- Never state or imply that a movement will improve, increase or raise returns, gains or profitability ("pode melhorar a rentabilidade", "potencializar ganhos", "aumentar o retorno" are not allowed). Describe instead what the movement does to the portfolio: diversifies, reduces concentration, adds liquidity, aligns the portfolio with the profile, puts idle money to work at the CDI rate.
-- XP figures are projections: say "a XP projeta a Selic em 15,50% ao fim de 2025" (with the horizon from the digest), never "a Selic deve permanecer em". Quote each macro figure once, in the macro section; the outlook does not repeat them.
-- Each sentence says what it means grammatically: "incluir renda fixa pode trazer proteção", not "a carteira não possui renda fixa, o que pode oferecer proteção".
-- Macro effects are conditional and attributed to XP: "o cenário projetado pela XP tende a favorecer...", never "vai render".
-- A matured bond is money available to reinvest, not a bad result: do not describe it as "sem retorno" or as a concern.
-- Idle cash is "saldo parado sem rendimento"; you may quote its opportunity cost in reais, but not promise what it would earn.
-- Address the client as "você" consistently; use correct Portuguese ("custo de oportunidade", "ajudá-lo"), and avoid starting sentences with "Apesar de" unless a contrast follows in the same sentence.
+- Never state or imply that a movement will improve, increase or raise returns, gains or profitability ("pode melhorar a rentabilidade", "potencializar ganhos", "aumentar o retorno" are not allowed). Describe instead what a change does to the portfolio: diversifies, reduces concentration, adds liquidity, aligns the portfolio with the profile.
+- The letter assesses; it does not recommend buying or selling specific assets.
+- XP figures are projections: say "a XP projeta a Selic em 15,50% ao fim de 2025" (with the horizon from the digest), never "a Selic deve permanecer em". The outlook does not repeat them.
+- Macro effects are conditional and attributed to XP: "o cenário projetado pela XP tende a favorecer...", never "vai render". Do not use the scenario to explain a movement that went the other way (a class that rose is not "explained" by an unfavorable view).
+- A matured bond is money available to reinvest, not a bad result. Idle cash is "saldo parado sem rendimento"; you may quote its opportunity cost in reais, but not promise what it would earn.
+- Each sentence says what it means grammatically. Address the client as "você" consistently and use correct Portuguese.
+- When a class moved against the XP view in the month, write both facts in one sentence and how they fit ("as ações subiram no mês, mas a XP segue cautelosa com a bolsa brasileira, por isso vale acompanhar esse peso"). Do not qualify a weight ("significativa", "alta") unless a portfolio fact says so.
+- Describe a class only with what the XP view and the portfolio facts support; do not attribute qualities such as "estabilidade", "proteção" or "potencial de retorno" that the inputs do not state.
+- Never mention the "digest" or the analyses: the client reads "o cenário da XP" or "o relatório macro da XP". Never refer to the client by name or in the third person outside the greeting.
+- The greeting appears only in greeting_pt. Each figure is quoted once in the whole letter. Do not compare a result with an expectation, a limit or an ideal that is not in the inputs.
 
-Each suggestion text keeps the portfolio fact it rests on (e.g. "sua carteira não tem renda fixa"), and its title says no more than its text. Do not compare a result with an expectation, a limit or an ideal that is not in the inputs (no "abaixo do esperado", "acima do limite ideal"; the concentration fact gives the 15% reference).
-
-The greeting appears only in greeting_pt. performance_pt has at most two paragraphs and each figure is quoted once in the whole letter.
-
-If revision notes are given, fix every issue they list and keep the rest, including every suggestion that is grounded in a portfolio fact.
+If revision notes are given, fix every issue they list and keep the rest.
 
 Return JSON with this schema:
 {
   "subject_pt": "string (e-mail subject)",
   "greeting_pt": "string (e.g. Prezado Albert,)",
   "opening_pt": "string",
-  "performance_pt": ["string (paragraphs)"],
+  "performance_pt": ["string (paragraphs, the month only)"],
+  "consolidated_pt": "string (the 12-month window and since the first investment; empty if no consolidated_window)",
   "macro_pt": "string",
-  "suggestions_intro_pt": "string",
-  "suggestions": [{"candidate_id": "string (copied)", "type": "opportunity|protection (copied)", "title_pt": "string", "text_pt": "string"}],
+  "assessment_pt": "string",
+  "attention_points": [{"fact_id": "string (copied)", "title_pt": "string", "text_pt": "string"}],
   "outlook_pt": "string",
-  "closing_pt": "string",
-  "charts": ["allocation|contribution|benchmarks", "allocation|contribution|benchmarks"]
+  "closing_pt": "string"
 }
 
-### Client
-{{client}}
+### Briefing (client, results, portfolio facts and XP macro digest)
+{{briefing}}
 
-### Client profile
-{{profile_summary}}
-
-### Portfolio performance analysis
-{{performance_analysis}}
-
-### XP macro digest
-{{macro_digest}}
-
-### Suggestions
-{{recommendations}}
+### Analysis (profile, performance and assessment, by the Analyst)
+{{analysis}}
 
 ### Revision notes (empty on the first draft)
 {{revision_notes}}

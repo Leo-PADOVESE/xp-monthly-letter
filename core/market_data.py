@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import time
 import warnings
 import zipfile
 from datetime import date, timedelta
@@ -36,7 +37,7 @@ SGS_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{series}/dados"
 CVM_DAILY_URL = "https://dados.cvm.gov.br/dados/FI/DOC/INF_DIARIO/DADOS/inf_diario_fi_{yyyymm}.zip"
 CVM_REGISTRY_URL = "https://dados.cvm.gov.br/dados/FI/CAD/DADOS/cad_fi.csv"
 CVM_CLASS_REGISTRY_URL = "https://dados.cvm.gov.br/dados/FI/CAD/DADOS/registro_fundo_classe.zip"
-SGS_CDI, SGS_IPCA, SGS_IPCA15 = 12, 433, 7478
+SGS_CDI, SGS_IPCA15 = 12, 7478
 IBOV = "^BVSP"
 
 
@@ -57,8 +58,8 @@ def _silence_yfinance_warnings() -> None:
 
 
 def yahoo_ticker(ticker: str) -> str:
-    """B3 tickers need the .SA suffix on Yahoo; indices start with ^."""
-    return ticker if ticker.startswith("^") or ticker.endswith(".SA") else f"{ticker}.SA"
+    """B3 tickers need the .SA suffix on Yahoo; indices start with ^ and currencies end with =X."""
+    return ticker if ticker.startswith("^") or "." in ticker or "=" in ticker else f"{ticker}.SA"
 
 
 def stock_history(ticker: str, start: date, end: date) -> pd.Series:
@@ -124,18 +125,27 @@ def stock_close_raw(ticker: str, start: date, end: date) -> pd.Series:
 
 # ------------------------------------------------------------- Banco Central (SGS)
 
+def _get_json(url: str, params: dict, attempts: int = 4) -> list:
+    """The Banco Central API fails on and off (timeouts, 502, empty bodies): retry with backoff."""
+    for attempt in range(attempts):
+        try:
+            response = requests.get(url, params=params, timeout=30)
+            response.raise_for_status()
+            return response.json()
+        except (requests.RequestException, ValueError):
+            if attempt == attempts - 1:
+                raise
+            time.sleep(2 ** attempt)
+    return []
+
+
 def sgs_series(series: int, start: date, end: date) -> pd.Series:
     path = _cache(f"sgs_{series}_{start}_{end}.json")
     if path.exists():
         rows = json.loads(path.read_text(encoding="utf-8"))
     else:
-        response = requests.get(
-            SGS_URL.format(series=series),
-            params={"formato": "json", "dataInicial": f"{start:%d/%m/%Y}", "dataFinal": f"{end:%d/%m/%Y}"},
-            timeout=30,
-        )
-        response.raise_for_status()
-        rows = response.json()
+        rows = _get_json(SGS_URL.format(series=series),
+                         {"formato": "json", "dataInicial": f"{start:%d/%m/%Y}", "dataFinal": f"{end:%d/%m/%Y}"})
         path.write_text(json.dumps(rows), encoding="utf-8")
     if not rows:
         raise MarketDataError(f"SGS series {series} returned no data for {start}..{end}")
@@ -151,11 +161,6 @@ def cdi_return(start: date, end: date) -> float:
     daily = sgs_series(SGS_CDI, start, end)
     daily = daily[(daily.index >= pd.Timestamp(start)) & (daily.index < pd.Timestamp(end))]
     return float((1 + daily / 100).prod() - 1)
-
-
-def ipca_monthly(start: date, end: date) -> pd.Series:
-    """Monthly IPCA in %, indexed by the first day of the reference month."""
-    return sgs_series(SGS_IPCA, start.replace(day=1), end)
 
 
 def ipca_for_period(start: date, end: date) -> float:
@@ -212,10 +217,6 @@ def cvm_daily_report(yyyymm: str) -> pd.DataFrame:
     frame["CNPJ"] = frame["CNPJ"].map(format_cnpj)
     frame.to_csv(path, index=False)
     return frame
-
-
-def fund_quota(cnpj: str, day: date) -> float:
-    return fund_quota_point(cnpj, day)[1]
 
 
 def fund_quota_point(cnpj: str, day: date) -> tuple[date, float]:
