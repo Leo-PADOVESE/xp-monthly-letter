@@ -33,6 +33,8 @@ def test_twelve_months_of_a_flat_portfolio_compound():
     assert history["months"] == 12 and history["start"] == "2024-04-30"
     assert history["total"]["portfolio"] == pytest.approx((1.01 ** 12 - 1) * 100)
     assert history["total"]["PROFILE"] == pytest.approx(history["total"]["CDI"])
+    # The result in reais over the window: today's value minus the value walked back 12 months.
+    assert history["total"]["gain_brl"] == pytest.approx(2000 - 2000 / 1.01 ** 12)
 
 
 def test_a_young_portfolio_starts_at_its_first_investment():
