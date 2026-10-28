@@ -17,7 +17,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Callable
 
-from core import crm, periods
+from core import crm, history, periods
 from core.briefing import PROFILE_PT
 from core.ingestion import (IngestionError, load_portfolio, parse_risk_profile_label, parse_xp_portfolio, pdf_to_text,
                             portfolio_from_extraction, portfolio_to_text)
@@ -79,6 +79,7 @@ def add_statement(slug: str, statement_pdf: bytes, month: str | None = None) -> 
     (folder / "portfolio.json").write_text(json.dumps(portfolio.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
     (folder / "portfolio.txt").write_text(portfolio_to_text(portfolio), encoding="utf-8")
     report, _ = run_profitability(folder, "market", row["profile"])
+    (folder / "history.json").unlink(missing_ok=True)       # rebuilt from the new statement with the letter
     return {"reader": reader, "return_pct": report.return_pct, "warnings": portfolio.warnings + report.warnings}
 
 
@@ -146,6 +147,11 @@ def generate_letter(slug: str, month: str | None = None) -> dict:
     try:
         if not (folder / "profitability_market.json").exists():
             run_profitability(folder, "market")
+        if not (folder / "history.json").exists():
+            try:
+                history.run(folder)
+            except Exception:  # the 12-month chart is context; the month's letter goes out without it
+                traceback.print_exc()
         doc = generate(folder)
         build_pdf(folder)
         status = "generated" if doc["status"] == "approved" else "needs_review"

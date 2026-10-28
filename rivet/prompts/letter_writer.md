@@ -1,11 +1,11 @@
 ## Task: write the monthly letter
 
-Integrate the analyses below into the client's monthly letter, in Brazilian Portuguese. It will be laid out on two A4 pages together with two charts (the portfolio against its benchmarks, and the contribution of each asset class), a table of the portfolio by class with the XP view, and the per-asset results table, so the whole text must stay between 330 and 480 words.
+Integrate the analyses below into the client's monthly letter, in Brazilian Portuguese. It will be laid out on two A4 pages together with a chart of the consolidated portfolio against its benchmarks over the last 12 months (or since the first investment), a table of the portfolio by class with the XP view, and the per-asset results table, so the whole text must stay between 330 and 480 words.
 
 Structure:
 1. greeting with the client's first name;
 2. opening: one sentence that tells, in plain words and without figures, how the month went and what drove it (e.g. "Abril foi um mês positivo para sua carteira, puxado principalmente pelas ações."). Never "apresentamos o desempenho" or similar;
-3. performance (at most two paragraphs): the consolidated result first, against the CDI (including the return as a % of the CDI when it applies), the profile benchmark and inflation; then where the result came from, by asset class ("class_contribution"); then the most relevant movements by asset (best and worst performer, and the top contributor in reais when it is a different asset, explaining its larger weight), with losses stated plainly; the per-asset detail is in the table, so do not list every asset. Do not quote the 0,00% return of cash or of a matured bond;
+3. performance (at most two paragraphs): the month's consolidated result first, against the CDI (as a % of the CDI when it applies: "o equivalente a 374% do CDI", never "superou o CDI em 374%"), the profile benchmark and inflation; then, when "consolidated_window" is given, one sentence on the portfolio over that window against the CDI and the Ibovespa, saying it considers the current positions; then where the month's result came from, by asset class ("class_contribution"); then the most relevant movements by asset (best and worst performer, and the top contributor in reais when it is a different asset, explaining its larger weight), with losses stated plainly; the per-asset detail is in the table, so do not list every asset. Do not quote the 0,00% return of cash or of a matured bond;
 4. macro: the XP scenario in two or three sentences and what it means for the assets this client actually holds (name the classes or sectors, following the analyses). Quote each macro figure once;
 5. assessment: the portfolio assessment, tightened if needed, keeping its balance (what is well placed and what is exposed);
 6. attention points: exactly the points in "Assessment", same order, fact_id copied; keep them as topics to discuss with the advisor;
@@ -21,6 +21,8 @@ Wording rules (the letter goes to a real client and must follow suitability rule
 - Macro effects are conditional and attributed to XP: "o cenário projetado pela XP tende a favorecer...", never "vai render". Do not use the scenario to explain a movement that went the other way (a class that rose is not "explained" by an unfavorable view).
 - A matured bond is money available to reinvest, not a bad result. Idle cash is "saldo parado sem rendimento"; you may quote its opportunity cost in reais, but not promise what it would earn.
 - Each sentence says what it means grammatically. Address the client as "você" consistently and use correct Portuguese.
+- Describe a class only with what the XP view and the portfolio facts support; do not attribute qualities such as "estabilidade", "proteção" or "potencial de retorno" that the inputs do not state.
+- Never mention the "digest" or the analyses: the client reads "o cenário da XP" or "o relatório macro da XP". Never refer to the client by name or in the third person outside the greeting.
 - The greeting appears only in greeting_pt. Each figure is quoted once in the whole letter. Do not compare a result with an expectation, a limit or an ideal that is not in the inputs.
 
 If revision notes are given, fix every issue they list and keep the rest.

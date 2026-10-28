@@ -87,6 +87,26 @@ def pct_of_cdi(report: dict) -> float | None:
     return report["return_pct"] / cdi * 100 if cdi > 0 and report["return_pct"] > 0 else None
 
 
+def formatted_history(history: dict) -> dict:
+    """The consolidated window (12 months, or since the first investment) with quotable figures."""
+    total, since = history["total"], history.get("since_purchase")
+    start, end = date.fromisoformat(history["start"]), date.fromisoformat(history["end"])
+    out = {
+        "window": (f"desde a primeira aplicação, de {start:%d/%m/%Y} a {end:%d/%m/%Y}" if history["since_first_investment"]
+                   else f"últimos {history['months']} meses, de {start:%d/%m/%Y} a {end:%d/%m/%Y}"),
+        "portfolio": pct(total["portfolio"]), "cdi": pct(total["CDI"]), "ibovespa": pct(total["IBOV"]),
+        "inflation_ipca15": pct(total["IPCA"]), "profile_benchmark": pct(total["PROFILE"]),
+        "excess_vs_cdi": pp(total["portfolio"] - total["CDI"]),
+        "how_it_was_built": history["note"],
+    }
+    if since:
+        out["since_purchase"] = {"invested": brl(since["cost"]), "current_value": brl(since["value"]),
+                                 "result": brl(since["gain_brl"]), "return": pct(since["return_pct"]),
+                                 "basis": "preço médio das ações e valor aplicado nos fundos e títulos, "
+                                          "contra o valor atual do extrato"}
+    return out
+
+
 def formatted_results(report: dict) -> dict:
     """The profitability report with every quotable figure pre-formatted."""
     invested = [p for p in report["positions"] if p["asset_class"] != CASH]

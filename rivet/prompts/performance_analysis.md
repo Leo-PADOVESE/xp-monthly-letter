@@ -5,6 +5,7 @@ You receive the portfolio, the profitability results already calculated by our e
 Explain:
 - the headline: the consolidated portfolio return versus CDI (and as a % of the CDI, when "return_as_pct_of_cdi" applies), versus the profile benchmark and versus inflation (real return);
 - where the result came from by asset class ("class_contribution", in reais and p.p.);
+- when "consolidated_window" is given: the portfolio over that window (12 months or since the first investment) against the CDI, the Ibovespa, inflation and the profile benchmark, and the result since purchase; it is rebuilt from the current positions, so say "considerando as posições atuais";
 - which asset rose the most and which fell the most (by return %), and which asset contributed the most and the least in reais. Mention when they are different assets and why (weight);
 - how each asset class and each fund type behaved, with the right sign: say which were positive and which negative;
 - the assets that hurt the most in reais (bottom contributors), not only the worst return;
@@ -22,6 +23,7 @@ Return JSON with this schema:
 {
   "headline_pt": "string (one sentence)",
   "attribution_pt": "string (one sentence: which classes produced the result)",
+  "window_pt": "string (one sentence on the consolidated window, or empty if not given)",
   "best_performer": {"asset": "string", "return": "string"},
   "worst_performer": {"asset": "string", "return": "string"},
   "top_contributor": {"asset": "string", "contribution": "string"},

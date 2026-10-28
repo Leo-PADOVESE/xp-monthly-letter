@@ -11,6 +11,8 @@ Check:
 - "linguagem": Brazilian Portuguese, formal and clear tone; no repeated ideas or figures between sections. Medium or low.
 - "promessa": wording that implies improved or guaranteed returns. An automatic check already blocks the obvious cases, so report it as medium at most, as a note for the advisor.
 
+Not issues: explaining the top contributor in reais by its larger weight when "positions" shows a larger weight than the best performer's; a matured CDB at +0,00% does not make statements about fixed income funds wrong; describing a class as the XP digest does.
+
 Report an issue only when you can quote the exact passage that breaks one of the rules above. Severity "high" means the letter must not be sent as it is; use "low" for style preferences. Do not report something that is correct.
 
 Return JSON with this schema:

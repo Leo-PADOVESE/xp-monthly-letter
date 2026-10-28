@@ -5,8 +5,9 @@ Input: ``letter.json`` (text written by the Rivet agent) and ``profitability_mar
 the charts, tiles and table comes from the profitability report, never from the LLM.
 
 Layout
-- Header, key figures, greeting, performance, two charts (the portfolio against its benchmarks, and
-  where the result came from by asset class) and the highlights; then the XP scenario and how the
+- Header, key figures, greeting, performance, the main chart (the consolidated portfolio over the last
+  12 months, or since the first investment, against its benchmarks; without that history, the month
+  against its benchmarks and where the result came from by class) and the highlights; then the XP scenario and how the
   portfolio sits in it for the client's profile, points to discuss, outlook, closing, the per-asset
   results table and the disclaimer, flowing over the two pages.
 If the content does not fit in two pages, the layout is tightened (smaller type and table)
@@ -30,6 +31,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+import matplotlib.ticker  # noqa: E402
 from pypdf import PdfReader, PdfWriter  # noqa: E402
 from reportlab.lib import colors  # noqa: E402
 from reportlab.lib.enums import TA_LEFT  # noqa: E402
@@ -136,6 +138,51 @@ def chart_attribution(report: dict, width: float, height: float) -> Image:
                  fontweight="bold")
     _style_axes(ax)
     ax.set_xticks([])
+    return _figure_to_image(fig, width, height)
+
+
+MONTHS_SHORT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
+
+
+def chart_history(history: dict, width: float, height: float) -> Image:
+    """Consolidated portfolio over the window (cumulative %) against CDI, Ibovespa, inflation and the profile benchmark."""
+    from datetime import date
+
+    days = [date.fromisoformat(p["date"]) for p in history["points"]]
+    lines = [("Benchmark do perfil", "PROFILE", CHART_INK, (0, (4, 2)), 1.2), ("CDI", "CDI", "#8C8C8C", "-", 1.2),
+             ("Ibovespa", "IBOV", "#C9C9C9", "-", 1.2), ("Inflação (IPCA-15)", "IPCA", "#8C8C8C", ":", 1.2),
+             ("Sua carteira", "portfolio", CHART_YELLOW, "-", 2.6)]
+    fig, ax = plt.subplots(figsize=(width / 72, height / 72))
+    x = list(range(len(days)))
+    ends = []
+    for label, key, color, style, lw in lines:
+        values = [p[key] for p in history["points"]]
+        ax.plot(x, values, color=color, linestyle=style, linewidth=lw, label=label, zorder=3 if key == "portfolio" else 2)
+        ends.append((values[-1], label, color))
+    # End labels, nudged apart so they never overlap.
+    span = max(abs(v) for v, _, _ in ends) or 1
+    placed: list[float] = []
+    for value, label, color in sorted(ends):
+        y = value
+        while any(abs(y - other) < span * 0.075 for other in placed):
+            y += span * 0.075
+        placed.append(y)
+        ax.text(x[-1] + 0.25, y, f"{'+' if value >= 0 else ''}{_br(value, 2)}%  {label}", va="center", fontsize=6.8,
+                color=INK.hexval().replace("0x", "#") if color == CHART_YELLOW else color,
+                fontweight="bold" if color == CHART_YELLOW else "normal")
+    ax.axhline(0, color=CHART_GREY, linewidth=0.6)
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"{MONTHS_SHORT[d.month - 1]}/{d:%y}" for d in days], fontsize=6.5)
+    ax.set_xlim(0, x[-1] + 3.2)
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{_br(v, 0)}%"))
+    ax.tick_params(axis="y", labelsize=6.5, length=0)
+    ax.grid(axis="y", color="#EDEDED", linewidth=0.6)
+    window = "desde a primeira aplicação" if history["since_first_investment"] else f"últimos {history['months']} meses"
+    ax.set_title(f"Sua carteira x referências · {window} (rentabilidade acumulada)", fontsize=8.5, loc="left",
+                 fontweight="bold")
+    for side in ("top", "right", "left"):
+        ax.spines[side].set_visible(False)
+    ax.spines["bottom"].set_color(RULE.hexval().replace("0x", "#"))
     return _figure_to_image(fig, width, height)
 
 
@@ -302,7 +349,7 @@ def _header_footer(client: dict):
     return draw
 
 
-def build_story(letter_doc: dict, report: dict, layout: Layout, width: float) -> list:
+def build_story(letter_doc: dict, report: dict, layout: Layout, width: float, history: dict | None = None) -> list:
     st = _styles(layout)
     letter, client = letter_doc["letter"], letter_doc["client"]
     body = lambda text: Paragraph(_esc(text), st["body"])  # noqa: E731
@@ -319,7 +366,19 @@ def build_story(letter_doc: dict, report: dict, layout: Layout, width: float) ->
              body(letter.get("opening_pt", "")),
              Paragraph("Desempenho da carteira", st["h2"])]
     story += [body(p) for p in letter.get("performance_pt", [])]
-    story += [Spacer(1, 2 * mm), chart_row, Spacer(1, 4 * mm), Paragraph("Destaques do mês", st["h2"]),
+    if history and history.get("months", 0) >= 2:
+        # The consolidated view is the main chart; the month's detail by asset is in the table at the end.
+        main_chart = [chart_history(history, width, layout.chart_height * 1.12)]
+        since = history.get("since_purchase")
+        if since:
+            main_chart.append(Paragraph(
+                f"<b>Desde a aplicação</b> (preço médio das ações e valor aplicado nos fundos e títulos, contra o valor "
+                f"atual): {brl(since['cost'])} aplicados, hoje {brl(since['value'])}, resultado de "
+                f"<b>{brl(since['gain_brl'])} ({pct(since['return_pct'])})</b>.", st["cell"]))
+        main_chart.append(Paragraph(_esc(history["note"]), st["small"]))
+    else:
+        main_chart = [chart_row]
+    story += [Spacer(1, 2 * mm), *main_chart, Spacer(1, 4 * mm), Paragraph("Destaques do mês", st["h2"]),
               _highlights(letter_doc, st, width), Spacer(1, 2 * mm),
               Paragraph("Cenário econômico e sua carteira", st["h2"]), body(letter.get("macro_pt", ""))]
     views = _class_views(letter_doc, st, width)
@@ -338,13 +397,13 @@ def build_story(letter_doc: dict, report: dict, layout: Layout, width: float) ->
     return story
 
 
-def render(letter_doc: dict, report: dict, out: Path, layout: Layout = COMFORTABLE) -> int:
+def render(letter_doc: dict, report: dict, out: Path, layout: Layout = COMFORTABLE, history: dict | None = None) -> int:
     """Write the PDF and return its number of pages."""
     doc = SimpleDocTemplate(str(out), pagesize=A4, leftMargin=16 * mm, rightMargin=16 * mm,
                             topMargin=30 * mm, bottomMargin=16 * mm,
                             title=f"Carta mensal - {letter_doc['client']['name']}", author="XP Investimentos")
     page = _header_footer(letter_doc["client"])
-    doc.build(build_story(letter_doc, report, layout, doc.width), onFirstPage=page, onLaterPages=page)
+    doc.build(build_story(letter_doc, report, layout, doc.width, history), onFirstPage=page, onLaterPages=page)
     return len(PdfReader(str(out)).pages)
 
 
@@ -359,10 +418,12 @@ def protect(path: Path, password: str) -> None:
 def build_pdf(month_dir: Path, password: str | None = None) -> tuple[Path, int]:
     letter_doc = json.loads((month_dir / "letter.json").read_text(encoding="utf-8"))
     report = json.loads((month_dir / "profitability_market.json").read_text(encoding="utf-8"))
+    history_path = month_dir / "history.json"
+    history = json.loads(history_path.read_text(encoding="utf-8")) if history_path.exists() else None
     out = month_dir / "letter.pdf"
-    pages = render(letter_doc, report, out)
+    pages = render(letter_doc, report, out, history=history)
     if pages > MAX_PAGES:
-        pages = render(letter_doc, report, out, COMPACT)
+        pages = render(letter_doc, report, out, COMPACT, history)
     if password:
         protect(out, password)
     return out, pages

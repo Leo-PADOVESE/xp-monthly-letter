@@ -27,7 +27,7 @@ from datetime import date
 from pathlib import Path
 
 from core import periods
-from core.briefing import client_card, formatted_results, portfolio_facts
+from core.briefing import client_card, formatted_history, formatted_results, portfolio_facts
 from core.ingestion import load_portfolio, parse_risk_profile_label, pdf_to_text, portfolio_to_text
 from core.profitability import load_settings
 
@@ -39,6 +39,8 @@ PROMISE = re.compile(
     r"|(?:melhor|aument|elev|potencializ|maximiz|turbin)\w*\s+(?:a |o |os |as |sua |seu |seus |suas )?"
     r"(?:rentabilidade|retornos?|ganhos?|rendimentos?|resultados?)\b",
     re.IGNORECASE)
+# "superou o CDI em 374%" reads as 374 p.p. above the CDI; the figure is a share of it ("374% do CDI").
+CDI_MISREAD = re.compile(r"(?:super\w*|acima d\w*|bat\w*)\s+(?:o\s+)?CDI\s+em\s+\d+%", re.IGNORECASE)
 NUMBER = re.compile(r"R\$\s?-?[\d.]+,\d{2}|[+-]?\d+(?:,\d+)?\s?%|[+-]?\d+(?:,\d+)?\s?p\.p\.")
 
 
@@ -110,13 +112,16 @@ GREETING = re.compile(r"^(?:Car[oa]|Prezad[oa])\s+[^\s,]+,\s*")
 
 
 def _client_voice(text: str, client_name: str) -> str:
-    if client_name:
-        text = re.sub(rf"\b([Aa]) (carteira|portfólio) de {re.escape(client_name)}",
-                      lambda m: ("S" if m.group(1) == "A" else "s") + f"ua carteira" if m.group(2) == "carteira"
-                      else ("S" if m.group(1) == "A" else "s") + "eu portfólio", text)
-        text = re.sub(rf"\b([Oo]) portfólio de {re.escape(client_name)}",
+    for name in dict.fromkeys(n for n in (client_name, client_name.split()[0] if client_name else "") if n):
+        text = re.sub(rf"\b([Aa]) (carteira|portfólio) de {re.escape(name)}\b",
+                      lambda m: ("S" if m.group(1) == "A" else "s") + ("ua carteira" if m.group(2) == "carteira"
+                                                                      else "eu portfólio"), text)
+        text = re.sub(rf"\b([Oo]) portfólio de {re.escape(name)}\b",
                       lambda m: ("S" if m.group(1) == "O" else "s") + "eu portfólio", text)
-    return re.sub(r"\b(no|o) digest macro", lambda m: f"{m.group(1)} relatório macro da XP", text)
+    # Internal jargon: the agent reads a "digest"; the client reads the XP macro report.
+    text = re.sub(r"\b(n?o) (?:digest|resumo) macro(?:econômico)?(?: da XP)?",
+                  lambda m: f"{m.group(1)} relatório macro da XP", text)
+    return re.sub(r"\bdigest\b", "relatório", text)
 
 
 def tidy(letter: dict, client_name: str = "") -> dict:
@@ -198,6 +203,9 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
 
     digest = macro_digest(macro_report(period), letter_date, model)
     results = formatted_results(report)
+    history_path = month_dir / "history.json"
+    if history_path.exists():
+        results["consolidated_window"] = formatted_history(json.loads(history_path.read_text(encoding="utf-8")))
     weights = settings["benchmarks"][profile]
     results["formatted"]["profile_benchmark_composition"] = " + ".join(
         f"{w * 100:.0f}% {'Ibovespa' if k == 'IBOV' else k}" for k, w in weights.items())
@@ -243,6 +251,10 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         if wrong_points:
             issues.append({"severity": "high", "rule": "pontos de atenção", "problem": "; ".join(wrong_points),
                            "fix": "Use de 1 a 3 pontos, cada um com o fact_id de um fato da carteira."})
+        misread = sorted({m.group(0) for m in CDI_MISREAD.finditer(letter_text(letter))})
+        if misread:
+            issues.append({"severity": "high", "rule": "fatos", "problem": f"% do CDI lido como diferença: {', '.join(misread)}",
+                           "fix": "Escreva 'o equivalente a X% do CDI'; a diferença para o CDI está em p.p."})
         promises = check_promises(letter)
         if promises:
             issues.append({"severity": "high", "rule": "3", "problem": f"Promessa de retorno: {', '.join(promises)}",

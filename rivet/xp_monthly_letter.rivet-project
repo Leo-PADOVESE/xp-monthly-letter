@@ -244,6 +244,12 @@ data:
               - where the result came from by asset class ("class_contribution",
               in reais and p.p.);
 
+              - when "consolidated_window" is given: the portfolio over that
+              window (12 months or since the first investment) against the CDI,
+              the Ibovespa, inflation and the profile benchmark, and the result
+              since purchase; it is rebuilt from the current positions, so say
+              "considerando as posições atuais";
+
               - which asset rose the most and which fell the most (by return %),
               and which asset contributed the most and the least in reais.
               Mention when they are different assets and why (weight);
@@ -295,6 +301,7 @@ data:
               {
                 "headline_pt": "string (one sentence)",
                 "attribution_pt": "string (one sentence: which classes produced the result)",
+                "window_pt": "string (one sentence on the consolidated window, or empty if not given)",
                 "best_performer": {"asset": "string", "return": "string"},
                 "worst_performer": {"asset": "string", "return": "string"},
                 "top_contributor": {"asset": "string", "contribution": "string"},
@@ -395,10 +402,13 @@ data:
               "neutral".
 
               - "profile_fit_pt" reads that class for this client in one short
-              sentence: what the class does for a client with this profile in
-              this scenario (protection, liquidity, growth, inflation defence,
-              concentration risk), linking to the profile's horizon, tolerance
-              or restrictions when relevant.
+              sentence, consistent with the XP view (do not call a class
+              "estável" or "proteção" when the digest sees it as volatile or
+              uncertain, and never mention "potencial de retorno"): what the
+              class does for a client with this profile in this scenario
+              (protection, liquidity, growth, inflation defence, concentration
+              risk), linking to the profile's horizon, tolerance or restrictions
+              when relevant.
 
               - "assessment_pt" is the overall reading: is the mix coherent with
               the profile given the scenario? Name the one or two classes that
@@ -420,6 +430,10 @@ data:
 
               - XP figures are projections with a horizon ("a XP projeta a Selic
               em 15,50% ao fim de 2025"), never current values.
+
+              - Address the client as "você" ("sua carteira"), never by name or
+              in the third person, and never mention the "digest": it is "o
+              cenário da XP".
 
               - If revision notes are given, fix what they say about the
               assessment.
@@ -628,6 +642,13 @@ data:
               as medium at most, as a note for the advisor.
 
 
+              Not issues: explaining the top contributor in reais by its larger
+              weight when "positions" shows a larger weight than the best
+              performer's; a matured CDB at +0,00% does not make statements
+              about fixed income funds wrong; describing a class as the XP
+              digest does.
+
+
               Report an issue only when you can quote the exact passage that
               breaks one of the rules above. Severity "high" means the letter
               must not be sent as it is; use "low" for style preferences. Do not
@@ -725,10 +746,11 @@ data:
 
               Integrate the analyses below into the client's monthly letter, in
               Brazilian Portuguese. It will be laid out on two A4 pages together
-              with two charts (the portfolio against its benchmarks, and the
-              contribution of each asset class), a table of the portfolio by
-              class with the XP view, and the per-asset results table, so the
-              whole text must stay between 330 and 480 words.
+              with a chart of the consolidated portfolio against its benchmarks
+              over the last 12 months (or since the first investment), a table
+              of the portfolio by class with the XP view, and the per-asset
+              results table, so the whole text must stay between 330 and 480
+              words.
 
 
               Structure:
@@ -740,15 +762,19 @@ data:
               mês positivo para sua carteira, puxado principalmente pelas
               ações."). Never "apresentamos o desempenho" or similar;
 
-              3. performance (at most two paragraphs): the consolidated result
-              first, against the CDI (including the return as a % of the CDI
-              when it applies), the profile benchmark and inflation; then where
-              the result came from, by asset class ("class_contribution"); then
-              the most relevant movements by asset (best and worst performer,
-              and the top contributor in reais when it is a different asset,
-              explaining its larger weight), with losses stated plainly; the
-              per-asset detail is in the table, so do not list every asset. Do
-              not quote the 0,00% return of cash or of a matured bond;
+              3. performance (at most two paragraphs): the month's consolidated
+              result first, against the CDI (as a % of the CDI when it applies:
+              "o equivalente a 374% do CDI", never "superou o CDI em 374%"), the
+              profile benchmark and inflation; then, when "consolidated_window"
+              is given, one sentence on the portfolio over that window against
+              the CDI and the Ibovespa, saying it considers the current
+              positions; then where the month's result came from, by asset class
+              ("class_contribution"); then the most relevant movements by asset
+              (best and worst performer, and the top contributor in reais when
+              it is a different asset, explaining its larger weight), with
+              losses stated plainly; the per-asset detail is in the table, so do
+              not list every asset. Do not quote the 0,00% return of cash or of
+              a matured bond;
 
               4. macro: the XP scenario in two or three sentences and what it
               means for the assets this client actually holds (name the classes
@@ -799,6 +825,14 @@ data:
 
               - Each sentence says what it means grammatically. Address the
               client as "você" consistently and use correct Portuguese.
+
+              - Describe a class only with what the XP view and the portfolio
+              facts support; do not attribute qualities such as "estabilidade",
+              "proteção" or "potencial de retorno" that the inputs do not state.
+
+              - Never mention the "digest" or the analyses: the client reads "o
+              cenário da XP" or "o relatório macro da XP". Never refer to the
+              client by name or in the third person outside the greeting.
 
               - The greeting appears only in greeting_pt. Each figure is quoted
               once in the whole letter. Do not compare a result with an
