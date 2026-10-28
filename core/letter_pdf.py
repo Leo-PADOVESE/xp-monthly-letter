@@ -73,6 +73,7 @@ class Layout:
 
 
 COMFORTABLE, COMPACT = Layout(), Layout(body=8.9, leading=11.9, chart_height=60 * mm, table_body=7.0)
+TIGHT = Layout(body=8.6, leading=11.2, chart_height=54 * mm, table_body=6.8)   # last resort before "too long"
 
 
 # --------------------------------------------------------------------- charts
@@ -228,7 +229,7 @@ def _tile_row(caption: str, tiles: list[tuple[str, str]], st: dict, width: float
         ("SPAN", (0, 0), (-1, 0)), ("BOTTOMPADDING", (0, 0), (-1, 0), 2), ("LEFTPADDING", (0, 0), (-1, 0), 0),
         ("BACKGROUND", (0, 1), (-1, 1), LIGHT), ("LINEBEFORE", (1, 1), (-1, 1), 2, colors.white),
         ("LINEABOVE", (0, 1), (0, 1), 2.2, YELLOW if accent else GREY), ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("TOPPADDING", (0, 1), (-1, 1), 6), ("BOTTOMPADDING", (0, 1), (-1, 1), 7),
+        ("TOPPADDING", (0, 1), (-1, 1), 4), ("BOTTOMPADDING", (0, 1), (-1, 1), 5),
         ("LEFTPADDING", (0, 1), (-1, 1), 8),
     ]))
     return table
@@ -242,7 +243,7 @@ def _tiles(report: dict, client: dict, st: dict, width: float, history: dict | N
                        ("CDI", pct(bench["CDI"])), ("Benchmark do perfil", pct(bench["PROFILE"]))], st, width, True)]
     if history and history.get("months", 0) >= 2:
         total = history["total"]
-        rows += [Spacer(1, 3 * mm), _tile_row(
+        rows += [Spacer(1, 2 * mm), _tile_row(
             f"ACUMULADO · {window_label(history).upper()}",
             [("Sua carteira", pct(total["portfolio"])), ("CDI", pct(total["CDI"])),
              ("Benchmark do perfil", pct(total["PROFILE"])), ("Ibovespa", pct(total["IBOV"]))], st, width, False)]
@@ -379,7 +380,7 @@ def build_story(letter_doc: dict, report: dict, layout: Layout, width: float, hi
     chart_row.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0)]))
 
     consolidated = bool(history and history.get("months", 0) >= 2)
-    story = [*_tiles(report, client, st, width, history if consolidated else None), Spacer(1, 6 * mm),
+    story = [*_tiles(report, client, st, width, history if consolidated else None), Spacer(1, 4 * mm),
              body(letter.get("greeting_pt", f"Prezado(a) {client['first_name']},")),
              body(letter.get("opening_pt", "")),
              Paragraph(f"Desempenho no mês · {client['reference_month']}", st["h2"])]
@@ -444,8 +445,10 @@ def build_pdf(month_dir: Path, password: str | None = None) -> tuple[Path, int]:
     history = json.loads(history_path.read_text(encoding="utf-8")) if history_path.exists() else None
     out = month_dir / "letter.pdf"
     pages = render(letter_doc, report, out, history=history)
-    if pages > MAX_PAGES:
-        pages = render(letter_doc, report, out, COMPACT, history)
+    for layout in (COMPACT, TIGHT):
+        if pages <= MAX_PAGES:
+            break
+        pages = render(letter_doc, report, out, layout, history)
     if password:
         protect(out, password)
     return out, pages
