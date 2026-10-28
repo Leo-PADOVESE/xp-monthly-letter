@@ -22,7 +22,7 @@ from core.briefing import PROFILE_PT
 from core.ingestion import (IngestionError, load_portfolio, parse_risk_profile_label, parse_xp_portfolio, pdf_to_text,
                             portfolio_from_extraction, portfolio_to_text)
 from core.letter_ai import generate, load_env, macro_digest, macro_report, parse_json, run_graph
-from core.letter_pdf import build_pdf
+from core.letter_pdf import MAX_PAGES, build_pdf
 from core.profitability import load_settings
 from core.profitability import run as run_profitability
 
@@ -153,7 +153,13 @@ def generate_letter(slug: str, month: str | None = None) -> dict:
             except Exception:  # the 12-month chart is context; the month's letter goes out without it
                 traceback.print_exc()
         doc = generate(folder)
-        build_pdf(folder)
+        _, pages = build_pdf(folder)
+        if pages > MAX_PAGES:     # did not fit even the tightest layout: the advisor shortens it before sending
+            doc["status"] = "needs_review"
+            doc.setdefault("advisor_notes", []).append(
+                {"severity": "high", "rule": "tamanho", "quote": "", "problem": f"A carta ficou com {pages} páginas.",
+                 "fix": "Encurte o texto no editor (o limite é de 2 páginas) e salve para refazer o PDF."})
+            (folder / "letter.json").write_text(json.dumps(doc, ensure_ascii=False, indent=2), encoding="utf-8")
         status = "generated" if doc["status"] == "approved" else "needs_review"
         crm.set_letter(slug, month, status, _cost(doc), len(doc.get("advisor_notes", [])))
         return {"slug": slug, "status": status, "seconds": round(time.time() - start)}

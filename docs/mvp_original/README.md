@@ -1,6 +1,6 @@
 # Baseline run of the original MVP
 
-- Project: `enter_challenge_local.rivet-project` (original graph, local file paths only)
+- Project: `enter_challenge_local.rivet-project`, the original graph provided with the case (not in this repository: it points to local file paths)
 - Date: 2026-10-28 · Model: gpt-4o-mini · Temperature 0.5
 - Runtime 15.71 s · 17,324 tokens · US$0.003
 

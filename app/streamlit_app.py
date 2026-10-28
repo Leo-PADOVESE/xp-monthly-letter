@@ -21,14 +21,13 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from core import crm, macro_panel, periods, pipeline  # noqa: E402
+from core.briefing import MONTHS_SHORT_PT, PROFILE_PT  # noqa: E402
 from core.letter_ai import load_env  # noqa: E402
 from core.mailer import MailError, send_letter  # noqa: E402
 from core.profitability import load_settings  # noqa: E402
 
 load_env()
 SETTINGS = load_settings()
-MONTHS_PT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
-PROFILE_PT = {"conservative": "Conservador", "moderate": "Moderado", "aggressive": "Arrojado"}
 STATUS_ICON = {"pending": "⚪", "generating": "⏳", "generated": "🟢", "needs_review": "🟠", "approved": "✅",
                "sent": "📨", "error": "🔴"}
 ADVISOR_EMAIL = os.environ.get("ADVISOR_EMAIL", "assessor@xpi.com.br")
@@ -119,7 +118,7 @@ def title(text: str) -> None:
 
 
 def month_label(period: periods.Period) -> str:
-    return f"{MONTHS_PT[period.reference.month - 1]}/{period.reference:%Y}"
+    return f"{MONTHS_SHORT_PT[period.reference.month - 1]}/{period.reference:%Y}"
 
 
 def download(label: str, path: Path, name: str, key: str) -> None:
@@ -499,11 +498,14 @@ def review_tab() -> None:
                 letter["assessment_pt"] = st.text_area("Avaliação da carteira", letter.get("assessment_pt", ""),
                                                        height=120)
                 for i, s in enumerate(letter.get("attention_points", [])):
-                    s["text_pt"] = st.text_area(f"Ponto de atenção {i + 1}: {s.get('title_pt', '')}",
-                                                s.get("text_pt", ""))
+                    s["title_pt"] = st.text_input(f"Ponto de atenção {i + 1} (título)", s.get("title_pt", ""))
+                    s["text_pt"] = st.text_area(f"Ponto de atenção {i + 1}", s.get("text_pt", ""))
                 letter["outlook_pt"] = st.text_area("O que esperar", letter.get("outlook_pt", ""))
+                letter["closing_pt"] = st.text_area("Desfecho", letter.get("closing_pt", ""))
                 if st.form_submit_button("Salvar e refazer o PDF"):
                     pipeline.save_letter_edits(row["slug"], letter, MONTH)
+                    if row["status"] == "approved":     # an edited letter is approved again before it is sent
+                        crm.set_letter(row["slug"], MONTH, "generated")
                     st.rerun()
 
         st.divider()

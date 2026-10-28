@@ -44,7 +44,7 @@ from reportlab.platypus import (  # noqa: E402
     Image, KeepTogether, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle,
 )
 
-from core.briefing import brl, class_contribution, pct, pp  # noqa: E402
+from core.briefing import MONTHS_SHORT_PT, brl, class_contribution, pct, pp  # noqa: E402
 
 MAX_PAGES = 2
 
@@ -144,7 +144,6 @@ def chart_attribution(report: dict, width: float, height: float) -> Image:
     return _figure_to_image(fig, width, height)
 
 
-MONTHS_SHORT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
 
 
 def window_label(history: dict) -> str:
@@ -179,7 +178,7 @@ def chart_history(history: dict, width: float, height: float) -> Image:
                 fontweight="bold" if color == CHART_YELLOW else "normal")
     ax.axhline(0, color=CHART_GREY, linewidth=0.6)
     ax.set_xticks(x)
-    ax.set_xticklabels([f"{MONTHS_SHORT[d.month - 1]}/{d:%y}" for d in days], fontsize=6.5)
+    ax.set_xticklabels([f"{MONTHS_SHORT_PT[d.month - 1]}/{d:%y}" for d in days], fontsize=6.5)
     ax.set_xlim(0, x[-1] + 3.2)
     ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{_br(v, 0)}%"))
     ax.tick_params(axis="y", labelsize=6.5, length=0)
@@ -192,8 +191,6 @@ def chart_history(history: dict, width: float, height: float) -> Image:
     return _figure_to_image(fig, width, height)
 
 
-CHARTS = {"benchmarks": chart_benchmarks, "attribution": chart_attribution}
-LETTER_CHARTS = ["benchmarks", "attribution"]   # the consolidated result in context, then its sources
 
 
 # --------------------------------------------------------------------- layout
@@ -385,7 +382,7 @@ def _header_footer(client: dict):
         canvas.setFillColor(GREY)
         canvas.setFont("Helvetica", 6.8)
         canvas.drawString(16 * mm, 9 * mm, f"Assessor: {client['advisor_name']} ({client['advisor_code']})")
-        canvas.drawRightString(width - 16 * mm, 9 * mm, f"Página {doc.page} de {MAX_PAGES}")
+        canvas.drawRightString(width - 16 * mm, 9 * mm, f"Página {doc.page}")
         canvas.restoreState()
     return draw
 
@@ -394,13 +391,6 @@ def build_story(letter_doc: dict, report: dict, layout: Layout, width: float, hi
     st = _styles(layout)
     letter, client = letter_doc["letter"], letter_doc["client"]
     body = lambda text: Paragraph(_esc(text), st["body"])  # noqa: E731
-
-    charts = LETTER_CHARTS
-    gap = 6 * mm
-    chart_w = (width - gap) / 2
-    chart_row = Table([[CHARTS[c](report, chart_w, layout.chart_height) for c in charts]],
-                      colWidths=[chart_w + gap / 2, chart_w + gap / 2])
-    chart_row.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0)]))
 
     consolidated = bool(history and history.get("months", 0) >= 2)
     story = [*_tiles(report, client, st, width, history if consolidated else None), Spacer(1, 4 * mm),
@@ -423,6 +413,13 @@ def build_story(letter_doc: dict, report: dict, layout: Layout, width: float, hi
                 f"resultado de <b>{brl(since['gain_brl'])} ({pct(since['return_pct'])})</b>.", st["cell"]))
         main_chart.append(Paragraph(_esc(history["note"]), st["small"]))
     else:
+        # No history yet (a new client): the month against its benchmarks and where the result came from.
+        gap = 6 * mm
+        chart_w = (width - gap) / 2
+        chart_row = Table([[chart_benchmarks(report, chart_w, layout.chart_height),
+                            chart_attribution(report, chart_w, layout.chart_height)]],
+                          colWidths=[chart_w + gap / 2, chart_w + gap / 2])
+        chart_row.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0)]))
         main_chart = [chart_row]
     story += [Spacer(1, 2 * mm), *main_chart, Spacer(1, 4 * mm), Paragraph("Destaques do mês", st["h2"]),
               _highlights(letter_doc, st, width), Spacer(1, 2 * mm),

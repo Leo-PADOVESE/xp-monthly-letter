@@ -69,3 +69,10 @@ def test_portfolio_is_compared_with_benchmarks_in_pp():
     side_by_side = {"performance_pt": ["+3,95% no mês, contra +1,06% do CDI."],
                     "consolidated_pt": "Em 12 meses, +7,61%, contra +11,45% do CDI."}
     assert len(check_versus_benchmarks(side_by_side, results)) == 4
+
+
+def test_critic_blocks_only_with_a_real_quote():
+    from core.letter_ai import _plain, _quoted
+    text = _plain("No mês, sua carteira rendeu +3,95%, 2,90 p.p. acima do CDI (1,06%).")
+    assert _quoted("“No mês, sua carteira rendeu +3,95%…”", text)
+    assert not _quoted("A carteira ficou abaixo do Ibovespa", text)

@@ -46,6 +46,21 @@ PROMISE = re.compile(
 NUMBER = re.compile(r"R\$\s?-?[\d.]+,\d{2}|[+-]?\d+(?:,\d+)?\s?%|[+-]?\d+(?:,\d+)?\s?p\.p\.")
 
 
+BLOCKING_RULES = ("fatos", "período", "coerência", "nomes")
+
+
+def _plain(text: str) -> str:
+    """Lower case, single spaces and straight quotes, to find a quoted passage in the letter."""
+    text = text.replace("“", '"').replace("”", '"').replace("’", "'").strip(' ."\'…')
+    return re.sub(r"\s+", " ", text).lower()
+
+
+def _quoted(quote: str, text: str) -> bool:
+    """The quote, or its first part before an ellipsis, appears in the letter."""
+    head = _plain(re.split(r"…|\.\.\.", quote)[0])
+    return len(head) >= 12 and head[:80] in text
+
+
 class LetterError(RuntimeError):
     pass
 
@@ -303,8 +318,14 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         # coherence and names force a rewrite (a wrong statement once reached the advisor as a mere note); on
         # promises it is advisory, since it blocked correct sentences in tests and the code check covers them.
         notes = critic.get("issues", [])
+        # The critic's high findings force a rewrite only on meaning (facts, time frames, coherence, names) and only
+        # when the passage it quotes is really in the letter: in tests it contradicted itself ("+0,41 p.p., não
+        # +0,41 p.p.") and blocked every letter. Structure and style stay as notes for the advisor; the outlook is
+        # checked in code.
+        text = _plain(letter_text(letter))
         issues: list[dict] = [{**n, "rule": n.get("rule", "fatos")} for n in notes
-                              if n.get("severity") == "high" and n.get("rule") in ("fatos", "período", "coerência", "nomes", "estrutura")]
+                              if n.get("severity") == "high" and n.get("rule") in BLOCKING_RULES
+                              and _quoted(n.get("quote", ""), text)]
         if unknown:
             issues.append({"severity": "high", "rule": "números",
                            "problem": f"Valores que não existem nos dados: {', '.join(unknown)}",
@@ -335,7 +356,7 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
                            "fix": "Em performance_pt só números do mês; em consolidated_pt só os da janela de 12 meses."})
         promises = check_promises(letter)
         if promises:
-            issues.append({"severity": "high", "rule": "3", "problem": f"Promessa de retorno: {', '.join(promises)}",
+            issues.append({"severity": "high", "rule": "promessa", "problem": f"Promessa de retorno: {', '.join(promises)}",
                            "fix": "Descreva o que a movimentação faz pela carteira (diversifica, reduz concentração, "
                                   "dá liquidez, alinha ao perfil), sem dizer que melhora ou aumenta o retorno."})
         if not 300 <= words <= 600:

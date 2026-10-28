@@ -294,7 +294,7 @@ def write_validation_workbook(report: ProfitabilityReport, path: Path) -> None:
     links = {
         "CDI": "https://www3.bcb.gov.br/sgspub (series 12, daily CDI, compounded)",
         "IBOV": "https://finance.yahoo.com/quote/%5EBVSP/history",
-        "IPCA": "https://www3.bcb.gov.br/sgspub (series 433, monthly IPCA)",
+        "IPCA": "https://www3.bcb.gov.br/sgspub (series 7478, IPCA-15 of the month, known on the letter date)",
         "PROFILE": "weighted mix from config/settings.yaml",
     }
     for name, value in report.benchmarks_pct.items():

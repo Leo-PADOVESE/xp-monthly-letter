@@ -26,6 +26,7 @@ CLASS_LABELS_PT = {
 PROFILE_PT = {"conservative": "Conservador", "moderate": "Moderado", "aggressive": "Arrojado"}
 MONTHS_PT = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto",
              "setembro", "outubro", "novembro", "dezembro"]
+MONTHS_SHORT_PT = [m[:3] for m in MONTHS_PT]   # "abr/25" on the chart and the platform
 
 
 # --------------------------------------------------------------------- formats
@@ -131,12 +132,11 @@ def formatted_results(report: dict) -> dict:
         return no_return["cash"] if p["asset_class"] == CASH else no_return["matured"] if p["name"] in matured else None
 
     def position_row(p: dict) -> dict:
-        row = {"asset": p["name"], "class": CLASS_LABELS_PT.get(_class_key(p), p["asset_class"]),
-               "weight": pct(p["weight_pct"], signed=False), "value_end": brl(p["end_value"]),
-               "return": status(p) or pct(p["monthly_return_pct"]), "contribution": brl(p["contribution_brl"]),
-               "contribution_pp": pp(p["contribution_pp"])}
         # Data caveats (proxies, matured bonds) reach the agent as portfolio facts, in Portuguese.
-        return row
+        return {"asset": p["name"], "class": CLASS_LABELS_PT.get(_class_key(p), p["asset_class"]),
+                "weight": pct(p["weight_pct"], signed=False), "value_end": brl(p["end_value"]),
+                "return": status(p) or pct(p["monthly_return_pct"]), "contribution": brl(p["contribution_brl"]),
+                "contribution_pp": pp(p["contribution_pp"])}
 
     return {
         # "% do CDI" was dropped: on a month driven by stocks it read as a fixed income yield ("374% do CDI").
