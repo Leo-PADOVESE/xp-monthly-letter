@@ -1,4 +1,4 @@
-from core.letter_ai import check_attention_points, check_matured_as_result, check_numbers, check_promises, check_specific_ending, check_scope, tidy
+from core.letter_ai import check_attention_points, check_matured_as_result, check_numbers, check_promises, check_specific_ending, check_scope, check_versus_benchmarks, tidy
 
 
 def letter(text: str) -> dict:
@@ -58,3 +58,14 @@ def test_generic_outlook_is_flagged():
     generic = {"outlook_pt": "O cenário econômico apresenta desafios, mas a diversificação pode mitigar riscos."}
     specific = {"outlook_pt": "No cenário da XP, as ações ligadas ao consumo interno seguem como ponto a acompanhar."}
     assert check_specific_ending(generic, facts) and not check_specific_ending(specific, facts)
+
+
+def test_portfolio_is_compared_with_benchmarks_in_pp():
+    results = {"formatted": {"excess_vs_cdi": "+2,90 p.p.", "excess_vs_profile_benchmark": "+2,11 p.p."},
+               "consolidated_window": {"excess_vs_cdi": "-3,84 p.p.", "excess_vs_profile_benchmark": "-2,77 p.p."}}
+    good = {"performance_pt": ["+3,95% no mês, 2,90 p.p. acima do CDI e 2,11 p.p. acima do benchmark."],
+            "consolidated_pt": "Em 12 meses, 3,84 p.p. abaixo do CDI e 2,77 p.p. abaixo do benchmark do perfil."}
+    assert check_versus_benchmarks(good, results) == []
+    side_by_side = {"performance_pt": ["+3,95% no mês, contra +1,06% do CDI."],
+                    "consolidated_pt": "Em 12 meses, +7,61%, contra +11,45% do CDI."}
+    assert len(check_versus_benchmarks(side_by_side, results)) == 4

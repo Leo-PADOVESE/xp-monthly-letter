@@ -92,6 +92,7 @@ def formatted_history(history: dict) -> dict:
         "cdi": pct(total["CDI"]), "ibovespa": pct(total["IBOV"]),
         "inflation_ipca15": pct(total["IPCA"]), "profile_benchmark": pct(total["PROFILE"]),
         "excess_vs_cdi": pp(total["portfolio"] - total["CDI"]),
+        "excess_vs_profile_benchmark": pp(total["portfolio"] - total["PROFILE"]),
         "how_it_was_built": history["note"],
     }
     if since:

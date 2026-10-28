@@ -26,7 +26,7 @@ ANALYSIS = {"profile": {"summary_pt": "Perfil moderado."},
                            "attention_points": [{"fact_id": "idle_cash", "title_pt": "Saldo parado",
                                                  "text_pt": "Vale conversar com seu assessor sobre o saldo parado."}]}}
 LETTER = {"subject_pt": "Sua carta de abril", "greeting_pt": "Prezado Albert,", "opening_pt": "Abril foi positivo.",
-          "performance_pt": ["Sua carteira rendeu +3,95% no mês, contra +1,06% do CDI. "
+          "performance_pt": ["Sua carteira rendeu +3,95% no mês, 2,90 p.p. acima do CDI e 2,11 p.p. acima do benchmark do perfil. "
                              + "O resultado veio principalmente das ações. " * 40],
           "macro_pt": "A XP projeta a Selic em 15,50% ao fim de 2025.",
           "assessment_pt": "O portfólio de Albert está coerente com o perfil, segundo o digest macro da XP.",

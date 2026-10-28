@@ -7,7 +7,7 @@ From the risk profile document ("profile"), what the letter must respect: horizo
 
 ### Part 2: performance (from "results")
 - Two time frames, never mixed: everything in "results" is the reference month only, except "consolidated_window" (the 12-month window, or since the first investment). The statement's per-asset "rentabilidade" is accumulated since each investment, not the month: for the month use "positions" and "highlights".
-- The headline: the month's return versus the CDI, the profile benchmark and inflation (real return), as differences in p.p. or side by side; never as a percentage of the CDI.
+- The headline: the month's return, then always the comparison against the CDI and the profile benchmark as the difference in p.p. with its direction (above or below), the benchmark's own return only in parentheses; never as a percentage of the CDI. Then inflation (real return). The same for the window.
 - Where the result came from by asset class ("class_contribution", in reais and p.p.).
 - When "consolidated_window" is given, in "window_pt" and only there: the portfolio over that window against the CDI, the Ibovespa, inflation and the profile benchmark, and the result since the first investment ("since_purchase", with its date), with why the two differ when they do. It is rebuilt from the current positions: say "considerando as posições atuais".
 - The best and worst performer by return and the top and bottom contributor in reais ("highlights"). A contribution comes from weight and return together: mention weight only when the asset's weight in "positions" is clearly larger than the best performer's.

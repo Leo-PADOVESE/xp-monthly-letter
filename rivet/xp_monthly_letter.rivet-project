@@ -250,9 +250,11 @@ data:
               "rentabilidade" is accumulated since each investment, not the
               month: for the month use "positions" and "highlights".
 
-              - The headline: the month's return versus the CDI, the profile
-              benchmark and inflation (real return), as differences in p.p. or
-              side by side; never as a percentage of the CDI.
+              - The headline: the month's return, then always the comparison
+              against the CDI and the profile benchmark as the difference in
+              p.p. with its direction (above or below), the benchmark's own
+              return only in parentheses; never as a percentage of the CDI. Then
+              inflation (real return). The same for the window.
 
               - Where the result came from by asset class ("class_contribution",
               in reais and p.p.).
@@ -436,6 +438,13 @@ data:
 
               Check:
 
+              - "fatos" also covers the comparison with benchmarks: the
+              portfolio must be compared with the CDI and the profile benchmark
+              by the difference in p.p. and the right direction (above or
+              below), in the month and in the window. A sentence that lets a
+              benchmark's return read as the portfolio's, or calls the portfolio
+              "acima" when it was below, is high.
+
               - "período": a figure presented in the wrong time frame (a
               12-month figure called the month's, or the other way round). High.
 
@@ -585,31 +594,38 @@ data:
               of the reference month from "results" (never from
               "consolidated_window"), and say "no mês" or name the month at
               least once in each paragraph. First the month's consolidated
-              result against the CDI, the profile benchmark and inflation, as
-              differences in p.p. or side by side ("+3,95% no mês, contra +1,06%
-              do CDI"); never as a percentage of the CDI. Then where the month's
-              result came from, by asset class ("class_contribution"); then the
-              most relevant movements by asset (best and worst performer, and
-              the top contributor in reais when it is a different asset,
-              explaining its larger weight), with losses stated plainly; the
-              per-asset detail is in the table, so do not list every asset. Do
-              not quote the 0,00% return of cash or of a matured bond, and never
-              name a matured bond in this section: the worst performer is
-              "highlights.worst_performer". An asset's return in the statement
-              ("statement") is accumulated since the investment: for the month
-              use "positions" and "highlights" only;
+              result, then the comparison against the CDI and against the
+              profile benchmark, always as the difference in p.p. with its
+              direction ("excess_vs_cdi", "excess_vs_profile_benchmark"):
+              "+3,95% no mês, 2,90 p.p. acima do CDI (1,06%) e 2,11 p.p. acima
+              do benchmark do perfil (1,85%)". The benchmark's own return goes
+              only in parentheses, never with a "+" next to the portfolio's
+              figure, and never as a percentage of the CDI; then inflation (real
+              return). Then where the month's result came from, by asset class
+              ("class_contribution"); then the most relevant movements by asset
+              (best and worst performer, and the top contributor in reais when
+              it is a different asset, explaining its larger weight), with
+              losses stated plainly; the per-asset detail is in the table, so do
+              not list every asset. Do not quote the 0,00% return of cash or of
+              a matured bond, and never name a matured bond in this section: the
+              worst performer is "highlights.worst_performer". An asset's return
+              in the statement ("statement") is accumulated since the
+              investment: for the month use "positions" and "highlights" only;
 
               3b. consolidated performance ("consolidated_pt", one paragraph,
               under the heading "Desempenho acumulado", only when
               "consolidated_window" is given, otherwise empty): only figures of
               "consolidated_window", always with the window ("nos últimos 12
-              meses"): the portfolio's return and result in reais ("gain")
-              against the CDI, the profile benchmark and the Ibovespa, saying it
-              considers the current positions; then the result since the first
-              investment ("since_purchase", with its date), explaining in plain
-              words when it differs from the 12 months (older positions that are
-              still below their purchase price). Never mix a month figure into
-              this paragraph;
+              meses"): the portfolio's return and result in reais ("gain"), then
+              the comparison against the CDI and against the profile benchmark
+              as the difference in p.p. with its direction ("excess_vs_cdi",
+              "excess_vs_profile_benchmark": "3,84 p.p. abaixo do CDI (11,45%) e
+              2,77 p.p. abaixo do benchmark do perfil (10,38%)"), and the
+              Ibovespa if relevant, saying it considers the current positions;
+              then the result since the first investment ("since_purchase", with
+              its date), explaining in plain words when it differs from the 12
+              months (older positions that are still below their purchase
+              price). Never mix a month figure into this paragraph;
 
               4. macro: the XP scenario in two or three sentences and what it
               means for the assets this client actually holds (name the classes

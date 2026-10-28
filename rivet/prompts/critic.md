@@ -7,6 +7,7 @@ The letter assesses the portfolio against the client's profile and the XP scenar
 Time frames: every figure in "results" is for the reference month only, except "consolidated_window" (the 12-month window and the result since the first investment). The statement's per-asset "rentabilidade" is accumulated since each investment, not the month, so never use it to judge a month figure: the month's return of each asset is in "results.positions". "performance_pt" is about the month and "consolidated_pt" about the window.
 
 Check:
+- "fatos" also covers the comparison with benchmarks: the portfolio must be compared with the CDI and the profile benchmark by the difference in p.p. and the right direction (above or below), in the month and in the window. A sentence that lets a benchmark's return read as the portfolio's, or calls the portfolio "acima" when it was below, is high.
 - "período": a figure presented in the wrong time frame (a 12-month figure called the month's, or the other way round). High.
 - "fatos": every statement about the portfolio agrees with the profitability results and the portfolio facts: which asset, class or fund type was positive or negative, best or worst, concentrated or matured; claims such as "bom desempenho" or "proteção contra a inflação" are supported; XP figures are presented as projections, not current values. A wrong statement is high. (Formatting of figures is checked elsewhere; check meaning only.)
 - "coerência": no two passages contradict each other (e.g. the scenario "explaining" a class that went the other way). High.

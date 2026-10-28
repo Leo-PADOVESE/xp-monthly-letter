@@ -205,6 +205,20 @@ def check_specific_ending(letter: dict, facts: dict) -> list[str]:
     return [] if any(t in outlook for t in terms) else ["'O que esperar' não cita nenhuma classe ou ativo da carteira"]
 
 
+def check_versus_benchmarks(letter: dict, results: dict) -> list[str]:
+    """The portfolio is always read against its benchmarks as a difference in p.p. ("+2,90 p.p. acima do CDI"),
+    in the month and in the window: quoted side by side, "CDI +11,45%" read as the portfolio earning CDI + 11%."""
+    def missing(text: str, figures: dict, where: str) -> list[str]:
+        found = {_norm(f) for f in NUMBER.findall(text)}
+        return [f"{where}: falta a diferença contra o {name} ({figures[key]})"
+                for key, name in (("excess_vs_cdi", "CDI"), ("excess_vs_profile_benchmark", "benchmark do perfil"))
+                if key in figures and _norm(figures[key]) not in found]
+    problems = missing(" ".join(letter.get("performance_pt", [])), results["formatted"], "desempenho do mês")
+    if results.get("consolidated_window"):
+        problems += missing(letter.get("consolidated_pt", ""), results["consolidated_window"], "acumulado")
+    return problems
+
+
 def check_promises(letter: dict) -> list[str]:
     """Passages that read as a promise of returns, e.g. "pode melhorar a rentabilidade"."""
     return sorted({m.group(0) for m in PROMISE.finditer(letter_text(letter))})
@@ -308,6 +322,11 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
                            "problem": f"Título vencido citado no desempenho do mês: {', '.join(quoted_matured)}",
                            "fix": "Não cite o título vencido no desempenho; o pior desempenho é o de 'worst_performer'. "
                                   "O vencimento é um ponto de atenção (valor disponível para reinvestir)."})
+        versus = check_versus_benchmarks(letter, results)
+        if versus:
+            issues.append({"severity": "high", "rule": "benchmark", "problem": "; ".join(versus),
+                           "fix": "Compare a carteira com o CDI e com o benchmark do perfil pela diferença em p.p., "
+                                  "dizendo se ficou acima ou abaixo (ex.: '3,84 p.p. abaixo do CDI, que rendeu 11,45%')."})
         mixed = check_scope(letter, results)
         if mixed:
             issues.append({"severity": "high", "rule": "período", "problem": "; ".join(mixed),
