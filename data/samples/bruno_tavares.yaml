@@ -1,0 +1,28 @@
+# Fictitious aggressive client: 5 stocks and 3 funds, no fixed income.
+# Stock last prices are left out: they are the real Yahoo closes on the snapshot date.
+name: Bruno Tavares
+account: "640218"
+snapshot: 07/05/2025 18:52
+advisor_code: A7699
+advisor_name: Antonio Bicudo
+cash: 8500.00
+risk_profile:
+  label: Arrojado
+  paragraphs:
+    - "1. Descrição do Perfil Arrojado:"
+    - "O perfil arrojado busca retornos superiores no longo prazo e aceita oscilações relevantes no valor da carteira, inclusive perdas temporárias. Bruno tem horizonte de investimento longo e conhecimento do mercado de capitais."
+    - "O foco do investidor é o crescimento do patrimônio. Ele aceita concentrar uma parte maior da carteira em renda variável e em estratégias ativas, desde que bem diversificadas."
+    - "2. Produtos Financeiros Compatíveis:"
+    - "a. Ações de empresas de diferentes setores, incluindo empresas de crescimento e cíclicas."
+    - "b. Fundos multimercado e fundos de ações com gestão ativa."
+    - "c. Renda fixa como parcela de proteção e liquidez, incluindo crédito privado e títulos atrelados à inflação."
+stocks:
+  - {ticker: PETR4, quantity: 1200, average_price: 30.15, investment_date: 12/05/2021}
+  - {ticker: VALE3, quantity: 500, average_price: 68.90, investment_date: 12/05/2021}
+  - {ticker: WEGE3, quantity: 400, average_price: 38.70, investment_date: 03/10/2022}
+  - {ticker: PRIO3, quantity: 900, average_price: 22.40, investment_date: 03/10/2022}
+  - {ticker: ITUB4, quantity: 1000, average_price: 25.10, investment_date: 18/07/2023}
+funds:
+  - {name: Kapitalo Kappa Advisory FIC FIM, invested: 40000.00, net_value: 44880.15, investment_date: 05/06/2023, quota_date: 06/05/2025}
+  - {name: SPX Nimitz Feeder FIC FIM, invested: 35000.00, net_value: 37210.40, investment_date: 05/06/2023, quota_date: 06/05/2025}
+  - {name: Dynamo Cougar FIC FIA, invested: 30000.00, net_value: 33712.90, investment_date: 18/07/2023, quota_date: 06/05/2025}

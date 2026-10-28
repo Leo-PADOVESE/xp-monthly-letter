@@ -1,0 +1,13 @@
+{
+  "name": "xp-monthly-letter-rivet",
+  "private": true,
+  "type": "module",
+  "description": "Builds and runs the Rivet graphs of the XP monthly letter",
+  "scripts": {
+    "build": "node build_project.mjs"
+  },
+  "dependencies": {
+    "@ironclad/rivet-core": "1.25.0",
+    "@ironclad/rivet-node": "1.25.0"
+  }
+}

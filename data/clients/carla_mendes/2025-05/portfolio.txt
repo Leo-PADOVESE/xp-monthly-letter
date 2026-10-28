@@ -1,0 +1,13 @@
+Client: Carla Mendes | Account: 815432
+Snapshot: 2025-05-07 18:40 | Advisor: Antonio Bicudo (A7699)
+Total equity: R$514,725.72 | Invested: R$502,725.72 | Cash available: R$12,000.00
+
+| Class | Sub-class | Asset | Market value (R$) | % of invested | Return since investment (%) | Investment date |
+|---|---|---|---|---|---|---|
+| stocks | equity | ITUB4 | 27,216.00 | 5.41 | 19.79 | 2022-03-15 |
+| stocks | equity | BBSE3 | 23,526.00 | 4.68 | 25.67 | 2022-03-15 |
+| funds | fixed_income_fund | Trend DI FIC FIRF Simples | 71,850.32 | 14.29 | 19.75 | 2023-02-03 |
+| funds | fixed_income_fund | Sparta Top FIC FIRF CP LP | 95,320.77 | 18.96 | 19.15 | 2022-08-10 |
+| funds | fixed_income_fund | Capitania Premium 45 FIC FIRF CP LP | 58,410.05 | 11.62 | 16.82 | 2023-09-14 |
+| fixed_income | bank_deposit | CDB BANCO XP S.A. - JAN/2027 | 104,532.18 | 20.79 |  | 2024-01-20 |
+| fixed_income | bank_deposit | CDB BANCO BTG PACTUAL S.A. - AGO/2028 | 121,870.40 | 24.24 |  | 2023-08-15 |

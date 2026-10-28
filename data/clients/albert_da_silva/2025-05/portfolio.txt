@@ -1,0 +1,27 @@
+Client: Albert da Silva | Account: 792854
+Snapshot: 2025-05-07 19:24 | Advisor: Antonio Bicudo (A7699)
+Total equity: R$386,858.82 | Invested: R$312,186.20 | Cash available: R$74,672.62
+
+| Class | Sub-class | Asset | Market value (R$) | % of invested | Return since investment (%) | Investment date |
+|---|---|---|---|---|---|---|
+| stocks | equity | LREN3 | 27,812.04 | 8.91 | -41.70 | 2021-04-22 |
+| stocks | equity | MRFG3 | 15,432.89 | 4.94 | 43.50 | 2021-04-22 |
+| stocks | equity | ARZZ3 | 10,923.72 | 3.50 | -31.05 | 2022-11-02 |
+| stocks | equity | HAPV3 | 6,143.14 | 1.97 | -74.58 | 2022-11-02 |
+| funds | fixed_income_fund | Riza Lotus Plus Advisory FIC FIRF REF DI CP | 96,178.73 | 30.81 | 15.51 | 2021-04-22 |
+| funds | multimarket_fund | Brave I FIC FIM CP | 72,567.43 | 23.24 | 19.08 | 2021-04-22 |
+| funds | fixed_income_fund | Trend Investback FIC FIRF Simples | 305.44 | 0.10 | 16.01 | 2022-11-02 |
+| funds | equity_fund | Truxt Long Bias Advisory FIC FIM | 12,522.05 | 4.01 | -12.13 | 2022-11-02 |
+| funds | equity_fund | STK Long Biased FIC FIA | 9,745.97 | 3.12 | -14.51 | 2023-11-09 |
+| funds | equity_fund | Constellation Institucional Advisory FIC FIA | 8,475.02 | 2.71 | -25.66 | 2023-11-09 |
+| funds | multimarket_fund | Ibiuna Hedge ST Advisory FIC FIM | 11,601.02 | 3.72 | 33.74 | 2023-11-09 |
+| fixed_income | bank_deposit | CDB BANCO C6 CONSIGNADO S.A. - SET/2024 | 40,478.75 | 12.97 |  | 2023-11-09 |
+
+Data warnings:
+- LREN3: quantity x last price = R$27,815.48 vs position R$27,812.04
+- MRFG3: quantity x last price = R$15,431.04 vs position R$15,432.89
+- ARZZ3: quantity x last price = R$10,919.94 vs position R$10,923.72
+- HAPV3: quantity x last price = R$6,141.59 vs position R$6,143.14
+- CDB BANCO C6 CONSIGNADO S.A. - SET/2024: matured on 2024-09-05, still listed on 2025-05-07
+- 7 funds have quota dates (2024-04-04, 2024-04-05) older than 45 days for a 2025-05-07 snapshot
+- Cash is 19.3% of total equity (allocation % ignores it)

@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+output/
+data/crm.db
+data/cache/
+
+# Rivet runner dependencies
+rivet/node_modules/
+
+# Generated per run
+data/clients/*/*/portfolio_raw.txt
+data/clients/*/*/validation_*.xlsx

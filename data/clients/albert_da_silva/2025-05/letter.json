@@ -1,0 +1,565 @@
+{
+  "status": "approved",
+  "client": {
+    "name": "Albert da Silva",
+    "first_name": "Albert",
+    "account": "792854",
+    "profile_pt": "Moderado",
+    "advisor_name": "Antonio Bicudo",
+    "advisor_code": "A7699",
+    "letter_date": "07/05/2025",
+    "reference_month": "abril de 2025"
+  },
+  "letter": {
+    "subject_pt": "Atualização Mensal - Abril de 2025",
+    "greeting_pt": "Prezado Albert,",
+    "opening_pt": "Neste mês de abril de 2025, apresentamos a você a análise de desempenho da sua carteira e as perspectivas econômicas que podem influenciar seus investimentos.",
+    "performance_pt": [
+      "Em abril de 2025, a carteira de Albert da Silva apresentou um retorno de +3,95%, superando tanto o CDI de +1,06% quanto o benchmark do perfil moderado de +1,85%. O destaque positivo foi o ativo ARZZ3, que obteve um retorno impressionante de +29,96%. Por outro lado, o CDB BANCO C6 CONSIGNADO S.A. - SET/2024 foi o ativo de menor desempenho, com retorno de +0,00%.",
+      "O ativo LREN3 foi o maior contribuinte em termos absolutos, com uma contribuição de R$ 4.530,64, devido ao seu peso significativo na carteira. No entanto, é importante destacar alguns pontos de atenção: o CDB vencido desde 2024-09-05, que não está gerando retorno, e o saldo disponível em conta, que representa 19,3% do total e pode indicar um custo de oportunidade. Além disso, sete fundos possuem datas de cota anteriores a 45 dias, o que pode afetar a liquidez e a avaliação."
+    ],
+    "macro_pt": "O cenário econômico brasileiro, conforme o relatório 'Brasil Macro Mensal' de 6 de fevereiro de 2025, mostra sinais de desaceleração, com um crescimento projetado do PIB de 2,0% para 2025 e uma inflação elevada de 6,1%. A taxa Selic deve permanecer alta em 15,50%, o que pode beneficiar os rendimentos de renda fixa. No entanto, incertezas políticas e fiscais continuam a ser riscos significativos, podendo impactar a confiança do mercado e a taxa de câmbio.",
+    "suggestions_intro_pt": "Com base na análise de desempenho e no cenário econômico, sugerimos discutir as seguintes oportunidades e medidas de proteção:",
+    "suggestions": [
+      {
+        "type": "opportunity",
+        "title_pt": "Reinvestir CDB Vencido",
+        "text_pt": "Considere reinvestir o valor do CDB vencido em um título de renda fixa com rendimento atrativo. A taxa Selic alta pode beneficiar novos investimentos em renda fixa, alinhando-se ao seu perfil moderado."
+      },
+      {
+        "type": "opportunity",
+        "title_pt": "Reduzir Concentração em Fundos",
+        "text_pt": "Avalie a possibilidade de diversificar os investimentos em fundos, reduzindo a concentração em Riza Lotus Plus e Brave I. A diversificação é importante em um cenário de incertezas econômicas."
+      },
+      {
+        "type": "protection",
+        "title_pt": "Investir em Renda Fixa",
+        "text_pt": "Considere aumentar a alocação em renda fixa, aproveitando o saldo disponível em conta. Investir em renda fixa pode oferecer maior segurança e retorno em um ambiente de Selic alta."
+      }
+    ],
+    "outlook_pt": "O cenário econômico apresenta desafios, como a inflação elevada e incertezas políticas, mas também oportunidades em renda fixa. A taxa Selic alta pode beneficiar os rendimentos, enquanto a diversificação se torna crucial para mitigar riscos. É um momento de cautela e análise cuidadosa das alocações.",
+    "closing_pt": "Estou à disposição para discutirmos qualquer dúvida ou para aprofundarmos as estratégias sugeridas. Entre em contato para agendarmos uma conversa.",
+    "charts": [
+      "benchmarks",
+      "contribution"
+    ]
+  },
+  "steps": {
+    "profile_summary": {
+      "profile": "moderate",
+      "profile_pt": "Moderado",
+      "horizon": "médio a longo prazo",
+      "volatility_tolerance": "aceita flutuações de mercado e variações nos retornos",
+      "objectives": [
+        "preservar o poder de compra",
+        "incrementar o patrimônio marginalmente"
+      ],
+      "compatible_products": [
+        "ações de empresas consolidadas com dividendos",
+        "instrumentos de renda fixa com classificação BB+ ou superior"
+      ],
+      "restrictions": [],
+      "summary_pt": "Albert possui um perfil moderado, buscando equilíbrio entre segurança e retorno em seus investimentos."
+    },
+    "performance_analysis": {
+      "headline_pt": "O retorno da carteira foi de +3,95%, superando o CDI de +1,06% e o benchmark do perfil de +1,85%.",
+      "best_performer": {
+        "asset": "ARZZ3",
+        "return": "+29,96%"
+      },
+      "worst_performer": {
+        "asset": "CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
+        "return": "+0,00%"
+      },
+      "top_contributor": {
+        "asset": "LREN3",
+        "contribution": "R$ 4.530,64"
+      },
+      "bottom_contributor": {
+        "asset": "CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
+        "contribution": "R$ 0,00"
+      },
+      "class_comments_pt": [
+        {
+          "asset_class": "Ações",
+          "comment": "A classe de ações teve um retorno de +19,40%, com destaque para ARZZ3."
+        },
+        {
+          "asset_class": "Fundos (todos os tipos)",
+          "comment": "Os fundos apresentaram um retorno de +2,38%, com variações entre os tipos."
+        },
+        {
+          "asset_class": "Renda fixa (CDB)",
+          "comment": "A renda fixa teve retorno de +0,00%, impactada pelo CDB vencido."
+        },
+        {
+          "asset_class": "Saldo em conta",
+          "comment": "O saldo em conta também não apresentou retorno, representando 19,30% do total."
+        }
+      ],
+      "attention_points_pt": [
+        "O CDB BANCO C6 CONSIGNADO S.A. - SET/2024 está vencido desde 2024-09-05 e deve ser resgatado ou reinvestido.",
+        "O saldo disponível representa 19,3% do total, o que pode indicar um custo de oportunidade.",
+        "Sete fundos têm datas de cota anteriores a 45 dias, o que pode afetar a liquidez e a avaliação."
+      ],
+      "paragraph_pt": "Em abril de 2025, a carteira de Albert da Silva apresentou um retorno de +3,95%, superando o CDI e o benchmark do perfil moderado. O destaque positivo foi o ativo ARZZ3, com retorno de +29,96%, enquanto o CDB vencido não contribuiu para a performance. A classe de ações teve um desempenho robusto, enquanto os fundos e a renda fixa mostraram resultados modestos. É importante considerar a gestão do saldo disponível e a situação dos ativos vencidos para otimizar a rentabilidade da carteira."
+    },
+    "recommendations": {
+      "suggestions": [
+        {
+          "type": "opportunity",
+          "title_pt": "Reinvestir CDB Vencido",
+          "action_pt": "Considere reinvestir o valor do CDB vencido em um título de renda fixa com rendimento atrativo.",
+          "rationale_pt": "O CDB vencido de R$ 40.478,75 não está contribuindo para a rentabilidade, e a taxa Selic alta pode beneficiar novos investimentos em renda fixa, alinhando-se ao seu perfil moderado.",
+          "facts_used": [
+            "matured:CDB BANCO C6 CONSIGNADO S.A. - SET/2024"
+          ]
+        },
+        {
+          "type": "opportunity",
+          "title_pt": "Reduzir Concentração em Fundos",
+          "action_pt": "Avalie a possibilidade de diversificar os investimentos em fundos, reduzindo a concentração em Riza Lotus Plus e Brave I.",
+          "rationale_pt": "Ambos os fundos representam mais de 15,00% do patrimônio, o que pode aumentar o risco. A diversificação é importante em um cenário de incertezas econômicas.",
+          "facts_used": [
+            "concentration:Riza Lotus Plus Advisory FIC FIRF REF DI CP",
+            "concentration:Brave I FIC FIM CP"
+          ]
+        },
+        {
+          "type": "protection",
+          "title_pt": "Investir em Renda Fixa",
+          "action_pt": "Considere aumentar a alocação em renda fixa, aproveitando o saldo disponível em conta.",
+          "rationale_pt": "Com R$ 74.672,62 em caixa sem rendimento, investir em renda fixa pode oferecer maior segurança e retorno em um ambiente de Selic alta, alinhando-se ao seu perfil moderado.",
+          "facts_used": [
+            "idle_cash"
+          ]
+        }
+      ],
+      "outlook_pt": "O cenário econômico apresenta desafios, como a inflação elevada e incertezas políticas, mas também oportunidades em renda fixa. A taxa Selic alta pode beneficiar os rendimentos, enquanto a diversificação se torna crucial para mitigar riscos. É um momento de cautela e análise cuidadosa das alocações."
+    },
+    "letter": {
+      "subject_pt": "Atualização Mensal - Abril de 2025",
+      "greeting_pt": "Prezado Albert,",
+      "opening_pt": "Neste mês de abril de 2025, apresentamos a você a análise de desempenho da sua carteira e as perspectivas econômicas que podem influenciar seus investimentos.",
+      "performance_pt": [
+        "Em abril de 2025, a carteira de Albert da Silva apresentou um retorno de +3,95%, superando tanto o CDI de +1,06% quanto o benchmark do perfil moderado de +1,85%. O destaque positivo foi o ativo ARZZ3, que obteve um retorno impressionante de +29,96%. Por outro lado, o CDB BANCO C6 CONSIGNADO S.A. - SET/2024 foi o ativo de menor desempenho, com retorno de +0,00%.",
+        "O ativo LREN3 foi o maior contribuinte em termos absolutos, com uma contribuição de R$ 4.530,64, devido ao seu peso significativo na carteira. No entanto, é importante destacar alguns pontos de atenção: o CDB vencido desde 2024-09-05, que não está gerando retorno, e o saldo disponível em conta, que representa 19,3% do total e pode indicar um custo de oportunidade. Além disso, sete fundos possuem datas de cota anteriores a 45 dias, o que pode afetar a liquidez e a avaliação."
+      ],
+      "macro_pt": "O cenário econômico brasileiro, conforme o relatório 'Brasil Macro Mensal' de 6 de fevereiro de 2025, mostra sinais de desaceleração, com um crescimento projetado do PIB de 2,0% para 2025 e uma inflação elevada de 6,1%. A taxa Selic deve permanecer alta em 15,50%, o que pode beneficiar os rendimentos de renda fixa. No entanto, incertezas políticas e fiscais continuam a ser riscos significativos, podendo impactar a confiança do mercado e a taxa de câmbio.",
+      "suggestions_intro_pt": "Com base na análise de desempenho e no cenário econômico, sugerimos discutir as seguintes oportunidades e medidas de proteção:",
+      "suggestions": [
+        {
+          "type": "opportunity",
+          "title_pt": "Reinvestir CDB Vencido",
+          "text_pt": "Considere reinvestir o valor do CDB vencido em um título de renda fixa com rendimento atrativo. A taxa Selic alta pode beneficiar novos investimentos em renda fixa, alinhando-se ao seu perfil moderado."
+        },
+        {
+          "type": "opportunity",
+          "title_pt": "Reduzir Concentração em Fundos",
+          "text_pt": "Avalie a possibilidade de diversificar os investimentos em fundos, reduzindo a concentração em Riza Lotus Plus e Brave I. A diversificação é importante em um cenário de incertezas econômicas."
+        },
+        {
+          "type": "protection",
+          "title_pt": "Investir em Renda Fixa",
+          "text_pt": "Considere aumentar a alocação em renda fixa, aproveitando o saldo disponível em conta. Investir em renda fixa pode oferecer maior segurança e retorno em um ambiente de Selic alta."
+        }
+      ],
+      "outlook_pt": "O cenário econômico apresenta desafios, como a inflação elevada e incertezas políticas, mas também oportunidades em renda fixa. A taxa Selic alta pode beneficiar os rendimentos, enquanto a diversificação se torna crucial para mitigar riscos. É um momento de cautela e análise cuidadosa das alocações.",
+      "closing_pt": "Estou à disposição para discutirmos qualquer dúvida ou para aprofundarmos as estratégias sugeridas. Entre em contato para agendarmos uma conversa.",
+      "charts": [
+        "benchmarks",
+        "contribution"
+      ]
+    },
+    "critic": {
+      "approved": true,
+      "issues": []
+    }
+  },
+  "briefing": {
+    "results": {
+      "period": "abril de 2025 (fechamento de 31/03/2025 a 30/04/2025)",
+      "formatted": {
+        "portfolio_return": "+3,95%",
+        "portfolio_return_invested_only": "+4,95%",
+        "gain": "R$ 14.711,97",
+        "equity_end": "R$ 386.858,82",
+        "cdi": "+1,06%",
+        "ibovespa": "+3,69%",
+        "inflation_ipca15": "+0,43%",
+        "profile_benchmark": "+1,85%",
+        "excess_vs_cdi": "+2,90 p.p.",
+        "excess_vs_profile_benchmark": "+2,11 p.p.",
+        "real_return": "+3,51%",
+        "cash_opportunity_cost": "R$ 788,45",
+        "profile_benchmark_composition": "70% CDI + 30% Ibovespa"
+      },
+      "highlights": {
+        "best_performer": {
+          "asset": "ARZZ3",
+          "return": "+29,96%"
+        },
+        "worst_performer": {
+          "asset": "CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
+          "return": "+0,00%"
+        },
+        "top_contributor": {
+          "asset": "LREN3",
+          "contribution": "R$ 4.530,64"
+        },
+        "bottom_contributor": {
+          "asset": "CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
+          "contribution": "R$ 0,00"
+        },
+        "assets_with_negative_return": []
+      },
+      "classes": [
+        {
+          "class": "Ações",
+          "weight": "15,59%",
+          "return": "+19,40%"
+        },
+        {
+          "class": "Fundos (todos os tipos)",
+          "weight": "54,64%",
+          "return": "+2,38%"
+        },
+        {
+          "class": "Renda fixa (CDB)",
+          "weight": "10,46%",
+          "return": "+0,00%"
+        },
+        {
+          "class": "Saldo em conta",
+          "weight": "19,30%",
+          "return": "+0,00%"
+        }
+      ],
+      "fund_types": [
+        {
+          "type": "Fundos de renda fixa",
+          "funds": [
+            "Riza Lotus Plus Advisory FIC FIRF REF DI CP",
+            "Trend Investback FIC FIRF Simples"
+          ],
+          "weight": "24,94%",
+          "return": "+1,21%"
+        },
+        {
+          "type": "Fundos multimercado",
+          "funds": [
+            "Brave I FIC FIM CP",
+            "Ibiuna Hedge ST Advisory FIC FIM"
+          ],
+          "weight": "21,76%",
+          "return": "+1,39%"
+        },
+        {
+          "type": "Fundos de ações",
+          "funds": [
+            "Truxt Long Bias Advisory FIC FIM",
+            "STK Long Biased FIC FIA",
+            "Constellation Institucional Advisory FIC FIA"
+          ],
+          "weight": "7,95%",
+          "return": "+9,25%"
+        }
+      ],
+      "positions": [
+        {
+          "asset": "LREN3",
+          "class": "Ações",
+          "weight": "7,19%",
+          "value_end": "R$ 27.812,04",
+          "return": "+19,46%",
+          "contribution": "R$ 4.530,64",
+          "contribution_pp": "+1,22 p.p.",
+          "price_source": "Yahoo Finance (adjusted close)"
+        },
+        {
+          "asset": "MRFG3",
+          "class": "Ações",
+          "weight": "3,99%",
+          "value_end": "R$ 15.432,89",
+          "return": "+18,94%",
+          "contribution": "R$ 2.457,19",
+          "contribution_pp": "+0,66 p.p.",
+          "price_source": "Yahoo Finance (adjusted close)",
+          "data_note": "priced as MBRF3"
+        },
+        {
+          "asset": "ARZZ3",
+          "class": "Ações",
+          "weight": "2,82%",
+          "value_end": "R$ 10.923,72",
+          "return": "+29,96%",
+          "contribution": "R$ 2.518,22",
+          "contribution_pp": "+0,68 p.p.",
+          "price_source": "Yahoo Finance (adjusted close)",
+          "data_note": "priced as AZZA3"
+        },
+        {
+          "asset": "HAPV3",
+          "class": "Ações",
+          "weight": "1,59%",
+          "value_end": "R$ 6.143,14",
+          "return": "+4,98%",
+          "contribution": "R$ 291,27",
+          "contribution_pp": "+0,08 p.p.",
+          "price_source": "Yahoo Finance (adjusted close)"
+        },
+        {
+          "asset": "Riza Lotus Plus Advisory FIC FIRF REF DI CP",
+          "class": "Fundos de renda fixa",
+          "weight": "24,86%",
+          "value_end": "R$ 96.178,73",
+          "return": "+1,21%",
+          "contribution": "R$ 1.153,42",
+          "contribution_pp": "+0,31 p.p.",
+          "price_source": "CVM daily report (quota)"
+        },
+        {
+          "asset": "Brave I FIC FIM CP",
+          "class": "Fundos multimercado",
+          "weight": "18,76%",
+          "value_end": "R$ 72.567,43",
+          "return": "+1,06%",
+          "contribution": "R$ 758,22",
+          "contribution_pp": "+0,20 p.p.",
+          "price_source": "proxy: CDI",
+          "data_note": "Renamed: now Brave 90 FIC FIDC (35.726.300/0001-37). As a FIDC it publishes no quotas in the CVM daily fund report (inf_diario_fi), so CDI is used as a proxy."
+        },
+        {
+          "asset": "Trend Investback FIC FIRF Simples",
+          "class": "Fundos de renda fixa",
+          "weight": "0,08%",
+          "value_end": "R$ 305,44",
+          "return": "+1,03%",
+          "contribution": "R$ 3,13",
+          "contribution_pp": "+0,00 p.p.",
+          "price_source": "CVM daily report (quota)",
+          "data_note": "Renamed: now Trend INB FIC FI RF Simples"
+        },
+        {
+          "asset": "Truxt Long Bias Advisory FIC FIM",
+          "class": "Fundos de ações",
+          "weight": "3,24%",
+          "value_end": "R$ 12.522,05",
+          "return": "+10,17%",
+          "contribution": "R$ 1.155,49",
+          "contribution_pp": "+0,31 p.p.",
+          "price_source": "CVM daily report (quota)"
+        },
+        {
+          "asset": "STK Long Biased FIC FIA",
+          "class": "Fundos de ações",
+          "weight": "2,52%",
+          "value_end": "R$ 9.745,97",
+          "return": "+6,56%",
+          "contribution": "R$ 599,83",
+          "contribution_pp": "+0,16 p.p.",
+          "price_source": "CVM daily report (quota)"
+        },
+        {
+          "asset": "Constellation Institucional Advisory FIC FIA",
+          "class": "Fundos de ações",
+          "weight": "2,19%",
+          "value_end": "R$ 8.475,02",
+          "return": "+11,13%",
+          "contribution": "R$ 848,70",
+          "contribution_pp": "+0,23 p.p.",
+          "price_source": "CVM daily report (quota)"
+        },
+        {
+          "asset": "Ibiuna Hedge ST Advisory FIC FIM",
+          "class": "Fundos multimercado",
+          "weight": "3,00%",
+          "value_end": "R$ 11.601,02",
+          "return": "+3,53%",
+          "contribution": "R$ 395,86",
+          "contribution_pp": "+0,11 p.p.",
+          "price_source": "CVM daily report (quota)"
+        },
+        {
+          "asset": "CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
+          "class": "Renda fixa (CDB)",
+          "weight": "10,46%",
+          "value_end": "R$ 40.478,75",
+          "return": "+0,00%",
+          "contribution": "R$ 0,00",
+          "contribution_pp": "+0,00 p.p.",
+          "price_source": "curve",
+          "data_note": "matured on 2024-09-05; amount should be redeemed or reinvested"
+        },
+        {
+          "asset": "Saldo disponível",
+          "class": "Saldo em conta",
+          "weight": "19,30%",
+          "value_end": "R$ 74.672,62",
+          "return": "+0,00%",
+          "contribution": "R$ 0,00",
+          "contribution_pp": "+0,00 p.p.",
+          "price_source": "account balance"
+        }
+      ]
+    },
+    "facts": {
+      "profile": "moderate",
+      "profile_pt": "Moderado",
+      "total_equity": "R$ 386.858,82",
+      "facts": [
+        {
+          "id": "class_weights",
+          "fact": "Peso de cada classe no patrimônio total",
+          "values": {
+            "Fundos de renda fixa": "24,94%",
+            "Fundos multimercado": "21,76%",
+            "Saldo em conta": "19,30%",
+            "Ações": "15,59%",
+            "Renda fixa (CDB)": "10,46%",
+            "Fundos de ações": "7,95%"
+          }
+        },
+        {
+          "id": "idle_cash",
+          "fact": "Saldo parado em conta de R$ 74.672,62 (19,30% do patrimônio), sem rendimento",
+          "opportunity_cost_month": "R$ 788,45"
+        },
+        {
+          "id": "matured:CDB BANCO C6 CONSIGNADO S.A. - SET/2024",
+          "fact": "CDB BANCO C6 CONSIGNADO S.A. - SET/2024 venceu em 05/09/2024 e ainda aparece na carteira (R$ 40.478,75); o valor está disponível para reinvestir"
+        },
+        {
+          "id": "concentration:Riza Lotus Plus Advisory FIC FIRF REF DI CP",
+          "fact": "Riza Lotus Plus Advisory FIC FIRF REF DI CP representa 24,86% do patrimônio (acima de 15,00% em um único ativo)"
+        },
+        {
+          "id": "concentration:Brave I FIC FIM CP",
+          "fact": "Brave I FIC FIM CP representa 18,76% do patrimônio (acima de 15,00% em um único ativo)"
+        },
+        {
+          "id": "data_proxy",
+          "fact": "Rentabilidade estimada por índice de referência (sem cota diária pública): Brave I FIC FIM CP"
+        }
+      ]
+    }
+  },
+  "macro_digest": {
+    "report_date": "6 de fevereiro de 2025",
+    "report_title": "Brasil Macro Mensal",
+    "projections": [
+      {
+        "indicator": "Crescimento do PIB",
+        "value": "2,0%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Crescimento do PIB",
+        "value": "1,0%",
+        "horizon": "2026"
+      },
+      {
+        "indicator": "IPCA",
+        "value": "6,1%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "IPCA",
+        "value": "4,5%",
+        "horizon": "2026"
+      },
+      {
+        "indicator": "SELIC",
+        "value": "15,50%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Taxa de Câmbio",
+        "value": "R$ 6,20",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Taxa de Câmbio",
+        "value": "R$ 6,40",
+        "horizon": "2026"
+      },
+      {
+        "indicator": "Resultado primário do governo central",
+        "value": "-0,7%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Dívida bruta - DBGG",
+        "value": "80,3%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Dívida bruta - DBGG",
+        "value": "83,9%",
+        "horizon": "2026"
+      }
+    ],
+    "sentiment": "O ambiente econômico apresenta sinais de desaceleração, mas com algumas bases de recuperação.",
+    "risks": [
+      "Incertezas políticas e fiscais podem impactar a confiança do mercado.",
+      "A inflação pode permanecer acima da meta, afetando o poder de compra.",
+      "A volatilidade externa pode influenciar a taxa de câmbio e os ativos brasileiros."
+    ],
+    "asset_class_implications": [
+      {
+        "asset_class": "Renda fixa pós-fixada",
+        "view": "favorável",
+        "why": "Taxa Selic alta pode beneficiar os rendimentos."
+      },
+      {
+        "asset_class": "Títulos atrelados à inflação",
+        "view": "favorável",
+        "why": "Expectativa de inflação elevada pode impulsionar esses ativos."
+      },
+      {
+        "asset_class": "Crédito",
+        "view": "neutro",
+        "why": "Cenário de desaceleração pode afetar a qualidade do crédito."
+      },
+      {
+        "asset_class": "Fundos multimercado",
+        "view": "neutro",
+        "why": "Ambiente volátil pode trazer oportunidades e riscos."
+      },
+      {
+        "asset_class": "Ações brasileiras",
+        "view": "neutro",
+        "why": "Setores de commodities podem se beneficiar, mas a incerteza persiste."
+      },
+      {
+        "asset_class": "Ações internacionais",
+        "view": "neutro",
+        "why": "Dependência do cenário global e da política monetária dos EUA."
+      }
+    ],
+    "sector_notes": [
+      "Setores de commodities devem se recuperar, especialmente a agricultura.",
+      "Setores de consumo e serviços podem enfrentar desafios devido à inflação e desaceleração econômica."
+    ],
+    "summary_pt": "O cenário econômico brasileiro apresenta sinais de desaceleração, com projeções de crescimento do PIB de 2,0% para 2025 e inflação elevada de 6,1%. A taxa Selic deve permanecer alta em 15,50%, refletindo a necessidade de controle inflacionário. Setores de commodities podem se beneficiar, enquanto a volatilidade política e fiscal continua a ser um risco significativo."
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "usage": {
+        "requestTokens": 12896,
+        "responseTokens": 1946,
+        "cost": 0.0421831
+      },
+      "words": 438,
+      "unknown_numbers": [],
+      "critic": {
+        "approved": true,
+        "issues": []
+      },
+      "issues": []
+    }
+  ],
+  "model": "gpt-4o-mini",
+  "writer_model": "gpt-4o"
+}

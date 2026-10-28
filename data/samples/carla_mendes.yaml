@@ -1,0 +1,30 @@
+# Fictitious conservative client, same XP statement layout as the case's client.
+# Stock last prices are left out: they are the real Yahoo closes on the snapshot date.
+name: Carla Mendes
+account: "815432"
+snapshot: 07/05/2025 18:40
+advisor_code: A7699
+advisor_name: Antonio Bicudo
+cash: 12000.00
+risk_profile:
+  label: Conservador
+  paragraphs:
+    - "1. Descrição do Perfil Conservador:"
+    - "O perfil conservador prioriza a preservação do capital e a liquidez. Carla aceita retornos menores em troca de baixa oscilação e prefere investimentos de renda fixa de emissores sólidos, como títulos públicos e CDBs de grandes bancos."
+    - "O foco da investidora é proteger o patrimônio da inflação e manter uma reserva disponível para objetivos de curto prazo. Perdas nominais, mesmo temporárias, causam desconforto."
+    - "2. Produtos Financeiros Compatíveis:"
+    - "a. Títulos públicos (Tesouro Selic e Tesouro IPCA+) e CDBs, LCIs e LCAs de bancos de primeira linha."
+    - "b. Fundos de renda fixa pós-fixados e de crédito privado com carteira de alta qualidade (high grade)."
+    - "c. Uma parcela pequena em ações de empresas consolidadas e boas pagadoras de dividendos, até 10% do patrimônio."
+stocks:
+  - {ticker: ITUB4, quantity: 800, average_price: 28.40, investment_date: 15/03/2022}
+  - {ticker: BBSE3, quantity: 600, average_price: 31.20, investment_date: 15/03/2022}
+funds:
+  - {name: Trend DI FIC FIRF Simples, invested: 60000.00, net_value: 71850.32, investment_date: 03/02/2023, quota_date: 06/05/2025}
+  - {name: Sparta Top FIC FIRF CP LP, invested: 80000.00, net_value: 95320.77, investment_date: 10/08/2022, quota_date: 06/05/2025}
+  - {name: Capitania Premium 45 FIC FIRF CP LP, invested: 50000.00, net_value: 58410.05, investment_date: 14/09/2023, quota_date: 06/05/2025}
+bonds:
+  - {name: CDB BANCO XP S.A. - JAN/2027, value: 104532.18, invested: 90000.00, rate: 102% CDI,
+     investment_date: 20/01/2024, application_date: 20/01/2024, maturity_date: 20/01/2027}
+  - {name: CDB BANCO BTG PACTUAL S.A. - AGO/2028, value: 121870.40, invested: 100000.00, rate: IPC-A +6,10%,
+     investment_date: 15/08/2023, application_date: 15/08/2023, maturity_date: 15/08/2028}

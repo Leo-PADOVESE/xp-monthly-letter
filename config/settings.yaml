@@ -1,0 +1,44 @@
+# Reference dates. The README lets us assume the letter is generated on the
+# portfolio snapshot date (2025-05-07) and asks for "last month's" return, so the
+# period is the last closed calendar month: April 2025, from the close of the last
+# business day of March to the close of the last business day of April.
+letter_date: 2025-05-07
+period_start: 2025-03-31
+period_end: 2025-04-30
+
+# Profile benchmark: what a neutral portfolio of each risk profile would have earned
+# (weights must sum to 1). The profile is read from the client's risk_profile.pdf.
+benchmarks:
+  conservative:
+    CDI: 0.90
+    IBOV: 0.10
+  moderate:
+    CDI: 0.70
+    IBOV: 0.30
+  aggressive:
+    CDI: 0.50
+    IBOV: 0.50
+
+# XP macro research used for every letter of the month (digested once by Rivet).
+macro_report: data/macro_2025-02.pdf
+
+# LLM used by the Rivet graphs (OpenAI key in .env, see .env.example).
+llm:
+  model: gpt-4o             # macro digest, profile, performance analysis, suggestions (gpt-4o-mini misread
+                            # signs and attributions in tests: "resultados mistos" for two positive fund types)
+  writer_model: gpt-4o      # letter writer and critic
+
+delivery:
+  require_advisor_approval: true   # scheduled batches wait in the approval queue
+  pdf_password_cpf_digits: 6
+
+language:
+  prompts_and_code: en
+  letter: pt-BR
+
+# Statement ticker -> ticker to price on Yahoo. ARZZ3 was merged into AZZA3 (2024);
+# Marfrig (MRFG3) now trades as MBRF3 and Yahoo keeps MRFG3's history under it.
+# Only used by the market price source; Albert's documented mode reads the case spreadsheet.
+ticker_map:
+  ARZZ3: AZZA3
+  MRFG3: MBRF3

@@ -1,0 +1,17 @@
+# Render blueprint: one web service built from the Dockerfile. Secrets are set in the Render
+# dashboard (Environment), never in the repository.
+services:
+  - type: web
+    name: xp-monthly-letter
+    runtime: docker
+    plan: free
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: APP_PASSWORD
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false

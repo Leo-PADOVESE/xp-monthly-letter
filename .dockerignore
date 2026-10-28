@@ -1,0 +1,8 @@
+.venv/
+.env
+**/__pycache__/
+.pytest_cache/
+rivet/node_modules/
+data/cache/
+data/crm.db
+output/

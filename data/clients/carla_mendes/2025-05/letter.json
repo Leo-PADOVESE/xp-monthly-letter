@@ -1,0 +1,485 @@
+{
+  "status": "approved",
+  "client": {
+    "name": "Carla Mendes",
+    "first_name": "Carla",
+    "account": "815432",
+    "profile_pt": "Conservador",
+    "advisor_name": "Antonio Bicudo",
+    "advisor_code": "A7699",
+    "letter_date": "07/05/2025",
+    "reference_month": "abril de 2025"
+  },
+  "letter": {
+    "subject_pt": "Atualização Mensal - Abril de 2025",
+    "greeting_pt": "Prezada Carla,",
+    "opening_pt": "Este mês, trazemos uma atualização sobre o desempenho do seu portfólio em abril de 2025 e discutimos possíveis ajustes para otimizar sua estratégia de investimento.",
+    "performance_pt": [
+      "Em abril de 2025, o portfólio apresentou um retorno de +1,80%, superando tanto o CDI de +1,06% quanto o benchmark do perfil conservador de +1,32%. O destaque foi a ação ITUB4, com um retorno de +13,34%, que também foi o maior contribuinte em termos de reais, com R$ 3.203,24, devido ao seu peso significativo no portfólio.",
+      "Por outro lado, o CDB BANCO BTG PACTUAL S.A. - AGO/2028 teve o menor retorno, de +0,92%. Além disso, o saldo disponível de R$ 12.000,00 não gerou retorno, resultando em um custo de oportunidade de R$ 126,71. Esses pontos merecem atenção para futuras alocações."
+    ],
+    "macro_pt": "O cenário econômico brasileiro apresenta sinais de desaceleração, com um crescimento do PIB projetado de 2,0% para 2025 e uma inflação elevada de 6,1%. A taxa Selic permanece alta em 15,50%, o que pode beneficiar investimentos em renda fixa pós-fixada e títulos atrelados à inflação. No entanto, incertezas políticas e fiscais continuam a ser um risco significativo, podendo impactar a confiança do mercado.",
+    "suggestions_intro_pt": "Com base no desempenho do portfólio e no cenário econômico atual, aqui estão algumas sugestões para discutirmos:",
+    "suggestions": [
+      {
+        "type": "protection",
+        "title_pt": "Reduzir concentração em CDBs",
+        "text_pt": "Considere reduzir a alocação em CDB BANCO BTG PACTUAL S.A. - AGO/2028. Com 23,68% do patrimônio, a concentração em um único ativo pode aumentar o risco, especialmente em um cenário de desaceleração econômica e incertezas fiscais."
+      },
+      {
+        "type": "opportunity",
+        "title_pt": "Investir o saldo disponível",
+        "text_pt": "Avalie investir o saldo de R$ 12.000,00 em títulos públicos ou CDBs de grandes bancos. O saldo em conta não gerou retorno, representando uma oportunidade de investimento não aproveitada em um cenário onde a Selic alta pode beneficiar a renda fixa."
+      },
+      {
+        "type": "protection",
+        "title_pt": "Diversificar fundos de renda fixa",
+        "text_pt": "Considere diversificar a alocação em fundos de renda fixa, reduzindo a concentração em Sparta Top FIC FIRF CP LP. Com 18,52% do patrimônio, a concentração em um único fundo pode aumentar o risco, especialmente em um ambiente econômico incerto."
+      }
+    ],
+    "outlook_pt": "O cenário econômico apresenta desafios, com crescimento do PIB projetado em 2,0% e inflação elevada de 6,1%. A Selic alta pode beneficiar a renda fixa, mas a volatilidade política e fiscal continua sendo um risco. É essencial manter uma abordagem cautelosa e considerar diversificações que preservem o capital.",
+    "closing_pt": "Estou à disposição para uma conversa mais detalhada sobre essas sugestões e outras dúvidas que você possa ter. Entre em contato para agendarmos um horário.",
+    "charts": [
+      "benchmarks",
+      "contribution"
+    ]
+  },
+  "steps": {
+    "profile_summary": {
+      "profile": "conservative",
+      "profile_pt": "Conservador",
+      "horizon": "curto prazo",
+      "volatility_tolerance": "baixa",
+      "objectives": [
+        "preservação do capital",
+        "manter uma reserva disponível"
+      ],
+      "compatible_products": [
+        "títulos públicos",
+        "CDBs",
+        "fundos de renda fixa",
+        "ações de empresas consolidadas"
+      ],
+      "restrictions": [
+        "perdas nominais causam desconforto",
+        "até 10% em ações"
+      ],
+      "summary_pt": "O perfil conservador de Carla prioriza a preservação do capital e a liquidez, aceitando retornos menores."
+    },
+    "performance_analysis": {
+      "headline_pt": "Em abril de 2025, o portfólio apresentou um retorno de +1,80%, superando o CDI de +1,06% e o benchmark do perfil conservador de +1,32%.",
+      "best_performer": {
+        "asset": "ITUB4",
+        "return": "+13,34%"
+      },
+      "worst_performer": {
+        "asset": "CDB BANCO BTG PACTUAL S.A. - AGO/2028",
+        "return": "+0,92%"
+      },
+      "top_contributor": {
+        "asset": "ITUB4",
+        "contribution": "R$ 3.203,24"
+      },
+      "bottom_contributor": {
+        "asset": "Capitania Premium 45 FIC FIRF CP LP",
+        "contribution": "R$ 594,59"
+      },
+      "class_comments_pt": [
+        {
+          "asset_class": "Ações",
+          "comment": "As ações tiveram um desempenho positivo, com retorno de +9,88%."
+        },
+        {
+          "asset_class": "Fundos (todos os tipos)",
+          "comment": "Os fundos de renda fixa apresentaram um retorno de +1,03%, refletindo a estabilidade do mercado."
+        },
+        {
+          "asset_class": "Renda fixa (CDB)",
+          "comment": "Os CDBs mostraram um retorno de +0,99%, com destaque para o CDB BANCO XP S.A. - JAN/2027."
+        },
+        {
+          "asset_class": "Saldo em conta",
+          "comment": "O saldo em conta não gerou retorno, representando uma oportunidade de investimento não aproveitada."
+        }
+      ],
+      "attention_points_pt": [
+        "O saldo disponível de R$ 12.000,00 não gerou retorno, resultando em um custo de oportunidade de R$ 126,71.",
+        "O CDB BANCO BTG PACTUAL S.A. - AGO/2028 apresentou o menor retorno entre os ativos, o que pode ser um ponto de atenção para futuras alocações."
+      ],
+      "paragraph_pt": "Prezada Carla, em abril de 2025, seu portfólio teve um desempenho positivo, com retorno de +1,80%, superando o CDI e o benchmark do seu perfil conservador. O destaque foi a ação ITUB4, que apresentou um retorno de +13,34%, contribuindo significativamente para o ganho total. Por outro lado, o CDB BANCO BTG PACTUAL S.A. - AGO/2028 teve o menor retorno. É importante considerar o saldo disponível que não gerou retorno, representando uma oportunidade de investimento não aproveitada. Estou à disposição para discutir as melhores estratégias para otimizar seu portfólio."
+    },
+    "recommendations": {
+      "suggestions": [
+        {
+          "type": "protection",
+          "title_pt": "Reduzir concentração em CDBs",
+          "action_pt": "Considere reduzir a alocação em CDB BANCO BTG PACTUAL S.A. - AGO/2028.",
+          "rationale_pt": "Com 23,68% do patrimônio, a concentração em um único ativo pode aumentar o risco, especialmente em um cenário de desaceleração econômica e incertezas fiscais.",
+          "facts_used": [
+            "concentration:CDB BANCO BTG PACTUAL S.A. - AGO/2028"
+          ]
+        },
+        {
+          "type": "opportunity",
+          "title_pt": "Investir o saldo disponível",
+          "action_pt": "Avalie investir o saldo de R$ 12.000,00 em títulos públicos ou CDBs de grandes bancos.",
+          "rationale_pt": "O saldo em conta não gerou retorno, representando uma oportunidade de investimento não aproveitada em um cenário onde a Selic alta pode beneficiar a renda fixa.",
+          "facts_used": [
+            "attention_points_pt"
+          ]
+        },
+        {
+          "type": "protection",
+          "title_pt": "Diversificar fundos de renda fixa",
+          "action_pt": "Considere diversificar a alocação em fundos de renda fixa, reduzindo a concentração em Sparta Top FIC FIRF CP LP.",
+          "rationale_pt": "Com 18,52% do patrimônio, a concentração em um único fundo pode aumentar o risco, especialmente em um ambiente econômico incerto.",
+          "facts_used": [
+            "concentration:Sparta Top FIC FIRF CP LP"
+          ]
+        }
+      ],
+      "outlook_pt": "O cenário econômico apresenta desafios, com crescimento do PIB projetado em 2,0% e inflação elevada de 6,1%. A Selic alta pode beneficiar a renda fixa, mas a volatilidade política e fiscal continua sendo um risco. É essencial manter uma abordagem cautelosa e considerar diversificações que preservem o capital."
+    },
+    "letter": {
+      "subject_pt": "Atualização Mensal - Abril de 2025",
+      "greeting_pt": "Prezada Carla,",
+      "opening_pt": "Este mês, trazemos uma atualização sobre o desempenho do seu portfólio em abril de 2025 e discutimos possíveis ajustes para otimizar sua estratégia de investimento.",
+      "performance_pt": [
+        "Em abril de 2025, o portfólio apresentou um retorno de +1,80%, superando tanto o CDI de +1,06% quanto o benchmark do perfil conservador de +1,32%. O destaque foi a ação ITUB4, com um retorno de +13,34%, que também foi o maior contribuinte em termos de reais, com R$ 3.203,24, devido ao seu peso significativo no portfólio.",
+        "Por outro lado, o CDB BANCO BTG PACTUAL S.A. - AGO/2028 teve o menor retorno, de +0,92%. Além disso, o saldo disponível de R$ 12.000,00 não gerou retorno, resultando em um custo de oportunidade de R$ 126,71. Esses pontos merecem atenção para futuras alocações."
+      ],
+      "macro_pt": "O cenário econômico brasileiro apresenta sinais de desaceleração, com um crescimento do PIB projetado de 2,0% para 2025 e uma inflação elevada de 6,1%. A taxa Selic permanece alta em 15,50%, o que pode beneficiar investimentos em renda fixa pós-fixada e títulos atrelados à inflação. No entanto, incertezas políticas e fiscais continuam a ser um risco significativo, podendo impactar a confiança do mercado.",
+      "suggestions_intro_pt": "Com base no desempenho do portfólio e no cenário econômico atual, aqui estão algumas sugestões para discutirmos:",
+      "suggestions": [
+        {
+          "type": "protection",
+          "title_pt": "Reduzir concentração em CDBs",
+          "text_pt": "Considere reduzir a alocação em CDB BANCO BTG PACTUAL S.A. - AGO/2028. Com 23,68% do patrimônio, a concentração em um único ativo pode aumentar o risco, especialmente em um cenário de desaceleração econômica e incertezas fiscais."
+        },
+        {
+          "type": "opportunity",
+          "title_pt": "Investir o saldo disponível",
+          "text_pt": "Avalie investir o saldo de R$ 12.000,00 em títulos públicos ou CDBs de grandes bancos. O saldo em conta não gerou retorno, representando uma oportunidade de investimento não aproveitada em um cenário onde a Selic alta pode beneficiar a renda fixa."
+        },
+        {
+          "type": "protection",
+          "title_pt": "Diversificar fundos de renda fixa",
+          "text_pt": "Considere diversificar a alocação em fundos de renda fixa, reduzindo a concentração em Sparta Top FIC FIRF CP LP. Com 18,52% do patrimônio, a concentração em um único fundo pode aumentar o risco, especialmente em um ambiente econômico incerto."
+        }
+      ],
+      "outlook_pt": "O cenário econômico apresenta desafios, com crescimento do PIB projetado em 2,0% e inflação elevada de 6,1%. A Selic alta pode beneficiar a renda fixa, mas a volatilidade política e fiscal continua sendo um risco. É essencial manter uma abordagem cautelosa e considerar diversificações que preservem o capital.",
+      "closing_pt": "Estou à disposição para uma conversa mais detalhada sobre essas sugestões e outras dúvidas que você possa ter. Entre em contato para agendarmos um horário.",
+      "charts": [
+        "benchmarks",
+        "contribution"
+      ]
+    },
+    "critic": {
+      "approved": true,
+      "issues": []
+    }
+  },
+  "briefing": {
+    "results": {
+      "period": "abril de 2025 (fechamento de 31/03/2025 a 30/04/2025)",
+      "formatted": {
+        "portfolio_return": "+1,80%",
+        "portfolio_return_invested_only": "+1,84%",
+        "gain": "R$ 9.081,36",
+        "equity_end": "R$ 514.725,72",
+        "cdi": "+1,06%",
+        "ibovespa": "+3,69%",
+        "inflation_ipca15": "+0,43%",
+        "profile_benchmark": "+1,32%",
+        "excess_vs_cdi": "+0,74 p.p.",
+        "excess_vs_profile_benchmark": "+0,48 p.p.",
+        "real_return": "+1,36%",
+        "cash_opportunity_cost": "R$ 126,71",
+        "profile_benchmark_composition": "90% CDI + 10% Ibovespa"
+      },
+      "highlights": {
+        "best_performer": {
+          "asset": "ITUB4",
+          "return": "+13,34%"
+        },
+        "worst_performer": {
+          "asset": "CDB BANCO BTG PACTUAL S.A. - AGO/2028",
+          "return": "+0,92%"
+        },
+        "top_contributor": {
+          "asset": "ITUB4",
+          "contribution": "R$ 3.203,24"
+        },
+        "bottom_contributor": {
+          "asset": "Capitania Premium 45 FIC FIRF CP LP",
+          "contribution": "R$ 594,59"
+        },
+        "assets_with_negative_return": []
+      },
+      "classes": [
+        {
+          "class": "Ações",
+          "weight": "9,86%",
+          "return": "+9,88%"
+        },
+        {
+          "class": "Fundos (todos os tipos)",
+          "weight": "43,83%",
+          "return": "+1,03%"
+        },
+        {
+          "class": "Renda fixa (CDB)",
+          "weight": "43,99%",
+          "return": "+0,99%"
+        },
+        {
+          "class": "Saldo em conta",
+          "weight": "2,33%",
+          "return": "+0,00%"
+        }
+      ],
+      "fund_types": [
+        {
+          "type": "Fundos de renda fixa",
+          "funds": [
+            "Trend DI FIC FIRF Simples",
+            "Sparta Top FIC FIRF CP LP",
+            "Capitania Premium 45 FIC FIRF CP LP"
+          ],
+          "weight": "43,83%",
+          "return": "+1,03%"
+        }
+      ],
+      "positions": [
+        {
+          "asset": "ITUB4",
+          "class": "Ações",
+          "weight": "5,29%",
+          "value_end": "R$ 27.216,00",
+          "return": "+13,34%",
+          "contribution": "R$ 3.203,24",
+          "contribution_pp": "+0,63 p.p.",
+          "price_source": "Yahoo Finance (adjusted close)"
+        },
+        {
+          "asset": "BBSE3",
+          "class": "Ações",
+          "weight": "4,57%",
+          "value_end": "R$ 23.526,00",
+          "return": "+6,13%",
+          "contribution": "R$ 1.358,64",
+          "contribution_pp": "+0,27 p.p.",
+          "price_source": "Yahoo Finance (adjusted close)"
+        },
+        {
+          "asset": "Trend DI FIC FIRF Simples",
+          "class": "Fundos de renda fixa",
+          "weight": "13,96%",
+          "value_end": "R$ 71.850,32",
+          "return": "+1,03%",
+          "contribution": "R$ 735,58",
+          "contribution_pp": "+0,15 p.p.",
+          "price_source": "CVM daily report (quota)"
+        },
+        {
+          "asset": "Sparta Top FIC FIRF CP LP",
+          "class": "Fundos de renda fixa",
+          "weight": "18,52%",
+          "value_end": "R$ 95.320,77",
+          "return": "+1,02%",
+          "contribution": "R$ 965,88",
+          "contribution_pp": "+0,19 p.p.",
+          "price_source": "CVM daily report (quota)"
+        },
+        {
+          "asset": "Capitania Premium 45 FIC FIRF CP LP",
+          "class": "Fundos de renda fixa",
+          "weight": "11,35%",
+          "value_end": "R$ 58.410,05",
+          "return": "+1,03%",
+          "contribution": "R$ 594,59",
+          "contribution_pp": "+0,12 p.p.",
+          "price_source": "CVM daily report (quota)",
+          "data_note": "Capitania Premium 45 FIC FIRF CP LP: matched automatically to 20.146.294/0001-71 (CAPITÂNIA PREMIUM 45 FIC DE FIF RENDA FIXA CRÉDITO PRIVADO LONGO PRAZO - RESPONSABILIDADE LIMITADA)"
+        },
+        {
+          "asset": "CDB BANCO XP S.A. - JAN/2027",
+          "class": "Renda fixa (CDB)",
+          "weight": "20,31%",
+          "value_end": "R$ 104.532,18",
+          "return": "+1,08%",
+          "contribution": "R$ 1.113,81",
+          "contribution_pp": "+0,22 p.p.",
+          "price_source": "curve (% of CDI)"
+        },
+        {
+          "asset": "CDB BANCO BTG PACTUAL S.A. - AGO/2028",
+          "class": "Renda fixa (CDB)",
+          "weight": "23,68%",
+          "value_end": "R$ 121.870,40",
+          "return": "+0,92%",
+          "contribution": "R$ 1.109,61",
+          "contribution_pp": "+0,22 p.p.",
+          "price_source": "curve (IPCA + spread)"
+        },
+        {
+          "asset": "Saldo disponível",
+          "class": "Saldo em conta",
+          "weight": "2,33%",
+          "value_end": "R$ 12.000,00",
+          "return": "+0,00%",
+          "contribution": "R$ 0,00",
+          "contribution_pp": "+0,00 p.p.",
+          "price_source": "account balance"
+        }
+      ]
+    },
+    "facts": {
+      "profile": "conservative",
+      "profile_pt": "Conservador",
+      "total_equity": "R$ 514.725,72",
+      "facts": [
+        {
+          "id": "class_weights",
+          "fact": "Peso de cada classe no patrimônio total",
+          "values": {
+            "Renda fixa (CDB)": "43,99%",
+            "Fundos de renda fixa": "43,83%",
+            "Ações": "9,86%",
+            "Saldo em conta": "2,33%"
+          }
+        },
+        {
+          "id": "concentration:Sparta Top FIC FIRF CP LP",
+          "fact": "Sparta Top FIC FIRF CP LP representa 18,52% do patrimônio (acima de 15,00% em um único ativo)"
+        },
+        {
+          "id": "concentration:CDB BANCO XP S.A. - JAN/2027",
+          "fact": "CDB BANCO XP S.A. - JAN/2027 representa 20,31% do patrimônio (acima de 15,00% em um único ativo)"
+        },
+        {
+          "id": "concentration:CDB BANCO BTG PACTUAL S.A. - AGO/2028",
+          "fact": "CDB BANCO BTG PACTUAL S.A. - AGO/2028 representa 23,68% do patrimônio (acima de 15,00% em um único ativo)"
+        }
+      ]
+    }
+  },
+  "macro_digest": {
+    "report_date": "6 de fevereiro de 2025",
+    "report_title": "Brasil Macro Mensal",
+    "projections": [
+      {
+        "indicator": "Crescimento do PIB",
+        "value": "2,0%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Crescimento do PIB",
+        "value": "1,0%",
+        "horizon": "2026"
+      },
+      {
+        "indicator": "IPCA",
+        "value": "6,1%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "IPCA",
+        "value": "4,5%",
+        "horizon": "2026"
+      },
+      {
+        "indicator": "SELIC",
+        "value": "15,50%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Taxa de Câmbio",
+        "value": "R$ 6,20",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Taxa de Câmbio",
+        "value": "R$ 6,40",
+        "horizon": "2026"
+      },
+      {
+        "indicator": "Resultado primário do governo central",
+        "value": "-0,7%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Dívida bruta - DBGG",
+        "value": "80,3%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Dívida bruta - DBGG",
+        "value": "83,9%",
+        "horizon": "2026"
+      }
+    ],
+    "sentiment": "O ambiente econômico apresenta sinais de desaceleração, mas com algumas bases de recuperação.",
+    "risks": [
+      "Incertezas políticas e fiscais podem impactar a confiança do mercado.",
+      "A inflação pode permanecer acima da meta, afetando o poder de compra.",
+      "A volatilidade externa pode influenciar a taxa de câmbio e os ativos brasileiros."
+    ],
+    "asset_class_implications": [
+      {
+        "asset_class": "Renda fixa pós-fixada",
+        "view": "favorável",
+        "why": "Taxa Selic alta pode beneficiar os rendimentos."
+      },
+      {
+        "asset_class": "Títulos atrelados à inflação",
+        "view": "favorável",
+        "why": "Expectativa de inflação elevada pode impulsionar esses ativos."
+      },
+      {
+        "asset_class": "Crédito",
+        "view": "neutro",
+        "why": "Cenário de desaceleração pode afetar a qualidade do crédito."
+      },
+      {
+        "asset_class": "Fundos multimercado",
+        "view": "neutro",
+        "why": "Ambiente volátil pode trazer oportunidades e riscos."
+      },
+      {
+        "asset_class": "Ações brasileiras",
+        "view": "neutro",
+        "why": "Setores de commodities podem se beneficiar, mas a incerteza persiste."
+      },
+      {
+        "asset_class": "Ações internacionais",
+        "view": "neutro",
+        "why": "Dependência do cenário global e da política monetária dos EUA."
+      }
+    ],
+    "sector_notes": [
+      "Setores de commodities devem se recuperar, especialmente a agricultura.",
+      "Setores de consumo e serviços podem enfrentar desafios devido à inflação e desaceleração econômica."
+    ],
+    "summary_pt": "O cenário econômico brasileiro apresenta sinais de desaceleração, com projeções de crescimento do PIB de 2,0% para 2025 e inflação elevada de 6,1%. A taxa Selic deve permanecer alta em 15,50%, refletindo a necessidade de controle inflacionário. Setores de commodities podem se beneficiar, enquanto a volatilidade política e fiscal continua a ser um risco significativo."
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "usage": {
+        "requestTokens": 11226,
+        "responseTokens": 1938,
+        "cost": 0.04120665
+      },
+      "words": 415,
+      "unknown_numbers": [],
+      "critic": {
+        "approved": true,
+        "issues": []
+      },
+      "issues": []
+    }
+  ],
+  "model": "gpt-4o-mini",
+  "writer_model": "gpt-4o"
+}

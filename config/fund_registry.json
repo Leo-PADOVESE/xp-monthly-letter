@@ -1,0 +1,62 @@
+{
+  "Riza Lotus Plus Advisory FIC FIRF REF DI CP": {
+    "cnpj": "43.917.493/0001-31"
+  },
+  "Brave I FIC FIM CP": {
+    "proxy": "CDI",
+    "cnpj_reference": "35.726.300/0001-37",
+    "note": "Renamed: now Brave 90 FIC FIDC (35.726.300/0001-37). As a FIDC it publishes no quotas in the CVM daily fund report (inf_diario_fi), so CDI is used as a proxy."
+  },
+  "Trend Investback FIC FIRF Simples": {
+    "cnpj": "37.910.132/0001-60",
+    "note": "Renamed: now Trend INB FIC FI RF Simples"
+  },
+  "Truxt Long Bias Advisory FIC FIM": {
+    "cnpj": "30.830.162/0001-18"
+  },
+  "STK Long Biased FIC FIA": {
+    "cnpj": "12.282.747/0001-69"
+  },
+  "Constellation Institucional Advisory FIC FIA": {
+    "cnpj": "34.462.109/0001-62"
+  },
+  "Ibiuna Hedge ST Advisory FIC FIM": {
+    "cnpj": "30.493.349/0001-73"
+  },
+  "Trend DI FIC FIRF Simples": {
+    "cnpj": "45.278.833/0001-57",
+    "status": "auto",
+    "auto": true,
+    "matched_name": "TREND DI FUNDO DE INVESTIMENTO EM COTAS RENDA FIXA SIMPLES RESPONSABILIDADE LIMITADA"
+  },
+  "Sparta Top FIC FIRF CP LP": {
+    "cnpj": "14.188.162/0001-00",
+    "status": "auto",
+    "auto": true,
+    "matched_name": "SPARTA TOP FIC DE FIF RENDA FIXA CRÉDITO PRIVADO LONGO PRAZO - RESPONSABILIDADE LIMITADA"
+  },
+  "Kapitalo Kappa Advisory FIC FIM": {
+    "cnpj": "26.978.199/0001-10",
+    "status": "auto",
+    "auto": true,
+    "matched_name": "KAPITALO KAPPA ADVISORY FUNDO DE INVESTIMENTO FINANCEIRO EM COTAS DE FI MULTIMERCADO"
+  },
+  "SPX Nimitz Feeder FIC FIM": {
+    "cnpj": "12.831.360/0001-14",
+    "status": "auto",
+    "auto": true,
+    "matched_name": "SPX NIMITZ FEEDER FIF DA CLASSE DE INVESTIMENTO EM COTAS MULTIMERCADO RESPONSABILIDADE LIMITADA"
+  },
+  "Dynamo Cougar FIC FIA": {
+    "cnpj": "73.232.530/0001-39",
+    "status": "auto",
+    "auto": true,
+    "matched_name": "DYNAMO COUGAR FUNDO DE INVESTIMENTO FINANCEIRO"
+  },
+  "Capitania Premium 45 FIC FIRF CP LP": {
+    "cnpj": "20.146.294/0001-71",
+    "status": "auto",
+    "auto": true,
+    "matched_name": "CAPITÂNIA PREMIUM 45 FIC DE FIF RENDA FIXA CRÉDITO PRIVADO LONGO PRAZO - RESPONSABILIDADE LIMITADA"
+  }
+}

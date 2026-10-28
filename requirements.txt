@@ -1,0 +1,17 @@
+# Phase 1: ingestion
+pdfplumber>=0.11.10
+pypdf>=5.1
+cryptography>=42  # AES-256 password on the letter PDF
+reportlab>=4.2  # letter PDF and sample statements
+matplotlib>=3.9  # letter charts
+PyYAML>=6.0.2
+# Phase 1: market data and profitability
+pandas>=2.2.3
+yfinance>=0.2.54
+requests>=2.32.3
+openpyxl>=3.1.5
+# Platform
+streamlit>=1.46
+pypdfium2>=4.30  # letter preview on the review page
+# Tests
+pytest>=8.3.4

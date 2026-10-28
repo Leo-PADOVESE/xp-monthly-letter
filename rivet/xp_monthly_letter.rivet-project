@@ -1,0 +1,1234 @@
+version: 4
+data:
+  attachedData: {}
+  graphs:
+    macro_digest:
+      metadata:
+        description: Digests the XP macro research once per month; the result is reused
+          for every client.
+        id: macro_digest
+        name: 1. Macro digest (once per month)
+      nodes:
+        '[macro_digest__in_letter_date]:graphInput "in_letter_date"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: letter_date
+            useDefaultValueInput: false
+          outgoingConnections:
+            - data->"macro_digest (prompt)"
+              macro_digest__macro_digest__prompt_/letter_date
+          visualData: 0/160/280/null//
+        '[macro_digest__in_macro_text]:graphInput "in_macro_text"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: macro_text
+            useDefaultValueInput: false
+          outgoingConnections:
+            - data->"macro_digest (prompt)"
+              macro_digest__macro_digest__prompt_/macro_text
+          visualData: 0/0/280/null//
+        '[macro_digest__in_model]:graphInput "in_model"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: model
+            useDefaultValueInput: false
+          outgoingConnections:
+            - data->"macro_digest (LLM)" macro_digest__macro_digest__LLM_/model
+          visualData: 0/320/280/null//
+        '[macro_digest__macro_digest__LLM_]:chat "macro_digest (LLM)"':
+          data:
+            additionalParameters: []
+            cache: false
+            enableFunctionUse: false
+            maxTokens: 1500
+            modalitiesIncludeAudio: false
+            modalitiesIncludeText: false
+            model: gpt-4o-mini
+            outputUsage: false
+            parallelFunctionCalling: true
+            reasoningEffort: ""
+            responseFormat: json
+            stop: ""
+            temperature: 0.1
+            top_p: 1
+            useAdditionalParametersInput: false
+            useAsGraphPartialOutput: false
+            useFrequencyPenaltyInput: false
+            useMaxTokensInput: false
+            useModelInput: true
+            usePredictedOutput: false
+            usePresencePenaltyInput: false
+            useReasoningEffortInput: false
+            useServerTokenCalculation: true
+            useStop: false
+            useStopInput: false
+            useTemperatureInput: false
+            useTopP: false
+            useTopPInput: false
+            useUseTopPInput: false
+            useUserInput: false
+          outgoingConnections:
+            - response->"out_macro_digest" macro_digest__out_macro_digest/value
+          visualData: 810/200/240/null//
+        '[macro_digest__macro_digest__prompt_]:prompt "macro_digest (prompt)"':
+          data:
+            enableFunctionCall: false
+            promptText: >-
+              ## Task: digest the XP macro research for this month's client
+              letters
+
+
+              This digest is produced once per month and reused for every
+              client, so keep it factual and client-agnostic.
+
+
+              Extract from the report below:
+
+              - the report date and title;
+
+              - the key projections (Selic, IPCA, GDP, exchange rate, fiscal),
+              with the numbers copied exactly as written in the report;
+
+              - the main risks and the overall market sentiment;
+
+              - the implications for each asset class (post-fixed income,
+              inflation-linked bonds, credit, multimarket funds, Brazilian
+              equities, international), as stated or clearly implied by the
+              report;
+
+              - which equity sectors the report sees as more exposed or more
+              resilient.
+
+
+              Return JSON with this schema:
+
+              {
+                "report_date": "string",
+                "report_title": "string",
+                "projections": [{"indicator": "string", "value": "string", "horizon": "string"}],
+                "sentiment": "string (one sentence)",
+                "risks": ["string"],
+                "asset_class_implications": [{"asset_class": "string", "view": "favorable|neutral|unfavorable", "why": "string"}],
+                "sector_notes": ["string"],
+                "summary_pt": "string (one paragraph in pt-BR, max 90 words, for the client letter)"
+              }
+
+
+              ### Letter date
+
+              {{letter_date}}
+
+
+              ### XP macro research (raw text)
+
+              {{macro_text}}
+            type: user
+            useTypeInput: false
+          outgoingConnections:
+            - output->"macro_digest (LLM)"
+              macro_digest__macro_digest__LLM_/prompt
+          visualData: 450/200/320/null//
+        '[macro_digest__macro_digest_system]:prompt "macro_digest_system"':
+          data:
+            enableFunctionCall: false
+            promptText: >-
+              You are a senior investment advisor at XP Investimentos preparing
+              the monthly letter for a middle-market client in Brazil.
+
+
+              Non-negotiable rules:
+
+              1. Use only facts and figures that appear in the inputs. Never
+              calculate, round, estimate or invent a number. When you mention a
+              figure, copy it exactly as it is written in the inputs (Brazilian
+              format, e.g. "+1,23%" or "R$ 1.234,56"; these two are format
+              examples, never real figures).
+
+              2. Attribute each figure only to what it measures: a class return
+              is not the return of one of its assets or fund types, and the
+              return of one asset is not the return of its class.
+
+              3. Never promise or forecast returns for the client's portfolio.
+              Talk about scenarios and possibilities, not certainties.
+
+              4. Every suggestion must be compatible with the client's risk
+              profile and grounded in the XP macro research provided. Present
+              suggestions as points to discuss with the advisor, not as orders.
+
+              5. Client-facing text is written in Brazilian Portuguese (pt-BR),
+              in a formal, warm and clear tone, without jargon overload.
+
+              6. Answer with a single valid JSON object that follows the
+              requested schema exactly, with no text before or after it.
+            type: system
+            useTypeInput: false
+          outgoingConnections:
+            - output->"macro_digest (LLM)"
+              macro_digest__macro_digest__LLM_/systemPrompt
+          visualData: 400/-400/320/null//
+        '[macro_digest__out_macro_digest]:graphOutput "out_macro_digest"':
+          data:
+            dataType: string
+            id: macro_digest
+          visualData: 1150/0/280/null//
+    monthly_letter:
+      metadata:
+        description: Profile, performance analysis, suggestions, letter and critic for
+          one client. Every figure comes from the Python engine.
+        id: monthly_letter
+        name: 2. Monthly letter (per client)
+      nodes:
+        '[monthly_letter__Analyst__performance_analysis__LLM_]:chat "Analyst: performance_analysis (LLM)"':
+          data:
+            additionalParameters: []
+            cache: false
+            enableFunctionUse: false
+            maxTokens: 1200
+            modalitiesIncludeAudio: false
+            modalitiesIncludeText: false
+            model: gpt-4o-mini
+            outputUsage: false
+            parallelFunctionCalling: true
+            reasoningEffort: ""
+            responseFormat: json
+            stop: ""
+            temperature: 0.2
+            top_p: 1
+            useAdditionalParametersInput: false
+            useAsGraphPartialOutput: false
+            useFrequencyPenaltyInput: false
+            useMaxTokensInput: false
+            useModelInput: true
+            usePredictedOutput: false
+            usePresencePenaltyInput: false
+            useReasoningEffortInput: false
+            useServerTokenCalculation: true
+            useStop: false
+            useStopInput: false
+            useTemperatureInput: false
+            useTopP: false
+            useTopPInput: false
+            useUseTopPInput: false
+            useUserInput: false
+          outgoingConnections:
+            - 'response->"Analyst: recommendations (prompt)"
+              monthly_letter__Analyst__recommendations__prompt_/performance_analysis'
+            - 'response->"Writer: letter_writer (prompt)"
+              monthly_letter__Writer__letter_writer__prompt_/performance_analysis'
+            - response->"out_performance_analysis"
+              monthly_letter__out_performance_analysis/value
+          visualData: 1510/320/240/null//
+        '[monthly_letter__Analyst__performance_analysis__prompt_]:prompt "Analyst: performance_analysis (prompt)"':
+          data:
+            enableFunctionCall: false
+            promptText: >-
+              ## Task: analyze the portfolio's performance in the month
+
+
+              You receive the portfolio, the profitability results already
+              calculated by our engine and the XP macro digest. Your job is to
+              choose what matters and explain it, never to recalculate.
+
+
+              Explain:
+
+              - the headline: the portfolio return versus CDI and versus the
+              profile benchmark;
+
+              - which asset rose the most and which fell the most (by return %),
+              and which asset contributed the most and the least in reais.
+              Mention when they are different assets and why (weight);
+
+              - how each asset class and each fund type behaved, with the right
+              sign: say which were positive and which negative;
+
+              - the assets that hurt the most in reais (bottom contributors),
+              not only the worst return;
+
+              - the most impactful movements in reais, and losses stated plainly
+              (asset, return and how much it took from the portfolio in reais);
+
+              - for each relevant loss or gain, a possible explanation from the
+              XP macro digest only when the digest supports it (e.g. a sector or
+              asset class it mentions); if the digest says nothing about it, do
+              not make up a cause;
+
+              - points of attention from the data (for example idle cash and its
+              opportunity cost, a matured bond, data caveats such as a proxy
+              used for a fund). A matured bond shows +0,00% because it already
+              paid out: describe it as an amount available to reinvest, never as
+              "sem retorno" or a loss.
+
+
+              Use the figures exactly as written in the results. Attribute each
+              figure only to what it measures:
+
+              - "classes" are whole asset classes (stocks, fixed income, cash);
+              funds are reported only by type in "fund_types", so name the type
+              ("fundos multimercado") with its own return; for one asset, use
+              "positions".
+
+              - Never present the return of a class as the return of a subset of
+              it, or the other way around. "Renda fixa (CDB)" is only the CDBs
+              held directly; fixed income funds are a fund type.
+
+              - A contribution in reais comes from weight and return together;
+              say "weight" only when the asset's weight is clearly larger than
+              the best performer's.
+
+              - "highlights" already ranks the assets: best and worst performer
+              by return, top and bottom contributor in reais.
+
+
+              Return JSON with this schema:
+
+              {
+                "headline_pt": "string (one sentence)",
+                "best_performer": {"asset": "string", "return": "string"},
+                "worst_performer": {"asset": "string", "return": "string"},
+                "top_contributor": {"asset": "string", "contribution": "string"},
+                "bottom_contributor": {"asset": "string", "contribution": "string"},
+                "class_comments_pt": [{"asset_class": "string", "comment": "string"}],
+                "attention_points_pt": ["string"],
+                "macro_links_pt": ["string (movement + the macro point that may explain it)"],
+                "paragraph_pt": "string (one paragraph in pt-BR, max 120 words, for the letter)"
+              }
+
+
+              ### Client
+
+              {{client}}
+
+
+              ### Portfolio (statement)
+
+              {{portfolio_text}}
+
+
+              ### XP macro digest
+
+              {{macro_digest}}
+
+
+              ### Profitability results (calculated by our engine; figures in
+              "formatted" are the ones to quote)
+
+              {{profitability}}
+            type: user
+            useTypeInput: false
+          outgoingConnections:
+            - 'output->"Analyst: performance_analysis (LLM)"
+              monthly_letter__Analyst__performance_analysis__LLM_/prompt'
+          visualData: 1150/320/320/null//
+        '[monthly_letter__Analyst__profile_summary__LLM_]:chat "Analyst: profile_summary (LLM)"':
+          data:
+            additionalParameters: []
+            cache: false
+            enableFunctionUse: false
+            maxTokens: 800
+            modalitiesIncludeAudio: false
+            modalitiesIncludeText: false
+            model: gpt-4o-mini
+            outputUsage: false
+            parallelFunctionCalling: true
+            reasoningEffort: ""
+            responseFormat: json
+            stop: ""
+            temperature: 0.1
+            top_p: 1
+            useAdditionalParametersInput: false
+            useAsGraphPartialOutput: false
+            useFrequencyPenaltyInput: false
+            useMaxTokensInput: false
+            useModelInput: true
+            usePredictedOutput: false
+            usePresencePenaltyInput: false
+            useReasoningEffortInput: false
+            useServerTokenCalculation: true
+            useStop: false
+            useStopInput: false
+            useTemperatureInput: false
+            useTopP: false
+            useTopPInput: false
+            useUseTopPInput: false
+            useUserInput: false
+          outgoingConnections:
+            - 'response->"Analyst: recommendations (prompt)"
+              monthly_letter__Analyst__recommendations__prompt_/profile_summary'
+            - 'response->"Reviewer: critic (prompt)"
+              monthly_letter__Reviewer__critic__prompt_/profile_summary'
+            - 'response->"Writer: letter_writer (prompt)"
+              monthly_letter__Writer__letter_writer__prompt_/profile_summary'
+            - response->"out_profile_summary"
+              monthly_letter__out_profile_summary/value
+          visualData: 810/200/240/null//
+        '[monthly_letter__Analyst__profile_summary__prompt_]:prompt "Analyst: profile_summary (prompt)"':
+          data:
+            enableFunctionCall: false
+            promptText: >-
+              ## Task: summarize the client's investor profile (suitability)
+
+
+              Read the client's risk profile document and extract what the
+              letter and the suggestions must respect.
+
+
+              Return JSON with this schema:
+
+              {
+                "profile": "conservative|moderate|aggressive",
+                "profile_pt": "string (e.g. Moderado)",
+                "horizon": "string",
+                "volatility_tolerance": "string",
+                "objectives": ["string"],
+                "compatible_products": ["string"],
+                "restrictions": ["string (explicit rules from the document, e.g. dividend-paying companies only)"],
+                "summary_pt": "string (one sentence in pt-BR, max 40 words)"
+              }
+
+
+              ### Risk profile classification computed from the document
+
+              {{profile_label}}
+
+
+              ### Risk profile document
+
+              {{risk_profile_text}}
+            type: user
+            useTypeInput: false
+          outgoingConnections:
+            - 'output->"Analyst: profile_summary (LLM)"
+              monthly_letter__Analyst__profile_summary__LLM_/prompt'
+          visualData: 450/200/320/null//
+        '[monthly_letter__Analyst__recommendations__LLM_]:chat "Analyst: recommendations (LLM)"':
+          data:
+            additionalParameters: []
+            cache: false
+            enableFunctionUse: false
+            maxTokens: 1200
+            modalitiesIncludeAudio: false
+            modalitiesIncludeText: false
+            model: gpt-4o-mini
+            outputUsage: false
+            parallelFunctionCalling: true
+            reasoningEffort: ""
+            responseFormat: json
+            stop: ""
+            temperature: 0.3
+            top_p: 1
+            useAdditionalParametersInput: false
+            useAsGraphPartialOutput: false
+            useFrequencyPenaltyInput: false
+            useMaxTokensInput: false
+            useModelInput: true
+            usePredictedOutput: false
+            usePresencePenaltyInput: false
+            useReasoningEffortInput: false
+            useServerTokenCalculation: true
+            useStop: false
+            useStopInput: false
+            useTemperatureInput: false
+            useTopP: false
+            useTopPInput: false
+            useUseTopPInput: false
+            useUserInput: false
+          outgoingConnections:
+            - 'response->"Writer: letter_writer (prompt)"
+              monthly_letter__Writer__letter_writer__prompt_/recommendations'
+            - response->"out_recommendations"
+              monthly_letter__out_recommendations/value
+          visualData: 2210/200/240/null//
+        '[monthly_letter__Analyst__recommendations__prompt_]:prompt "Analyst: recommendations (prompt)"':
+          data:
+            enableFunctionCall: false
+            promptText: >-
+              ## Task: suggest portfolio movements for the coming month
+
+
+              Our rules engine has already listed the movements that are
+              objectively justified for this client ("candidates"), each with
+              its type and its basis in the portfolio. Your job is to choose and
+              explain, not to invent movements.
+
+
+              Rules:
+
+              - Choose 2 or 3 candidates. Prefer, in this order: a matured bond
+              or idle cash to put to work, a protection need (no fixed income,
+              concentration, a heavy class that fell), and at most one macro
+              opportunity.
+
+              - Use a macro candidate only if the XP macro digest is favorable
+              or neutral for that asset class, and say which projection supports
+              it.
+
+              - Do not change the action of a candidate and do not name products
+              or tickers that the candidate does not name. Never state where the
+              money must go: every action is a possibility to discuss with the
+              advisor ("discutir com o assessor a possibilidade de...").
+
+              - Do not choose two candidates that point to the same instrument
+              for the same money.
+
+              - The rationale links three things: the candidate's basis (fact),
+              the client's profile and the XP scenario. Explain what the
+              movement does to the portfolio (diversifies, reduces
+              concentration, gives liquidity, puts idle money to work at the CDI
+              rate), never that it will improve or increase returns.
+
+              - XP figures are projections with a horizon (e.g. "a XP projeta a
+              Selic em 15,50% em 2025"), never current values.
+
+              - If revision notes are given, fix what they say about the
+              suggestions.
+
+
+              Return JSON with this schema:
+
+              {
+                "suggestions": [
+                  {
+                    "candidate_id": "string (id from the candidates)",
+                    "type": "opportunity|protection (copied from the candidate)",
+                    "title_pt": "string (max 8 words)",
+                    "action_pt": "string (the candidate's action, one sentence)",
+                    "rationale_pt": "string (fact + profile + XP scenario, max 60 words)"
+                  }
+                ],
+                "outlook_pt": "string (one paragraph in pt-BR, max 70 words: what to watch in the coming months given the scenario, without repeating the macro figures and without promising returns)"
+              }
+
+
+              ### Candidates (from our rules engine)
+
+              {{suggestion_candidates}}
+
+
+              ### Client profile
+
+              {{profile_summary}}
+
+
+              ### XP macro digest
+
+              {{macro_digest}}
+
+
+              ### Portfolio performance analysis
+
+              {{performance_analysis}}
+
+
+              ### Portfolio facts (calculated by our engine)
+
+              {{portfolio_facts}}
+
+
+              ### Revision notes (empty on the first draft)
+
+              {{revision_notes}}
+            type: user
+            useTypeInput: false
+          outgoingConnections:
+            - 'output->"Analyst: recommendations (LLM)"
+              monthly_letter__Analyst__recommendations__LLM_/prompt'
+          visualData: 1850/200/320/null//
+        '[monthly_letter__Reviewer__critic__LLM_]:chat "Reviewer: critic (LLM)"':
+          data:
+            additionalParameters: []
+            cache: false
+            enableFunctionUse: false
+            maxTokens: 1200
+            modalitiesIncludeAudio: false
+            modalitiesIncludeText: false
+            model: gpt-4o-mini
+            outputUsage: false
+            parallelFunctionCalling: true
+            reasoningEffort: ""
+            responseFormat: json
+            stop: ""
+            temperature: 0
+            top_p: 1
+            useAdditionalParametersInput: false
+            useAsGraphPartialOutput: false
+            useFrequencyPenaltyInput: false
+            useMaxTokensInput: false
+            useModelInput: true
+            usePredictedOutput: false
+            usePresencePenaltyInput: false
+            useReasoningEffortInput: false
+            useServerTokenCalculation: true
+            useStop: false
+            useStopInput: false
+            useTemperatureInput: false
+            useTopP: false
+            useTopPInput: false
+            useUseTopPInput: false
+            useUserInput: false
+          outgoingConnections:
+            - response->"out_critic" monthly_letter__out_critic/value
+          visualData: 3610/200/240/null//
+        '[monthly_letter__Reviewer__critic__prompt_]:prompt "Reviewer: critic (prompt)"':
+          data:
+            enableFunctionCall: false
+            promptText: >-
+              ## Task: review the letter before it goes to the advisor
+
+
+              Every figure in the letter is already verified automatically
+              against the source data, so do NOT check numbers or word count.
+              Review only what needs judgement. The letter will be sent to a
+              real client.
+
+
+              The suggestions were chosen from candidates produced by our rules
+              engine, which already checks suitability and grounding; do not
+              judge whether a suggestion fits the profile.
+
+
+              Check:
+
+              - "fatos": every statement about the portfolio agrees with the
+              profitability results and the portfolio facts: which asset, class
+              or fund type was positive or negative, best or worst, concentrated
+              or matured; claims such as "bom desempenho" or "proteção contra a
+              inflação" are supported; XP figures are presented as projections,
+              not current values. A wrong statement is high. (Formatting of
+              figures is checked elsewhere; check meaning only.)
+
+              - "coerência": no two passages contradict each other, and no
+              suggestion contradicts another. High.
+
+              - "nomes": correct client name, reference month and advisor; the
+              letter speaks to the client as "você" (not in the third person).
+              High.
+
+              - "linguagem": Brazilian Portuguese, formal and clear tone; no
+              repeated ideas or figures between sections. Medium or low.
+
+              - "promessa": wording that implies improved or guaranteed returns.
+              An automatic check already blocks the obvious cases, so report it
+              as medium at most, as a note for the advisor.
+
+
+              Report an issue only when you can quote the exact passage that
+              breaks one of the rules above. Severity "high" means the letter
+              must not be sent as it is; use "low" for style preferences. Do not
+              report something that is correct.
+
+
+              Return JSON with this schema:
+
+              {
+                "approved": true,
+                "issues": [{"severity": "high|medium|low", "rule": "fatos|coerência|nomes|linguagem|promessa", "quote": "exact passage from the letter", "problem": "string", "fix": "string"}]
+              }
+
+              Write "problem" and "fix" in Brazilian Portuguese, for the
+              advisor. Set "approved" to false only if there is a high issue.
+
+
+              ### Client
+
+              {{client}}
+
+
+              ### Client profile
+
+              {{profile_summary}}
+
+
+              ### Profitability results
+
+              {{profitability}}
+
+
+              ### Portfolio facts
+
+              {{portfolio_facts}}
+
+
+              ### XP macro digest
+
+              {{macro_digest}}
+
+
+              ### Draft letter
+
+              {{letter}}
+            type: user
+            useTypeInput: false
+          outgoingConnections:
+            - 'output->"Reviewer: critic (LLM)"
+              monthly_letter__Reviewer__critic__LLM_/prompt'
+          visualData: 3250/200/320/null//
+        '[monthly_letter__Writer__letter_writer__LLM_]:chat "Writer: letter_writer (LLM)"':
+          data:
+            additionalParameters: []
+            cache: false
+            enableFunctionUse: false
+            maxTokens: 2500
+            modalitiesIncludeAudio: false
+            modalitiesIncludeText: false
+            model: gpt-4o-mini
+            outputUsage: false
+            parallelFunctionCalling: true
+            reasoningEffort: ""
+            responseFormat: json
+            stop: ""
+            temperature: 0.4
+            top_p: 1
+            useAdditionalParametersInput: false
+            useAsGraphPartialOutput: false
+            useFrequencyPenaltyInput: false
+            useMaxTokensInput: false
+            useModelInput: true
+            usePredictedOutput: false
+            usePresencePenaltyInput: false
+            useReasoningEffortInput: false
+            useServerTokenCalculation: true
+            useStop: false
+            useStopInput: false
+            useTemperatureInput: false
+            useTopP: false
+            useTopPInput: false
+            useUseTopPInput: false
+            useUserInput: false
+          outgoingConnections:
+            - 'response->"Reviewer: critic (prompt)"
+              monthly_letter__Reviewer__critic__prompt_/letter'
+            - response->"out_letter" monthly_letter__out_letter/value
+          visualData: 2910/320/240/null//
+        '[monthly_letter__Writer__letter_writer__prompt_]:prompt "Writer: letter_writer (prompt)"':
+          data:
+            enableFunctionCall: false
+            promptText: >-
+              ## Task: write the monthly letter
+
+
+              Integrate the analyses below into the client's monthly letter, in
+              Brazilian Portuguese. It will be laid out on two A4 pages together
+              with two charts and a small results table, so the whole text must
+              stay between 380 and 520 words.
+
+
+              Structure:
+
+              1. greeting with the client's first name;
+
+              2. opening: one or two sentences with the month and the purpose of
+              the letter;
+
+              3. performance: the month's result versus CDI and the profile
+              benchmark; the most impactful movements, with losses stated
+              plainly and, when the analysis links them to the XP scenario, that
+              possible explanation; the best performer and the worst performer
+              (by return); the top contributor in reais when it is a different
+              asset from the best performer, explaining that its weight in the
+              portfolio is larger; then the attention points;
+
+              4. macro: how the XP scenario may affect the portfolio;
+
+              5. suggestions: exactly the movements in "Suggestions", same
+              order, candidate_id and type copied; each text starts with
+              "Discutir com o assessor a possibilidade de..." (or a close
+              variation) and never states where the money must go, nor names a
+              product or ticker the suggestion does not name;
+
+              6. outlook: what to expect, without promising returns;
+
+              7. closing: availability of the advisor for a conversation.
+
+
+              Choose the two charts that best support the story, from:
+              "allocation" (portfolio by asset class), "contribution"
+              (contribution of each asset in R$), "benchmarks" (portfolio vs
+              CDI, Ibovespa and profile benchmark).
+
+
+              Quote figures exactly as they appear in the analyses and attribute
+              them only to what they measure (a class return is not the return
+              of one fund type or one asset).
+
+
+              Wording rules (the letter goes to a real client and must follow
+              suitability rules):
+
+              - Never state or imply that a movement will improve, increase or
+              raise returns, gains or profitability ("pode melhorar a
+              rentabilidade", "potencializar ganhos", "aumentar o retorno" are
+              not allowed). Describe instead what the movement does to the
+              portfolio: diversifies, reduces concentration, adds liquidity,
+              aligns the portfolio with the profile, puts idle money to work at
+              the CDI rate.
+
+              - XP figures are projections: say "a XP projeta a Selic em 15,50%
+              ao fim de 2025" (with the horizon from the digest), never "a Selic
+              deve permanecer em". Quote each macro figure once, in the macro
+              section; the outlook does not repeat them.
+
+              - Each sentence says what it means grammatically: "incluir renda
+              fixa pode trazer proteção", not "a carteira não possui renda fixa,
+              o que pode oferecer proteção".
+
+              - Macro effects are conditional and attributed to XP: "o cenário
+              projetado pela XP tende a favorecer...", never "vai render".
+
+              - A matured bond is money available to reinvest, not a bad result:
+              do not describe it as "sem retorno" or as a concern.
+
+              - Idle cash is "saldo parado sem rendimento"; you may quote its
+              opportunity cost in reais, but not promise what it would earn.
+
+              - Address the client as "você" consistently; use correct
+              Portuguese ("custo de oportunidade", "ajudá-lo"), and avoid
+              starting sentences with "Apesar de" unless a contrast follows in
+              the same sentence.
+
+
+              Each suggestion text keeps the portfolio fact it rests on (e.g.
+              "sua carteira não tem renda fixa"), and its title says no more
+              than its text. Do not compare a result with an expectation, a
+              limit or an ideal that is not in the inputs (no "abaixo do
+              esperado", "acima do limite ideal"; the concentration fact gives
+              the 15% reference).
+
+
+              The greeting appears only in greeting_pt. performance_pt has at
+              most two paragraphs and each figure is quoted once in the whole
+              letter.
+
+
+              If revision notes are given, fix every issue they list and keep
+              the rest, including every suggestion that is grounded in a
+              portfolio fact.
+
+
+              Return JSON with this schema:
+
+              {
+                "subject_pt": "string (e-mail subject)",
+                "greeting_pt": "string (e.g. Prezado Albert,)",
+                "opening_pt": "string",
+                "performance_pt": ["string (paragraphs)"],
+                "macro_pt": "string",
+                "suggestions_intro_pt": "string",
+                "suggestions": [{"candidate_id": "string (copied)", "type": "opportunity|protection (copied)", "title_pt": "string", "text_pt": "string"}],
+                "outlook_pt": "string",
+                "closing_pt": "string",
+                "charts": ["allocation|contribution|benchmarks", "allocation|contribution|benchmarks"]
+              }
+
+
+              ### Client
+
+              {{client}}
+
+
+              ### Client profile
+
+              {{profile_summary}}
+
+
+              ### Portfolio performance analysis
+
+              {{performance_analysis}}
+
+
+              ### XP macro digest
+
+              {{macro_digest}}
+
+
+              ### Suggestions
+
+              {{recommendations}}
+
+
+              ### Revision notes (empty on the first draft)
+
+              {{revision_notes}}
+            type: user
+            useTypeInput: false
+          outgoingConnections:
+            - 'output->"Writer: letter_writer (LLM)"
+              monthly_letter__Writer__letter_writer__LLM_/prompt'
+          visualData: 2550/320/320/null//
+        '[monthly_letter__in_client]:graphInput "in_client"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: client
+            useDefaultValueInput: false
+          outgoingConnections:
+            - 'data->"Analyst: performance_analysis (prompt)"
+              monthly_letter__Analyst__performance_analysis__prompt_/client'
+            - 'data->"Reviewer: critic (prompt)"
+              monthly_letter__Reviewer__critic__prompt_/client'
+            - 'data->"Writer: letter_writer (prompt)"
+              monthly_letter__Writer__letter_writer__prompt_/client'
+          visualData: 0/0/280/null//
+        '[monthly_letter__in_macro_digest]:graphInput "in_macro_digest"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: macro_digest
+            useDefaultValueInput: false
+          outgoingConnections:
+            - 'data->"Analyst: performance_analysis (prompt)"
+              monthly_letter__Analyst__performance_analysis__prompt_/macro_digest'
+            - 'data->"Analyst: recommendations (prompt)"
+              monthly_letter__Analyst__recommendations__prompt_/macro_digest'
+            - 'data->"Reviewer: critic (prompt)"
+              monthly_letter__Reviewer__critic__prompt_/macro_digest'
+            - 'data->"Writer: letter_writer (prompt)"
+              monthly_letter__Writer__letter_writer__prompt_/macro_digest'
+          visualData: 0/1120/280/null//
+        '[monthly_letter__in_model]:graphInput "in_model"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: model
+            useDefaultValueInput: false
+          outgoingConnections:
+            - 'data->"Analyst: performance_analysis (LLM)"
+              monthly_letter__Analyst__performance_analysis__LLM_/model'
+            - 'data->"Analyst: profile_summary (LLM)"
+              monthly_letter__Analyst__profile_summary__LLM_/model'
+            - 'data->"Analyst: recommendations (LLM)"
+              monthly_letter__Analyst__recommendations__LLM_/model'
+          visualData: 0/1440/280/null//
+        '[monthly_letter__in_portfolio_facts]:graphInput "in_portfolio_facts"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: portfolio_facts
+            useDefaultValueInput: false
+          outgoingConnections:
+            - 'data->"Analyst: recommendations (prompt)"
+              monthly_letter__Analyst__recommendations__prompt_/portfolio_facts'
+            - 'data->"Reviewer: critic (prompt)"
+              monthly_letter__Reviewer__critic__prompt_/portfolio_facts'
+          visualData: 0/800/280/null//
+        '[monthly_letter__in_portfolio_text]:graphInput "in_portfolio_text"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: portfolio_text
+            useDefaultValueInput: false
+          outgoingConnections:
+            - 'data->"Analyst: performance_analysis (prompt)"
+              monthly_letter__Analyst__performance_analysis__prompt_/portfolio_text'
+          visualData: 0/480/280/null//
+        '[monthly_letter__in_profile_label]:graphInput "in_profile_label"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: profile_label
+            useDefaultValueInput: false
+          outgoingConnections:
+            - 'data->"Analyst: profile_summary (prompt)"
+              monthly_letter__Analyst__profile_summary__prompt_/profile_label'
+          visualData: 0/160/280/null//
+        '[monthly_letter__in_profitability]:graphInput "in_profitability"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: profitability
+            useDefaultValueInput: false
+          outgoingConnections:
+            - 'data->"Analyst: performance_analysis (prompt)"
+              monthly_letter__Analyst__performance_analysis__prompt_/profitability'
+            - 'data->"Reviewer: critic (prompt)"
+              monthly_letter__Reviewer__critic__prompt_/profitability'
+          visualData: 0/640/280/null//
+        '[monthly_letter__in_revision_notes]:graphInput "in_revision_notes"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: revision_notes
+            useDefaultValueInput: false
+          outgoingConnections:
+            - 'data->"Analyst: recommendations (prompt)"
+              monthly_letter__Analyst__recommendations__prompt_/revision_notes'
+            - 'data->"Writer: letter_writer (prompt)"
+              monthly_letter__Writer__letter_writer__prompt_/revision_notes'
+          visualData: 0/1280/280/null//
+        '[monthly_letter__in_risk_profile_text]:graphInput "in_risk_profile_text"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: risk_profile_text
+            useDefaultValueInput: false
+          outgoingConnections:
+            - 'data->"Analyst: profile_summary (prompt)"
+              monthly_letter__Analyst__profile_summary__prompt_/risk_profile_text'
+          visualData: 0/320/280/null//
+        '[monthly_letter__in_suggestion_candidates]:graphInput "in_suggestion_candidates"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: suggestion_candidates
+            useDefaultValueInput: false
+          outgoingConnections:
+            - 'data->"Analyst: recommendations (prompt)"
+              monthly_letter__Analyst__recommendations__prompt_/suggestion_candidates'
+          visualData: 0/960/280/null//
+        '[monthly_letter__in_writer_model]:graphInput "in_writer_model"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: writer_model
+            useDefaultValueInput: false
+          outgoingConnections:
+            - 'data->"Reviewer: critic (LLM)"
+              monthly_letter__Reviewer__critic__LLM_/model'
+            - 'data->"Writer: letter_writer (LLM)"
+              monthly_letter__Writer__letter_writer__LLM_/model'
+          visualData: 0/1600/280/null//
+        '[monthly_letter__monthly_letter_system]:prompt "monthly_letter_system"':
+          data:
+            enableFunctionCall: false
+            promptText: >-
+              You are a senior investment advisor at XP Investimentos preparing
+              the monthly letter for a middle-market client in Brazil.
+
+
+              Non-negotiable rules:
+
+              1. Use only facts and figures that appear in the inputs. Never
+              calculate, round, estimate or invent a number. When you mention a
+              figure, copy it exactly as it is written in the inputs (Brazilian
+              format, e.g. "+1,23%" or "R$ 1.234,56"; these two are format
+              examples, never real figures).
+
+              2. Attribute each figure only to what it measures: a class return
+              is not the return of one of its assets or fund types, and the
+              return of one asset is not the return of its class.
+
+              3. Never promise or forecast returns for the client's portfolio.
+              Talk about scenarios and possibilities, not certainties.
+
+              4. Every suggestion must be compatible with the client's risk
+              profile and grounded in the XP macro research provided. Present
+              suggestions as points to discuss with the advisor, not as orders.
+
+              5. Client-facing text is written in Brazilian Portuguese (pt-BR),
+              in a formal, warm and clear tone, without jargon overload.
+
+              6. Answer with a single valid JSON object that follows the
+              requested schema exactly, with no text before or after it.
+            type: system
+            useTypeInput: false
+          outgoingConnections:
+            - 'output->"Analyst: performance_analysis (LLM)"
+              monthly_letter__Analyst__performance_analysis__LLM_/systemPrompt'
+            - 'output->"Analyst: profile_summary (LLM)"
+              monthly_letter__Analyst__profile_summary__LLM_/systemPrompt'
+            - 'output->"Analyst: recommendations (LLM)"
+              monthly_letter__Analyst__recommendations__LLM_/systemPrompt'
+            - 'output->"Reviewer: critic (LLM)"
+              monthly_letter__Reviewer__critic__LLM_/systemPrompt'
+            - 'output->"Writer: letter_writer (LLM)"
+              monthly_letter__Writer__letter_writer__LLM_/systemPrompt'
+          visualData: 400/-400/320/null//
+        '[monthly_letter__out_critic]:graphOutput "out_critic"':
+          data:
+            dataType: string
+            id: critic
+          visualData: 3950/640/280/null//
+        '[monthly_letter__out_letter]:graphOutput "out_letter"':
+          data:
+            dataType: string
+            id: letter
+          visualData: 3950/480/280/null//
+        '[monthly_letter__out_performance_analysis]:graphOutput "out_performance_analysis"':
+          data:
+            dataType: string
+            id: performance_analysis
+          visualData: 3950/160/280/null//
+        '[monthly_letter__out_profile_summary]:graphOutput "out_profile_summary"':
+          data:
+            dataType: string
+            id: profile_summary
+          visualData: 3950/0/280/null//
+        '[monthly_letter__out_recommendations]:graphOutput "out_recommendations"':
+          data:
+            dataType: string
+            id: recommendations
+          visualData: 3950/320/280/null//
+    portfolio_extraction:
+      metadata:
+        description: Used only when the code reader does not recognise a statement; the
+          result goes through the same sum checks.
+        id: portfolio_extraction
+        name: 3. Statement extraction (fallback)
+      nodes:
+        '[portfolio_extraction__in_model]:graphInput "in_model"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: model
+            useDefaultValueInput: false
+          outgoingConnections:
+            - data->"portfolio_extraction (LLM)"
+              portfolio_extraction__portfolio_extraction__LLM_/model
+          visualData: 0/160/280/null//
+        '[portfolio_extraction__in_statement_text]:graphInput "in_statement_text"':
+          data:
+            dataType: string
+            defaultValue: ""
+            id: statement_text
+            useDefaultValueInput: false
+          outgoingConnections:
+            - data->"portfolio_extraction (prompt)"
+              portfolio_extraction__portfolio_extraction__prompt_/statement_text
+          visualData: 0/0/280/null//
+        '[portfolio_extraction__out_portfolio_json]:graphOutput "out_portfolio_json"':
+          data:
+            dataType: string
+            id: portfolio_json
+          visualData: 1150/0/280/null//
+        '[portfolio_extraction__portfolio_extraction__LLM_]:chat "portfolio_extraction (LLM)"':
+          data:
+            additionalParameters: []
+            cache: false
+            enableFunctionUse: false
+            maxTokens: 4000
+            modalitiesIncludeAudio: false
+            modalitiesIncludeText: false
+            model: gpt-4o-mini
+            outputUsage: false
+            parallelFunctionCalling: true
+            reasoningEffort: ""
+            responseFormat: json
+            stop: ""
+            temperature: 0
+            top_p: 1
+            useAdditionalParametersInput: false
+            useAsGraphPartialOutput: false
+            useFrequencyPenaltyInput: false
+            useMaxTokensInput: false
+            useModelInput: true
+            usePredictedOutput: false
+            usePresencePenaltyInput: false
+            useReasoningEffortInput: false
+            useServerTokenCalculation: true
+            useStop: false
+            useStopInput: false
+            useTemperatureInput: false
+            useTopP: false
+            useTopPInput: false
+            useUseTopPInput: false
+            useUserInput: false
+          outgoingConnections:
+            - response->"out_portfolio_json"
+              portfolio_extraction__out_portfolio_json/value
+          visualData: 810/200/240/null//
+        '[portfolio_extraction__portfolio_extraction__prompt_]:prompt "portfolio_extraction (prompt)"':
+          data:
+            enableFunctionCall: false
+            promptText: >-
+              ## Task: extract the positions of an investment statement
+              (fallback reader)
+
+
+              Our code reader could not recognise this statement. Extract its
+              data so it can be validated by our checks (the sum of the
+              positions must match the total invested, and invested + cash must
+              match the total equity).
+
+
+              Copy every number exactly as printed. Do not skip any position. If
+              a field is not in the statement, use null.
+
+
+              Return JSON with this schema:
+
+              {
+                "client_name": "string",
+                "account": "string|null",
+                "snapshot_date": "dd/mm/yyyy|null",
+                "advisor_code": "string|null",
+                "advisor_name": "string|null",
+                "total_equity": "string",
+                "total_invested": "string",
+                "cash_available": "string",
+                "positions": [
+                  {
+                    "section": "string (section title as printed)",
+                    "name": "string",
+                    "market_value": "string",
+                    "allocation_pct": "string|null",
+                    "cumulative_return_pct": "string|null",
+                    "quantity": "string|null",
+                    "average_price": "string|null",
+                    "last_price": "string|null",
+                    "invested_amount": "string|null",
+                    "rate": "string|null",
+                    "maturity_date": "string|null"
+                  }
+                ]
+              }
+
+
+              ### Statement text
+
+              {{statement_text}}
+            type: user
+            useTypeInput: false
+          outgoingConnections:
+            - output->"portfolio_extraction (LLM)"
+              portfolio_extraction__portfolio_extraction__LLM_/prompt
+          visualData: 450/200/320/null//
+        '[portfolio_extraction__portfolio_extraction_system]:prompt "portfolio_extraction_system"':
+          data:
+            enableFunctionCall: false
+            promptText: >-
+              You are a senior investment advisor at XP Investimentos preparing
+              the monthly letter for a middle-market client in Brazil.
+
+
+              Non-negotiable rules:
+
+              1. Use only facts and figures that appear in the inputs. Never
+              calculate, round, estimate or invent a number. When you mention a
+              figure, copy it exactly as it is written in the inputs (Brazilian
+              format, e.g. "+1,23%" or "R$ 1.234,56"; these two are format
+              examples, never real figures).
+
+              2. Attribute each figure only to what it measures: a class return
+              is not the return of one of its assets or fund types, and the
+              return of one asset is not the return of its class.
+
+              3. Never promise or forecast returns for the client's portfolio.
+              Talk about scenarios and possibilities, not certainties.
+
+              4. Every suggestion must be compatible with the client's risk
+              profile and grounded in the XP macro research provided. Present
+              suggestions as points to discuss with the advisor, not as orders.
+
+              5. Client-facing text is written in Brazilian Portuguese (pt-BR),
+              in a formal, warm and clear tone, without jargon overload.
+
+              6. Answer with a single valid JSON object that follows the
+              requested schema exactly, with no text before or after it.
+            type: system
+            useTypeInput: false
+          outgoingConnections:
+            - output->"portfolio_extraction (LLM)"
+              portfolio_extraction__portfolio_extraction__LLM_/systemPrompt
+          visualData: 400/-400/320/null//
+  metadata:
+    description: "Rivet decides, Python executes: analysis, suggestions and the
+      letter are written here; figures, charts, PDF and e-mail are produced by
+      the Python platform."
+    id: xp_monthly_letter
+    mainGraphId: monthly_letter
+    title: XP Monthly Letter
+  plugins: []
+  references: []
