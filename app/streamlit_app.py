@@ -220,10 +220,10 @@ def edit_client(row: dict) -> None:
 
 
 if page == "Clientes":
-    head, button = st.columns([4, 1], vertical_alignment="bottom")
+    head, button = st.columns([5, 1], vertical_alignment="bottom")
     with head:
         title("Clientes")
-    if button.button("Cadastrar novo cliente", type="primary", width="stretch"):
+    if button.button("+ Novo cliente", type="primary", width="stretch"):
         new_client()
 
     table = st.dataframe(
@@ -280,13 +280,10 @@ def generate_tab() -> None:
     names = {f"{STATUS_ICON[r['status']]} {r['name']}": r["slug"] for r in ready}
     pending = [k for k, r in zip(names, ready) if r["status"] in ("pending", "error")]
     selected = st.multiselect("Clientes", list(names), default=pending or list(names))
-    workers = st.slider("Cartas em paralelo", 1, 16, pipeline.BATCH_WORKERS,
-                        help="Cada carta espera a IA; em paralelo, 20 cartas levam quase o mesmo tempo que uma. "
-                             "O limite é a cota da OpenAI.")
     job = jobs()["current"]
     running = bool(job and not job["end"])
     if st.button(f"Gerar {len(selected)} carta(s)", type="primary", disabled=running or not selected):
-        start_batch([names[k] for k in selected], workers)
+        start_batch([names[k] for k in selected], pipeline.BATCH_WORKERS)
         st.rerun()
     if running:
         st.caption("As cartas estão sendo escritas no servidor. Pode trocar de página: o lote continua.")
