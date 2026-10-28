@@ -2,9 +2,11 @@
 
 Flow (Rivet decides, Python executes):
 1. Macro digest: graph ``macro_digest`` runs once per month and is cached for every client.
-2. Briefing: statement, profile, formatted results and portfolio facts (``core.briefing``).
-3. Graph ``monthly_letter``: profile, performance analysis, an assessment of the portfolio against the
-   client's profile and the XP scenario (no buy/sell orders), letter and critic.
+2. Briefing: statement, profile, formatted results, 12-month window, portfolio facts and the macro
+   digest (``core.briefing``), written to ``briefing.json``.
+3. Graph ``monthly_letter``, with ``briefing.json`` (every figure already calculated) as its only data
+   input: the Analyst (profile, performance and an assessment of the portfolio against the client's
+   profile and the XP scenario, no buy/sell orders), the Writer and the Reviewer.
 4. Checks, deterministic: every figure in the letter must exist in the briefing, no promise of returns,
    every attention point cites a portfolio fact, the length fits; plus the critic's high-severity findings
    on facts, coherence and names. If any fails, the letter is rewritten (up to twice) with the issues as
@@ -215,18 +217,18 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
     portfolio_text = portfolio_to_text(portfolio).split("\nData warnings:")[0].rstrip()
     digest_for_llm = {k: v for k, v in digest.items() if not k.startswith("_")}
 
-    inputs = {
-        "client": json.dumps(client, ensure_ascii=False),
-        "profile_label": profile,
-        "risk_profile_text": risk_text,
-        "portfolio_text": portfolio_text,
-        "profitability": json.dumps(results, ensure_ascii=False, indent=1),
-        "portfolio_facts": json.dumps(facts, ensure_ascii=False, indent=1),
-        "macro_digest": json.dumps(digest_for_llm, ensure_ascii=False, indent=1),
-        "revision_notes": "",
-        "model": model,
-        "writer_model": writer_model,
+    # Everything the agent needs, already calculated, in one file: the Rivet graph's only data input.
+    briefing = {
+        "client": client,
+        "profile": {"label": profile, "document_text": risk_text},
+        "statement": portfolio_text,
+        "results": results,
+        "portfolio_facts": facts,
+        "macro_digest": digest_for_llm,
     }
+    (month_dir / "briefing.json").write_text(json.dumps(briefing, ensure_ascii=False, indent=1), encoding="utf-8")
+    inputs = {"briefing": json.dumps(briefing, ensure_ascii=False), "revision_notes": "", "model": model,
+              "writer_model": writer_model}
 
     attempts = []
     for attempt in range(max_rewrites + 1):
@@ -234,7 +236,7 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         steps = {name: parse_json(raw, name) for name, raw in outputs.items()}
         letter, critic = tidy(steps["letter"], client["name"]), steps["critic"]
         # The class table comes from the Analyst's assessment; weights are laid out from the facts by the PDF.
-        letter["class_views"] = steps["profile_assessment"].get("class_views", [])
+        letter["class_views"] = steps["analysis"].get("assessment", {}).get("class_views", [])
         unknown = check_numbers(letter, results, facts, digest_for_llm)
         words = word_count(letter)
         # Figures are verified by check_numbers; the critic judges meaning and tone. Its high findings on facts,

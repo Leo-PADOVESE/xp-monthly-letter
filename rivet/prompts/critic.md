@@ -22,20 +22,8 @@ Return JSON with this schema:
 }
 Write "problem" and "fix" in Brazilian Portuguese, for the advisor. Set "approved" to false only if there is a high issue.
 
-### Client
-{{client}}
-
-### Client profile
-{{profile_summary}}
-
-### Profitability results
-{{profitability}}
-
-### Portfolio facts
-{{portfolio_facts}}
-
-### XP macro digest
-{{macro_digest}}
+### Briefing (client, profile document, results, portfolio facts and XP macro digest)
+{{briefing}}
 
 ### Draft letter
 {{letter}}

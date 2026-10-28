@@ -177,18 +177,18 @@ data:
           visualData: 1150/0/280/null//
     monthly_letter:
       metadata:
-        description: Profile, performance analysis, assessment against profile and XP
-          scenario, letter and critic for one client. Every figure comes from
-          the Python engine.
+        description: Analyst, Writer and Reviewer for one client. The only data input is
+          briefing.json, written by the Python engine with every figure already
+          calculated and formatted.
         id: monthly_letter
         name: 2. Monthly letter (per client)
       nodes:
-        '[monthly_letter__Analyst__performance_analysis__LLM_]:chat "Analyst: performance_analysis (LLM)"':
+        '[monthly_letter__Analyst__analyst__LLM_]:chat "Analyst: analyst (LLM)"':
           data:
             additionalParameters: []
             cache: false
             enableFunctionUse: false
-            maxTokens: 1200
+            maxTokens: 3000
             modalitiesIncludeAudio: false
             modalitiesIncludeText: false
             model: gpt-4o-mini
@@ -216,262 +216,130 @@ data:
             useUseTopPInput: false
             useUserInput: false
           outgoingConnections:
-            - 'response->"Analyst: profile_assessment (prompt)"
-              monthly_letter__Analyst__profile_assessment__prompt_/performance_analysis'
             - 'response->"Writer: letter_writer (prompt)"
-              monthly_letter__Writer__letter_writer__prompt_/performance_analysis'
-            - response->"out_performance_analysis"
-              monthly_letter__out_performance_analysis/value
-          visualData: 1510/320/240/null//
-        '[monthly_letter__Analyst__performance_analysis__prompt_]:prompt "Analyst: performance_analysis (prompt)"':
+              monthly_letter__Writer__letter_writer__prompt_/analysis'
+            - response->"out_analysis" monthly_letter__out_analysis/value
+          visualData: 810/200/240/null//
+        '[monthly_letter__Analyst__analyst__prompt_]:prompt "Analyst: analyst (prompt)"':
           data:
             enableFunctionCall: false
             promptText: >-
-              ## Task: analyze the portfolio's performance in the month
+              ## Task: analyze the client's month, in three parts
 
 
-              You receive the portfolio, the profitability results already
-              calculated by our engine and the XP macro digest. Your job is to
-              choose what matters and explain it, never to recalculate.
+              The briefing below was prepared by our Python engine: the client,
+              the risk profile document, the statement, every result already
+              calculated and formatted, the portfolio facts and the XP macro
+              digest. Your job is to choose what matters and explain it, never
+              to recalculate. You do not recommend buying or selling assets.
 
 
-              Explain:
+              ### Part 1: profile
 
-              - the headline: the consolidated portfolio return versus CDI (and
-              as a % of the CDI, when "return_as_pct_of_cdi" applies), versus
-              the profile benchmark and versus inflation (real return);
-
-              - where the result came from by asset class ("class_contribution",
-              in reais and p.p.);
-
-              - when "consolidated_window" is given: the portfolio over that
-              window (12 months or since the first investment) against the CDI,
-              the Ibovespa, inflation and the profile benchmark, and the result
-              since purchase; it is rebuilt from the current positions, so say
-              "considerando as posições atuais";
-
-              - which asset rose the most and which fell the most (by return %),
-              and which asset contributed the most and the least in reais.
-              Mention when they are different assets and why (weight);
-
-              - how each asset class and each fund type behaved, with the right
-              sign: say which were positive and which negative;
-
-              - the assets that hurt the most in reais (bottom contributors),
-              not only the worst return;
-
-              - the most impactful movements in reais, and losses stated plainly
-              (asset, return and how much it took from the portfolio in reais);
-
-              - for each relevant loss or gain, a possible explanation from the
-              XP macro digest only when the digest supports it (e.g. a sector or
-              asset class it mentions); if the digest says nothing about it, do
-              not make up a cause;
-
-              - points of attention from the data (for example idle cash and its
-              opportunity cost, a matured bond, data caveats such as a proxy
-              used for a fund). A matured bond shows +0,00% because it already
-              paid out: describe it as an amount available to reinvest, never as
-              "sem retorno" or a loss. Do not quote the 0,00% return of cash or
-              of a matured bond as a class result.
+              From the risk profile document ("profile"), what the letter must
+              respect: horizon, tolerance to volatility, objectives, compatible
+              products and explicit restrictions (e.g. dividend-paying companies
+              only).
 
 
-              Use the figures exactly as written in the results. Attribute each
-              figure only to what it measures:
+              ### Part 2: performance (from "results")
 
-              - "classes" are whole asset classes (stocks, fixed income, cash);
-              funds are reported only by type in "fund_types", so name the type
-              ("fundos multimercado") with its own return; for one asset, use
-              "positions".
+              - The headline: the month's consolidated return versus the CDI (as
+              a % of the CDI when "return_as_pct_of_cdi" applies), the profile
+              benchmark and inflation (real return).
 
-              - Never present the return of a class as the return of a subset of
-              it, or the other way around. "Renda fixa (CDB)" is only the CDBs
-              held directly; fixed income funds are a fund type.
+              - Where the result came from by asset class ("class_contribution",
+              in reais and p.p.).
 
-              - A contribution in reais comes from weight and return together;
-              say "weight" only when the asset's weight is clearly larger than
-              the best performer's.
+              - When "consolidated_window" is given: the portfolio over that
+              window against the CDI, the Ibovespa, inflation and the profile
+              benchmark, and the result since purchase. It is rebuilt from the
+              current positions: say "considerando as posições atuais".
 
-              - "highlights" already ranks the assets: best and worst performer
-              by return, top and bottom contributor in reais.
+              - The best and worst performer by return and the top and bottom
+              contributor in reais ("highlights"). A contribution comes from
+              weight and return together: mention weight only when the asset's
+              weight in "positions" is clearly larger than the best performer's.
 
+              - Losses stated plainly (asset, return, reais). A possible
+              explanation from the XP digest only when the digest supports it;
+              never "explain" a class by a scenario that points the other way.
 
-              Return JSON with this schema:
+              - Points of attention from the data: idle cash and its opportunity
+              cost, a matured bond (+0,00% because it already paid out: an
+              amount available to reinvest, never "sem retorno"), a fund priced
+              by proxy. Never quote the 0,00% of cash or of a matured bond as a
+              class result.
 
-              {
-                "headline_pt": "string (one sentence)",
-                "attribution_pt": "string (one sentence: which classes produced the result)",
-                "window_pt": "string (one sentence on the consolidated window, or empty if not given)",
-                "best_performer": {"asset": "string", "return": "string"},
-                "worst_performer": {"asset": "string", "return": "string"},
-                "top_contributor": {"asset": "string", "contribution": "string"},
-                "bottom_contributor": {"asset": "string", "contribution": "string"},
-                "class_comments_pt": [{"asset_class": "string", "comment": "string"}],
-                "attention_points_pt": ["string"],
-                "macro_links_pt": ["string (movement + the macro point that may explain it)"],
-                "paragraph_pt": "string (one paragraph in pt-BR, max 120 words, for the letter)"
-              }
-
-
-              ### Client
-
-              {{client}}
+              - Attribution: "classes" are whole classes; funds appear only by
+              type in "fund_types"; one asset is in "positions". Never present
+              the return of a class as the return of a subset of it, or the
+              other way around. "Renda fixa (CDB)" is only the CDBs held
+              directly.
 
 
-              ### Portfolio (statement)
+              ### Part 3: assessment (portfolio vs profile and XP scenario)
 
-              {{portfolio_text}}
+              - Class by class, using the classes and weights in the
+              "class_weights" portfolio fact (copied exactly). The XP view comes
+              from the digest's asset_class_implications ("favorable", "neutral"
+              or "unfavorable"); when the digest says nothing about a class, or
+              for "Saldo em conta", use "neutral".
 
+              - "profile_fit_pt": one short sentence on what the class does for
+              this client in this scenario (protection, liquidity, growth,
+              inflation defence, concentration risk), consistent with the XP
+              view: do not call a class "estável" or "proteção" when the digest
+              sees it as volatile or uncertain, and never mention "potencial de
+              retorno".
 
-              ### XP macro digest
+              - "assessment_pt": is the mix coherent with the profile given the
+              scenario? Name the one or two classes that matter most for this
+              client, and the sectors the digest flags when the client holds
+              stocks in them. Balanced: what is well placed and what is exposed.
 
-              {{macro_digest}}
-
-
-              ### Profitability results (calculated by our engine; figures in
-              "formatted" are the ones to quote)
-
-              {{profitability}}
-            type: user
-            useTypeInput: false
-          outgoingConnections:
-            - 'output->"Analyst: performance_analysis (LLM)"
-              monthly_letter__Analyst__performance_analysis__LLM_/prompt'
-          visualData: 1150/320/320/null//
-        '[monthly_letter__Analyst__profile_assessment__LLM_]:chat "Analyst: profile_assessment (LLM)"':
-          data:
-            additionalParameters: []
-            cache: false
-            enableFunctionUse: false
-            maxTokens: 1200
-            modalitiesIncludeAudio: false
-            modalitiesIncludeText: false
-            model: gpt-4o-mini
-            outputUsage: false
-            parallelFunctionCalling: true
-            reasoningEffort: ""
-            responseFormat: json
-            stop: ""
-            temperature: 0.3
-            top_p: 1
-            useAdditionalParametersInput: false
-            useAsGraphPartialOutput: false
-            useFrequencyPenaltyInput: false
-            useMaxTokensInput: false
-            useModelInput: true
-            usePredictedOutput: false
-            usePresencePenaltyInput: false
-            useReasoningEffortInput: false
-            useServerTokenCalculation: true
-            useStop: false
-            useStopInput: false
-            useTemperatureInput: false
-            useTopP: false
-            useTopPInput: false
-            useUseTopPInput: false
-            useUserInput: false
-          outgoingConnections:
-            - 'response->"Writer: letter_writer (prompt)"
-              monthly_letter__Writer__letter_writer__prompt_/profile_assessment'
-            - response->"out_profile_assessment"
-              monthly_letter__out_profile_assessment/value
-          visualData: 2210/200/240/null//
-        '[monthly_letter__Analyst__profile_assessment__prompt_]:prompt "Analyst: profile_assessment (prompt)"':
-          data:
-            enableFunctionCall: false
-            promptText: >-
-              ## Task: assess how the portfolio sits in the XP scenario, for
-              this client's profile
-
-
-              You do not recommend buying or selling assets. You assess: given
-              the client's risk profile and the XP macro digest, how is the
-              current portfolio positioned for the coming months? Where is it
-              well placed, where is it exposed, and what is worth discussing
-              with the advisor?
-
-
-              Rules:
-
-              - Work class by class, using the classes and weights in the
-              "class_weights" portfolio fact (copy each class name and weight
-              exactly as written). For each class, take the XP view from the
-              digest's asset_class_implications ("favorable", "neutral" or
-              "unfavorable"); if the digest says nothing about that class, use
-              "neutral" and say so. "Saldo em conta" has no XP view: use
-              "neutral".
-
-              - "profile_fit_pt" reads that class for this client in one short
-              sentence, consistent with the XP view (do not call a class
-              "estável" or "proteção" when the digest sees it as volatile or
-              uncertain, and never mention "potencial de retorno"): what the
-              class does for a client with this profile in this scenario
-              (protection, liquidity, growth, inflation defence, concentration
-              risk), linking to the profile's horizon, tolerance or restrictions
-              when relevant.
-
-              - "assessment_pt" is the overall reading: is the mix coherent with
-              the profile given the scenario? Name the one or two classes that
-              matter most for this client (by weight or by exposure to the
-              scenario) and the sectors the digest flags when the client holds
-              stocks in them. Be balanced: say what is well placed as well as
-              what is exposed.
-
-              - "attention_points" are 1 to 3 objective facts worth a
-              conversation, each citing the id of a portfolio fact (idle cash,
-              matured bond, concentration, no fixed income, a class the digest
-              sees as unfavorable that weighs a lot). Phrase each as a topic to
+              - "attention_points": 1 to 3 objective facts worth a conversation,
+              each citing the id of a portfolio fact. Phrase each as a topic to
               discuss ("vale conversar com seu assessor sobre..."), never as an
-              order, and never say where the money must go or name a product.
-
-              - Describe what a change would do to the portfolio (diversify,
-              reduce concentration, add liquidity, align with the profile),
-              never that it would improve or increase returns.
+              order; never say where the money must go or name a product;
+              describe what a change would do (diversify, reduce concentration,
+              add liquidity, align with the profile), never that it would
+              improve returns.
 
               - XP figures are projections with a horizon ("a XP projeta a Selic
-              em 15,50% ao fim de 2025"), never current values.
+              em 15,50% ao fim de 2025").
 
-              - Address the client as "você" ("sua carteira"), never by name or
-              in the third person, and never mention the "digest": it is "o
-              cenário da XP".
 
-              - If revision notes are given, fix what they say about the
-              assessment.
+              Client-facing strings are in Brazilian Portuguese, address the
+              client as "você", never by name or in the third person, and never
+              mention the "digest" (it is "o cenário da XP"). Copy figures
+              exactly as written in the briefing. If revision notes are given,
+              fix what they say.
 
 
               Return JSON with this schema:
 
               {
-                "class_views": [
-                  {"asset_class": "string (copied from class_weights)", "weight": "string (copied)",
-                   "xp_view": "favorable|neutral|unfavorable", "profile_fit_pt": "string (pt-BR, max 18 words)"}
-                ],
-                "assessment_pt": "string (one paragraph in pt-BR, max 90 words)",
-                "attention_points": [
-                  {"fact_id": "string (id of a portfolio fact)", "title_pt": "string (max 7 words)", "text_pt": "string (pt-BR, max 45 words)"}
-                ],
-                "outlook_pt": "string (one paragraph in pt-BR, max 60 words: what to watch in the coming months, without repeating the macro figures and without promising returns)"
+                "profile": {"profile_pt": "string", "horizon": "string", "volatility_tolerance": "string",
+                            "objectives": ["string"], "restrictions": ["string"], "summary_pt": "string (max 40 words)"},
+                "performance": {
+                  "headline_pt": "string", "attribution_pt": "string", "window_pt": "string (empty if no consolidated_window)",
+                  "movers_pt": "string (best/worst performer, top contributor and losses)",
+                  "attention_points_pt": ["string"], "macro_links_pt": ["string (movement + the XP point that may explain it)"]
+                },
+                "assessment": {
+                  "class_views": [{"asset_class": "string (copied)", "weight": "string (copied)",
+                                   "xp_view": "favorable|neutral|unfavorable", "profile_fit_pt": "string (max 18 words)"}],
+                  "assessment_pt": "string (max 90 words)",
+                  "attention_points": [{"fact_id": "string", "title_pt": "string (max 7 words)", "text_pt": "string (max 45 words)"}],
+                  "outlook_pt": "string (max 60 words, no macro figures, no promise of returns)"
+                }
               }
 
 
-              ### Client profile
+              ### Briefing
 
-              {{profile_summary}}
-
-
-              ### XP macro digest
-
-              {{macro_digest}}
-
-
-              ### Portfolio performance analysis
-
-              {{performance_analysis}}
-
-
-              ### Portfolio facts (calculated by our engine)
-
-              {{portfolio_facts}}
+              {{briefing}}
 
 
               ### Revision notes (empty on the first draft)
@@ -480,89 +348,8 @@ data:
             type: user
             useTypeInput: false
           outgoingConnections:
-            - 'output->"Analyst: profile_assessment (LLM)"
-              monthly_letter__Analyst__profile_assessment__LLM_/prompt'
-          visualData: 1850/200/320/null//
-        '[monthly_letter__Analyst__profile_summary__LLM_]:chat "Analyst: profile_summary (LLM)"':
-          data:
-            additionalParameters: []
-            cache: false
-            enableFunctionUse: false
-            maxTokens: 800
-            modalitiesIncludeAudio: false
-            modalitiesIncludeText: false
-            model: gpt-4o-mini
-            outputUsage: false
-            parallelFunctionCalling: true
-            reasoningEffort: ""
-            responseFormat: json
-            stop: ""
-            temperature: 0.1
-            top_p: 1
-            useAdditionalParametersInput: false
-            useAsGraphPartialOutput: false
-            useFrequencyPenaltyInput: false
-            useMaxTokensInput: false
-            useModelInput: true
-            usePredictedOutput: false
-            usePresencePenaltyInput: false
-            useReasoningEffortInput: false
-            useServerTokenCalculation: true
-            useStop: false
-            useStopInput: false
-            useTemperatureInput: false
-            useTopP: false
-            useTopPInput: false
-            useUseTopPInput: false
-            useUserInput: false
-          outgoingConnections:
-            - 'response->"Analyst: profile_assessment (prompt)"
-              monthly_letter__Analyst__profile_assessment__prompt_/profile_summary'
-            - 'response->"Reviewer: critic (prompt)"
-              monthly_letter__Reviewer__critic__prompt_/profile_summary'
-            - 'response->"Writer: letter_writer (prompt)"
-              monthly_letter__Writer__letter_writer__prompt_/profile_summary'
-            - response->"out_profile_summary"
-              monthly_letter__out_profile_summary/value
-          visualData: 810/200/240/null//
-        '[monthly_letter__Analyst__profile_summary__prompt_]:prompt "Analyst: profile_summary (prompt)"':
-          data:
-            enableFunctionCall: false
-            promptText: >-
-              ## Task: summarize the client's investor profile (suitability)
-
-
-              Read the client's risk profile document and extract what the
-              letter and the portfolio assessment must respect.
-
-
-              Return JSON with this schema:
-
-              {
-                "profile": "conservative|moderate|aggressive",
-                "profile_pt": "string (e.g. Moderado)",
-                "horizon": "string",
-                "volatility_tolerance": "string",
-                "objectives": ["string"],
-                "compatible_products": ["string"],
-                "restrictions": ["string (explicit rules from the document, e.g. dividend-paying companies only)"],
-                "summary_pt": "string (one sentence in pt-BR, max 40 words)"
-              }
-
-
-              ### Risk profile classification computed from the document
-
-              {{profile_label}}
-
-
-              ### Risk profile document
-
-              {{risk_profile_text}}
-            type: user
-            useTypeInput: false
-          outgoingConnections:
-            - 'output->"Analyst: profile_summary (LLM)"
-              monthly_letter__Analyst__profile_summary__LLM_/prompt'
+            - 'output->"Analyst: analyst (LLM)"
+              monthly_letter__Analyst__analyst__LLM_/prompt'
           visualData: 450/200/320/null//
         '[monthly_letter__Reviewer__critic__LLM_]:chat "Reviewer: critic (LLM)"':
           data:
@@ -598,7 +385,7 @@ data:
             useUserInput: false
           outgoingConnections:
             - response->"out_critic" monthly_letter__out_critic/value
-          visualData: 3610/200/240/null//
+          visualData: 2210/200/240/null//
         '[monthly_letter__Reviewer__critic__prompt_]:prompt "Reviewer: critic (prompt)"':
           data:
             enableFunctionCall: false
@@ -666,29 +453,10 @@ data:
               advisor. Set "approved" to false only if there is a high issue.
 
 
-              ### Client
+              ### Briefing (client, profile document, results, portfolio facts
+              and XP macro digest)
 
-              {{client}}
-
-
-              ### Client profile
-
-              {{profile_summary}}
-
-
-              ### Profitability results
-
-              {{profitability}}
-
-
-              ### Portfolio facts
-
-              {{portfolio_facts}}
-
-
-              ### XP macro digest
-
-              {{macro_digest}}
+              {{briefing}}
 
 
               ### Draft letter
@@ -699,7 +467,7 @@ data:
           outgoingConnections:
             - 'output->"Reviewer: critic (LLM)"
               monthly_letter__Reviewer__critic__LLM_/prompt'
-          visualData: 3250/200/320/null//
+          visualData: 1850/200/320/null//
         '[monthly_letter__Writer__letter_writer__LLM_]:chat "Writer: letter_writer (LLM)"':
           data:
             additionalParameters: []
@@ -736,7 +504,7 @@ data:
             - 'response->"Reviewer: critic (prompt)"
               monthly_letter__Reviewer__critic__prompt_/letter'
             - response->"out_letter" monthly_letter__out_letter/value
-          visualData: 2910/320/240/null//
+          visualData: 1510/320/240/null//
         '[monthly_letter__Writer__letter_writer__prompt_]:prompt "Writer: letter_writer (prompt)"':
           data:
             enableFunctionCall: false
@@ -744,7 +512,7 @@ data:
               ## Task: write the monthly letter
 
 
-              Integrate the analyses below into the client's monthly letter, in
+              Turn the analysis below into the client's monthly letter, in
               Brazilian Portuguese. It will be laid out on two A4 pages together
               with a chart of the consolidated portfolio against its benchmarks
               over the last 12 months (or since the first investment), a table
@@ -780,12 +548,12 @@ data:
               means for the assets this client actually holds (name the classes
               or sectors, following the analyses). Quote each macro figure once;
 
-              5. assessment: the portfolio assessment, tightened if needed,
+              5. assessment: the analysis' assessment_pt, tightened if needed,
               keeping its balance (what is well placed and what is exposed);
 
-              6. attention points: exactly the points in "Assessment", same
-              order, fact_id copied; keep them as topics to discuss with the
-              advisor;
+              6. attention points: exactly the points in the analysis'
+              assessment, same order, fact_id copied; keep them as topics to
+              discuss with the advisor;
 
               7. outlook: what to watch, without promising returns;
 
@@ -858,29 +626,15 @@ data:
               }
 
 
-              ### Client
+              ### Briefing (client, results, portfolio facts and XP macro
+              digest)
 
-              {{client}}
-
-
-              ### Client profile
-
-              {{profile_summary}}
+              {{briefing}}
 
 
-              ### Portfolio performance analysis
+              ### Analysis (profile, performance and assessment, by the Analyst)
 
-              {{performance_analysis}}
-
-
-              ### XP macro digest
-
-              {{macro_digest}}
-
-
-              ### Assessment (portfolio vs profile and XP scenario)
-
-              {{profile_assessment}}
+              {{analysis}}
 
 
               ### Revision notes (empty on the first draft)
@@ -891,37 +645,21 @@ data:
           outgoingConnections:
             - 'output->"Writer: letter_writer (LLM)"
               monthly_letter__Writer__letter_writer__LLM_/prompt'
-          visualData: 2550/320/320/null//
-        '[monthly_letter__in_client]:graphInput "in_client"':
+          visualData: 1150/320/320/null//
+        '[monthly_letter__in_briefing]:graphInput "in_briefing"':
           data:
             dataType: string
             defaultValue: ""
-            id: client
+            id: briefing
             useDefaultValueInput: false
           outgoingConnections:
-            - 'data->"Analyst: performance_analysis (prompt)"
-              monthly_letter__Analyst__performance_analysis__prompt_/client'
+            - 'data->"Analyst: analyst (prompt)"
+              monthly_letter__Analyst__analyst__prompt_/briefing'
             - 'data->"Reviewer: critic (prompt)"
-              monthly_letter__Reviewer__critic__prompt_/client'
+              monthly_letter__Reviewer__critic__prompt_/briefing'
             - 'data->"Writer: letter_writer (prompt)"
-              monthly_letter__Writer__letter_writer__prompt_/client'
+              monthly_letter__Writer__letter_writer__prompt_/briefing'
           visualData: 0/0/280/null//
-        '[monthly_letter__in_macro_digest]:graphInput "in_macro_digest"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: macro_digest
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: performance_analysis (prompt)"
-              monthly_letter__Analyst__performance_analysis__prompt_/macro_digest'
-            - 'data->"Analyst: profile_assessment (prompt)"
-              monthly_letter__Analyst__profile_assessment__prompt_/macro_digest'
-            - 'data->"Reviewer: critic (prompt)"
-              monthly_letter__Reviewer__critic__prompt_/macro_digest'
-            - 'data->"Writer: letter_writer (prompt)"
-              monthly_letter__Writer__letter_writer__prompt_/macro_digest'
-          visualData: 0/960/280/null//
         '[monthly_letter__in_model]:graphInput "in_model"':
           data:
             dataType: string
@@ -929,57 +667,9 @@ data:
             id: model
             useDefaultValueInput: false
           outgoingConnections:
-            - 'data->"Analyst: performance_analysis (LLM)"
-              monthly_letter__Analyst__performance_analysis__LLM_/model'
-            - 'data->"Analyst: profile_assessment (LLM)"
-              monthly_letter__Analyst__profile_assessment__LLM_/model'
-            - 'data->"Analyst: profile_summary (LLM)"
-              monthly_letter__Analyst__profile_summary__LLM_/model'
-          visualData: 0/1280/280/null//
-        '[monthly_letter__in_portfolio_facts]:graphInput "in_portfolio_facts"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: portfolio_facts
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: profile_assessment (prompt)"
-              monthly_letter__Analyst__profile_assessment__prompt_/portfolio_facts'
-            - 'data->"Reviewer: critic (prompt)"
-              monthly_letter__Reviewer__critic__prompt_/portfolio_facts'
-          visualData: 0/800/280/null//
-        '[monthly_letter__in_portfolio_text]:graphInput "in_portfolio_text"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: portfolio_text
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: performance_analysis (prompt)"
-              monthly_letter__Analyst__performance_analysis__prompt_/portfolio_text'
-          visualData: 0/480/280/null//
-        '[monthly_letter__in_profile_label]:graphInput "in_profile_label"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: profile_label
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: profile_summary (prompt)"
-              monthly_letter__Analyst__profile_summary__prompt_/profile_label'
-          visualData: 0/160/280/null//
-        '[monthly_letter__in_profitability]:graphInput "in_profitability"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: profitability
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: performance_analysis (prompt)"
-              monthly_letter__Analyst__performance_analysis__prompt_/profitability'
-            - 'data->"Reviewer: critic (prompt)"
-              monthly_letter__Reviewer__critic__prompt_/profitability'
-          visualData: 0/640/280/null//
+            - 'data->"Analyst: analyst (LLM)"
+              monthly_letter__Analyst__analyst__LLM_/model'
+          visualData: 0/320/280/null//
         '[monthly_letter__in_revision_notes]:graphInput "in_revision_notes"':
           data:
             dataType: string
@@ -987,21 +677,11 @@ data:
             id: revision_notes
             useDefaultValueInput: false
           outgoingConnections:
-            - 'data->"Analyst: profile_assessment (prompt)"
-              monthly_letter__Analyst__profile_assessment__prompt_/revision_notes'
+            - 'data->"Analyst: analyst (prompt)"
+              monthly_letter__Analyst__analyst__prompt_/revision_notes'
             - 'data->"Writer: letter_writer (prompt)"
               monthly_letter__Writer__letter_writer__prompt_/revision_notes'
-          visualData: 0/1120/280/null//
-        '[monthly_letter__in_risk_profile_text]:graphInput "in_risk_profile_text"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: risk_profile_text
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: profile_summary (prompt)"
-              monthly_letter__Analyst__profile_summary__prompt_/risk_profile_text'
-          visualData: 0/320/280/null//
+          visualData: 0/160/280/null//
         '[monthly_letter__in_writer_model]:graphInput "in_writer_model"':
           data:
             dataType: string
@@ -1013,7 +693,7 @@ data:
               monthly_letter__Reviewer__critic__LLM_/model'
             - 'data->"Writer: letter_writer (LLM)"
               monthly_letter__Writer__letter_writer__LLM_/model'
-          visualData: 0/1440/280/null//
+          visualData: 0/480/280/null//
         '[monthly_letter__monthly_letter_system]:prompt "monthly_letter_system"':
           data:
             enableFunctionCall: false
@@ -1050,42 +730,28 @@ data:
             type: system
             useTypeInput: false
           outgoingConnections:
-            - 'output->"Analyst: performance_analysis (LLM)"
-              monthly_letter__Analyst__performance_analysis__LLM_/systemPrompt'
-            - 'output->"Analyst: profile_assessment (LLM)"
-              monthly_letter__Analyst__profile_assessment__LLM_/systemPrompt'
-            - 'output->"Analyst: profile_summary (LLM)"
-              monthly_letter__Analyst__profile_summary__LLM_/systemPrompt'
+            - 'output->"Analyst: analyst (LLM)"
+              monthly_letter__Analyst__analyst__LLM_/systemPrompt'
             - 'output->"Reviewer: critic (LLM)"
               monthly_letter__Reviewer__critic__LLM_/systemPrompt'
             - 'output->"Writer: letter_writer (LLM)"
               monthly_letter__Writer__letter_writer__LLM_/systemPrompt'
           visualData: 400/-400/320/null//
+        '[monthly_letter__out_analysis]:graphOutput "out_analysis"':
+          data:
+            dataType: string
+            id: analysis
+          visualData: 2550/0/280/null//
         '[monthly_letter__out_critic]:graphOutput "out_critic"':
           data:
             dataType: string
             id: critic
-          visualData: 3950/640/280/null//
+          visualData: 2550/320/280/null//
         '[monthly_letter__out_letter]:graphOutput "out_letter"':
           data:
             dataType: string
             id: letter
-          visualData: 3950/480/280/null//
-        '[monthly_letter__out_performance_analysis]:graphOutput "out_performance_analysis"':
-          data:
-            dataType: string
-            id: performance_analysis
-          visualData: 3950/160/280/null//
-        '[monthly_letter__out_profile_assessment]:graphOutput "out_profile_assessment"':
-          data:
-            dataType: string
-            id: profile_assessment
-          visualData: 3950/320/280/null//
-        '[monthly_letter__out_profile_summary]:graphOutput "out_profile_summary"':
-          data:
-            dataType: string
-            id: profile_summary
-          visualData: 3950/0/280/null//
+          visualData: 2550/160/280/null//
     portfolio_extraction:
       metadata:
         description: Used only when the code reader does not recognise a statement; the
