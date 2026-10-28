@@ -599,12 +599,13 @@ data:
               under the heading "Desempenho acumulado", only when
               "consolidated_window" is given, otherwise empty): only figures of
               "consolidated_window", always with the window ("nos últimos 12
-              meses"): the portfolio against the CDI, the profile benchmark and
-              the Ibovespa, saying it considers the current positions; then the
-              result since the first investment ("since_purchase", with its
-              date), explaining in plain words when it differs from the 12
-              months (older positions that are still below their purchase
-              price). Never mix a month figure into this paragraph;
+              meses"): the portfolio's return and result in reais ("gain")
+              against the CDI, the profile benchmark and the Ibovespa, saying it
+              considers the current positions; then the result since the first
+              investment ("since_purchase", with its date), explaining in plain
+              words when it differs from the 12 months (older positions that are
+              still below their purchase price). Never mix a month figure into
+              this paragraph;
 
               4. macro: the XP scenario in two or three sentences and what it
               means for the assets this client actually holds (name the classes

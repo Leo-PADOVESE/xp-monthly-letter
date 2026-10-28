@@ -87,7 +87,9 @@ def formatted_history(history: dict) -> dict:
     out = {
         "window": (f"desde a primeira aplicação, de {start:%d/%m/%Y} a {end:%d/%m/%Y}" if history["since_first_investment"]
                    else f"últimos {history['months']} meses, de {start:%d/%m/%Y} a {end:%d/%m/%Y}"),
-        "portfolio": pct(total["portfolio"]), "cdi": pct(total["CDI"]), "ibovespa": pct(total["IBOV"]),
+        "portfolio": pct(total["portfolio"]),
+        **({"gain": brl(total["gain_brl"])} if "gain_brl" in total else {}),
+        "cdi": pct(total["CDI"]), "ibovespa": pct(total["IBOV"]),
         "inflation_ipca15": pct(total["IPCA"]), "profile_benchmark": pct(total["PROFILE"]),
         "excess_vs_cdi": pp(total["portfolio"] - total["CDI"]),
         "how_it_was_built": history["note"],

@@ -77,7 +77,8 @@ def build(portfolio: Portfolio, source: PriceSource, end: date, profile_weights:
         return p.investment_date is None or p.investment_date <= day
 
     cumulative = {"portfolio": 1.0, "CDI": 1.0, "IBOV": 1.0, "IPCA": 1.0, "PROFILE": 1.0}
-    points = [{"date": ends[0].isoformat(), **{k: 0.0 for k in cumulative}}]
+    points = [{"date": ends[0].isoformat(), **{k: 0.0 for k in cumulative}, "gain_brl": 0.0}]
+    gain_brl = 0.0
     for k, (s, e) in enumerate(windows):
         live = [p for p in portfolio.positions if held(p, s)]
         start_value = sum(values[p.name][k] for p in live) + portfolio.cash_available
@@ -87,7 +88,9 @@ def build(portfolio: Portfolio, source: PriceSource, end: date, profile_weights:
                  "PROFILE": sum(w * bench[name] for name, w in profile_weights.items())}
         for key in cumulative:
             cumulative[key] *= 1 + month[key]
-        points.append({"date": e.isoformat(), **{key: (v - 1) * 100 for key, v in cumulative.items()}})
+        gain_brl += gain
+        points.append({"date": e.isoformat(), **{key: (v - 1) * 100 for key, v in cumulative.items()},
+                       "gain_brl": gain_brl})
 
     first = min((p.investment_date for p in portfolio.positions if p.investment_date), default=ends[0])
     since = since_purchase(portfolio)
@@ -116,7 +119,8 @@ def main() -> None:
     parser.add_argument("month_dir", type=Path)
     args = parser.parse_args()
     total = run(args.month_dir)["total"]
-    print(", ".join(f"{k} {v:+.2f}%" for k, v in total.items() if k != "date"))
+    print(", ".join(f"{k} {v:+.2f}%" for k, v in total.items() if k not in ("date", "gain_brl")),
+          f"gain R$ {total['gain_brl']:,.2f}")
 
 
 if __name__ == "__main__":

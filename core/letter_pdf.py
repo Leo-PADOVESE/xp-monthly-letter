@@ -236,7 +236,8 @@ def _tile_row(caption: str, tiles: list[tuple[str, str]], st: dict, width: float
 
 
 def _tiles(report: dict, client: dict, st: dict, width: float, history: dict | None = None) -> list:
-    """The month and the consolidated window in two separate, labelled rows, so no figure reads as the other."""
+    """The month and the consolidated window in two labelled rows with the same four figures, so the client
+    reads one against the other and no figure is taken for the other period."""
     bench = report["benchmarks_pct"]
     rows = [_tile_row(f"NO MÊS · {client['reference_month'].upper()}",
                       [("Sua carteira", pct(report["return_pct"])), ("Resultado em reais", brl(report["gain_brl"])),
@@ -245,8 +246,9 @@ def _tiles(report: dict, client: dict, st: dict, width: float, history: dict | N
         total = history["total"]
         rows += [Spacer(1, 2 * mm), _tile_row(
             f"ACUMULADO · {window_label(history).upper()}",
-            [("Sua carteira", pct(total["portfolio"])), ("CDI", pct(total["CDI"])),
-             ("Benchmark do perfil", pct(total["PROFILE"])), ("Ibovespa", pct(total["IBOV"]))], st, width, False)]
+            [("Sua carteira", pct(total["portfolio"])),
+             ("Resultado em reais", brl(total["gain_brl"])) if "gain_brl" in total else ("Ibovespa", pct(total["IBOV"])),
+             ("CDI", pct(total["CDI"])), ("Benchmark do perfil", pct(total["PROFILE"]))], st, width, False)]
     return rows
 
 
