@@ -104,19 +104,35 @@ def formatted_history(history: dict) -> dict:
     return out
 
 
+def _class_status(c: dict, report: dict, matured: set[str], no_return: dict) -> str | None:
+    """Cash, or a class made only of matured bonds, has no return of the month to quote."""
+    if c["asset_class"] == CASH:
+        return no_return["cash"]
+    names = [p["name"] for p in report["positions"] if p["asset_class"] == c["asset_class"]]
+    return no_return["matured"] if names and all(n in matured for n in names) else None
+
+
 def formatted_results(report: dict) -> dict:
     """The profitability report with every quotable figure pre-formatted."""
     invested = [p for p in report["positions"] if p["asset_class"] != CASH]
     # A matured bond earns 0% by definition; it is a fact to act on, not a "worst performer".
     ranked = [p for p in invested if "matured" not in p.get("note", "")] or invested
     by_return = sorted(ranked, key=lambda p: p["monthly_return_pct"], reverse=True)
-    by_contribution = sorted(invested, key=lambda p: p["contribution_brl"], reverse=True)
+    by_contribution = sorted(ranked, key=lambda p: p["contribution_brl"], reverse=True)
     bench = report["benchmarks_pct"]
+    matured = {p["name"] for p in invested if "matured" in p.get("note", "")}
+    # Cash and a matured bond show 0,00% by construction. Quoted as a number, the writer kept picking the
+    # matured CDB as "o menor retorno do mês", so they reach the agent as a status, not as a return.
+    no_return = {"cash": "não se aplica (saldo sem rendimento)",
+                 "matured": "vencido: já pago, não é resultado do mês (valor disponível para reinvestir)"}
+
+    def status(p: dict) -> str | None:
+        return no_return["cash"] if p["asset_class"] == CASH else no_return["matured"] if p["name"] in matured else None
 
     def position_row(p: dict) -> dict:
         row = {"asset": p["name"], "class": CLASS_LABELS_PT.get(_class_key(p), p["asset_class"]),
                "weight": pct(p["weight_pct"], signed=False), "value_end": brl(p["end_value"]),
-               "return": pct(p["monthly_return_pct"]), "contribution": brl(p["contribution_brl"]),
+               "return": status(p) or pct(p["monthly_return_pct"]), "contribution": brl(p["contribution_brl"]),
                "contribution_pp": pp(p["contribution_pp"])}
         # Data caveats (proxies, matured bonds) reach the agent as portfolio facts, in Portuguese.
         return row
@@ -154,7 +170,8 @@ def formatted_results(report: dict) -> dict:
         # Funds appear only by type: the all-funds return mixes equity, multimarket and fixed income funds,
         # and the writer kept quoting it as "fundos de ações" (+4,32% instead of the equity fund's +12,20%).
         "classes": [{"class": CLASS_LABELS_PT.get(c["asset_class"], c["asset_class"]),
-                     "weight": pct(c["weight_pct"], signed=False), "return": pct(c["monthly_return_pct"])}
+                     "weight": pct(c["weight_pct"], signed=False),
+                     "return": _class_status(c, report, matured, no_return) or pct(c["monthly_return_pct"])}
                     for c in report["classes"] if c["asset_class"] != FUNDS],
         "fund_types": _fund_types(report),
         # Attribution: which classes produced the month's result (the per-asset detail is in "positions").

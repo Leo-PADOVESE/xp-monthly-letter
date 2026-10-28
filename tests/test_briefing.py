@@ -75,3 +75,12 @@ def test_results_say_they_are_the_month_and_drop_pct_of_cdi(albert):
     results = formatted_results(report)
     assert "mês de referência" in results["scope"]
     assert not any("do CDI" in v for v in results["formatted"].values())
+
+
+def test_matured_bond_and_cash_have_no_month_return_to_quote(albert):
+    _, report = albert
+    results = formatted_results(report)
+    cdb = next(p for p in results["positions"] if p["asset"].startswith("CDB BANCO C6"))
+    assert cdb["return"].startswith("vencido")
+    assert "CDB" not in results["highlights"]["worst_performer"]["asset"]
+    assert "CDB" not in results["highlights"]["bottom_contributor"]["asset"]
