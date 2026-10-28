@@ -14,4 +14,4 @@ COPY . .
 COPY --from=rivet /rivet/node_modules rivet/node_modules
 ENV PORT=8501 PYTHONUNBUFFERED=1
 EXPOSE 8501
-CMD streamlit run app/streamlit_app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+CMD ["sh", "scripts/entrypoint.sh"]

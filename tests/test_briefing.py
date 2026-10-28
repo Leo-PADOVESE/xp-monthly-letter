@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from core.briefing import brl, formatted_results, pct, portfolio_facts, pp
+from core.briefing import brl, class_contribution, formatted_results, pct, portfolio_facts, pp
 from core.ingestion import parse_xp_portfolio, pdf_to_text
 from core.letter_ai import check_numbers
 
@@ -61,3 +61,26 @@ def test_fund_types_split_the_funds_class(albert):
     types = {t["type"]: t for t in formatted_results(report)["fund_types"]}
     assert set(types) == {"Fundos de renda fixa", "Fundos multimercado", "Fundos de ações"}
     assert "Truxt Long Bias Advisory FIC FIM" in types["Fundos de ações"]["funds"]
+
+
+def test_class_contribution_adds_up_to_the_portfolio_return(albert):
+    _, report = albert
+    rows = class_contribution(report)
+    assert sum(r["contribution_pp"] for r in rows) == pytest.approx(report["return_pct"], abs=0.01)
+    assert rows[0]["class"] == "Ações"
+
+
+def test_results_say_they_are_the_month_and_drop_pct_of_cdi(albert):
+    _, report = albert
+    results = formatted_results(report)
+    assert "mês de referência" in results["scope"]
+    assert not any("do CDI" in v for v in results["formatted"].values())
+
+
+def test_matured_bond_and_cash_have_no_month_return_to_quote(albert):
+    _, report = albert
+    results = formatted_results(report)
+    cdb = next(p for p in results["positions"] if p["asset"].startswith("CDB BANCO C6"))
+    assert cdb["return"].startswith("vencido")
+    assert "CDB" not in results["highlights"]["worst_performer"]["asset"]
+    assert "CDB" not in results["highlights"]["bottom_contributor"]["asset"]

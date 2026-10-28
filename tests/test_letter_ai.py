@@ -1,4 +1,4 @@
-from core.letter_ai import check_numbers, check_promises, tidy
+from core.letter_ai import check_attention_points, check_matured_as_result, check_numbers, check_promises, check_specific_ending, check_scope, check_versus_benchmarks, tidy
 
 
 def letter(text: str) -> dict:
@@ -24,3 +24,55 @@ def test_numbers_match_by_value():
 def test_tidy_removes_repeated_greeting():
     out = tidy({"performance_pt": ["Caro Bruno, em abril sua carteira caiu.", "Segundo parágrafo."]})
     assert out["performance_pt"] == ["Em abril sua carteira caiu.", "Segundo parágrafo."]
+
+
+def test_attention_points_must_cite_a_portfolio_fact():
+    facts = {"facts": [{"id": "idle_cash"}, {"id": "class_weights"}]}
+    assert check_attention_points({"attention_points": [{"fact_id": "idle_cash"}]}, facts) == []
+    bad = {"attention_points": [{"fact_id": "buy_petr4"}, {"fact_id": "idle_cash"}, {"fact_id": "idle_cash"}]}
+    assert check_attention_points(bad, facts) == ["ponto de atenção sem fato da carteira: buy_petr4",
+                                                  "fato repetido: idle_cash"]
+
+
+def test_month_and_window_figures_stay_in_their_paragraphs():
+    results = {"formatted": {"portfolio_return": "+3,95%", "cdi": "+1,06%"},
+               "consolidated_window": {"portfolio": "+7,61%", "cdi": "+11,45%"}}
+    ok = {"performance_pt": ["No mês, +3,95% contra +1,06% do CDI."],
+          "consolidated_pt": "Nos últimos 12 meses, +7,61% contra +11,45% do CDI."}
+    assert check_scope(ok, results) == []
+    mixed = {"performance_pt": ["No mês, +7,61%."], "consolidated_pt": "Em 12 meses, +3,95%."}
+    assert len(check_scope(mixed, results)) == 2
+    assert check_scope(mixed, {"formatted": results["formatted"]}) == []   # no window, nothing to mix
+
+
+def test_sign_off_is_left_to_the_pdf_and_matured_bond_is_not_a_result():
+    out = tidy({"closing_pt": "Estou à disposição. Atenciosamente, Antonio Bicudo."})
+    assert out["closing_pt"] == "Estou à disposição."
+    facts = {"facts": [{"id": "matured:CDB C6 - SET/2024"}]}
+    letter = {"performance_pt": ["O CDB C6 - SET/2024 teve o menor retorno, de +0,00%."]}
+    assert check_matured_as_result(letter, facts) == ["CDB C6 - SET/2024"]
+
+
+def test_generic_outlook_is_flagged():
+    facts = {"facts": [{"id": "class_weights", "values": {"Ações": "15,59%", "Saldo em conta": "19,30%"}}]}
+    generic = {"outlook_pt": "O cenário econômico apresenta desafios, mas a diversificação pode mitigar riscos."}
+    specific = {"outlook_pt": "No cenário da XP, as ações ligadas ao consumo interno seguem como ponto a acompanhar."}
+    assert check_specific_ending(generic, facts) and not check_specific_ending(specific, facts)
+
+
+def test_portfolio_is_compared_with_benchmarks_in_pp():
+    results = {"formatted": {"excess_vs_cdi": "+2,90 p.p.", "excess_vs_profile_benchmark": "+2,11 p.p."},
+               "consolidated_window": {"excess_vs_cdi": "-3,84 p.p.", "excess_vs_profile_benchmark": "-2,77 p.p."}}
+    good = {"performance_pt": ["+3,95% no mês, 2,90 p.p. acima do CDI e 2,11 p.p. acima do benchmark."],
+            "consolidated_pt": "Em 12 meses, 3,84 p.p. abaixo do CDI e 2,77 p.p. abaixo do benchmark do perfil."}
+    assert check_versus_benchmarks(good, results) == []
+    side_by_side = {"performance_pt": ["+3,95% no mês, contra +1,06% do CDI."],
+                    "consolidated_pt": "Em 12 meses, +7,61%, contra +11,45% do CDI."}
+    assert len(check_versus_benchmarks(side_by_side, results)) == 4
+
+
+def test_critic_blocks_only_with_a_real_quote():
+    from core.letter_ai import _plain, _quoted
+    text = _plain("No mês, sua carteira rendeu +3,95%, 2,90 p.p. acima do CDI (1,06%).")
+    assert _quoted("“No mês, sua carteira rendeu +3,95%…”", text)
+    assert not _quoted("A carteira ficou abaixo do Ibovespa", text)

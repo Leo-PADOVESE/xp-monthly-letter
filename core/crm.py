@@ -11,10 +11,14 @@ life cycle:
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import re
+import secrets
 import sqlite3
 import unicodedata
 from contextlib import contextmanager
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -31,7 +35,15 @@ CREATE TABLE IF NOT EXISTS clients (
     email TEXT,
     cpf TEXT,
     advisor TEXT,
+    advisor_code TEXT,
     created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS advisors (
+    email TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    code TEXT NOT NULL,
+    salt TEXT NOT NULL,
+    password_hash TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS letters (
     slug TEXT NOT NULL REFERENCES clients(slug),
@@ -66,6 +78,8 @@ def connect(path: Path = DB_PATH):
     conn = sqlite3.connect(path, timeout=30)
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)
+    if "advisor_code" not in {r["name"] for r in conn.execute("PRAGMA table_info(clients)")}:
+        conn.execute("ALTER TABLE clients ADD COLUMN advisor_code TEXT")  # databases created before advisor login
     try:
         yield conn
         conn.commit()
@@ -74,30 +88,87 @@ def connect(path: Path = DB_PATH):
 
 
 def upsert_client(slug: str, name: str, account: str = "", profile: str = "", email: str = "", cpf: str = "",
-                  advisor: str = "", path: Path = DB_PATH) -> None:
+                  advisor: str = "", advisor_code: str = "", path: Path = DB_PATH) -> None:
     with connect(path) as conn:
         conn.execute(
-            """INSERT INTO clients (slug, name, account, profile, email, cpf, advisor, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-               ON CONFLICT(slug) DO UPDATE SET name=excluded.name, account=excluded.account,
-                 profile=excluded.profile, advisor=excluded.advisor,
+            """INSERT INTO clients (slug, name, account, profile, email, cpf, advisor, advisor_code, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(slug) DO UPDATE SET name=excluded.name,
+                 account=COALESCE(NULLIF(excluded.account, ''), clients.account),
+                 profile=COALESCE(NULLIF(excluded.profile, ''), clients.profile),
+                 advisor=COALESCE(NULLIF(excluded.advisor, ''), clients.advisor),
+                 advisor_code=COALESCE(NULLIF(excluded.advisor_code, ''), clients.advisor_code),
                  email=COALESCE(NULLIF(excluded.email, ''), clients.email),
                  cpf=COALESCE(NULLIF(excluded.cpf, ''), clients.cpf)""",
-            (slug, name, account, profile, email, re.sub(r"\D", "", cpf), advisor, _now()))
+            (slug, name, account, profile, email, re.sub(r"\D", "", cpf), advisor, advisor_code, _now()))
 
 
-def update_contact(slug: str, email: str, cpf: str, path: Path = DB_PATH) -> None:
+def update_contact(slug: str, email: str, cpf: str, account: str | None = None, path: Path = DB_PATH) -> None:
     with connect(path) as conn:
-        conn.execute("UPDATE clients SET email = ?, cpf = ? WHERE slug = ?", (email.strip(), re.sub(r"\D", "", cpf), slug))
+        conn.execute("UPDATE clients SET email = ?, cpf = ?, account = COALESCE(?, account) WHERE slug = ?",
+                     (email.strip(), re.sub(r"\D", "", cpf), account, slug))
 
 
-def clients(month: str, path: Path = DB_PATH) -> list[dict]:
-    """Every client with this month's letter status ("pending" when not generated)."""
+# ------------------------------------------------------------------- advisors
+
+def _hash(password: str, salt: str) -> str:
+    return hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 200_000).hex()
+
+
+def set_advisor(email: str, name: str, code: str, password: str, path: Path = DB_PATH) -> None:
+    salt = secrets.token_hex(16)
+    with connect(path) as conn:
+        conn.execute(
+            """INSERT INTO advisors (email, name, code, salt, password_hash) VALUES (?, ?, ?, ?, ?)
+               ON CONFLICT(email) DO UPDATE SET name=excluded.name, code=excluded.code, salt=excluded.salt,
+                 password_hash=excluded.password_hash""",
+            (email.strip().lower(), name, code, salt, _hash(password, salt)))
+
+
+def login(email: str, password: str, path: Path = DB_PATH) -> dict | None:
+    """The advisor (email, name, code) when the password matches, else None."""
+    with connect(path) as conn:
+        row = conn.execute("SELECT * FROM advisors WHERE email = ?", (email.strip().lower(),)).fetchone()
+    if row and secrets.compare_digest(row["password_hash"], _hash(password, row["salt"])):
+        return {"email": row["email"], "name": row["name"], "code": row["code"]}
+    return None
+
+
+SESSION_DAYS = 7
+
+
+def session_token(email: str, path: Path = DB_PATH) -> str:
+    """Keeps the advisor signed in across page reloads for SESSION_DAYS; a new password revokes it."""
+    with connect(path) as conn:
+        row = conn.execute("SELECT password_hash FROM advisors WHERE email = ?", (email,)).fetchone()
+    payload = f"{email}|{int(time.time()) + SESSION_DAYS * 86400}"
+    return f"{payload}|{hmac.new(row['password_hash'].encode(), payload.encode(), 'sha256').hexdigest()}"
+
+
+def advisor_from_token(token: str, path: Path = DB_PATH) -> dict | None:
+    """The advisor a session_token belongs to, or None when it is forged, expired or revoked."""
+    try:
+        email, expires, signature = token.split("|")
+        if int(expires) < time.time():
+            return None
+    except ValueError:
+        return None
+    with connect(path) as conn:
+        row = conn.execute("SELECT * FROM advisors WHERE email = ?", (email,)).fetchone()
+    expected = row and hmac.new(row["password_hash"].encode(), f"{email}|{expires}".encode(), "sha256").hexdigest()
+    if expected and hmac.compare_digest(expected, signature):
+        return {"email": row["email"], "name": row["name"], "code": row["code"]}
+    return None
+
+
+def clients(month: str, advisor_code: str | None = None, path: Path = DB_PATH) -> list[dict]:
+    """Every client (of one advisor, when given) with this month's letter status ("pending" when not generated)."""
     with connect(path) as conn:
         rows = conn.execute(
             """SELECT c.*, COALESCE(l.status, 'pending') AS status, l.cost_usd, l.notes, l.error, l.sent_to, l.sent_at
                FROM clients c LEFT JOIN letters l ON l.slug = c.slug AND l.month = ?
-               ORDER BY c.name""", (month,)).fetchall()
+               WHERE ? IS NULL OR c.advisor_code = ?
+               ORDER BY c.name""", (month, advisor_code, advisor_code)).fetchall()
     return [dict(r) for r in rows]
 
 
@@ -130,3 +201,14 @@ def reset_interrupted(path: Path = DB_PATH) -> None:
     with connect(path) as conn:
         conn.execute("UPDATE letters SET status = 'error', error = 'Geração interrompida (servidor reiniciou)', "
                      "updated_at = ? WHERE status = 'generating'", (_now(),))
+
+
+def delete_client(slug: str, path: Path = DB_PATH) -> None:
+    """Remove the client, its letters and its files (statements, results, letters)."""
+    import shutil
+
+    with connect(path) as conn:
+        conn.execute("DELETE FROM letters WHERE slug = ?", (slug,))
+        conn.execute("DELETE FROM clients WHERE slug = ?", (slug,))
+    if path == DB_PATH:
+        shutil.rmtree(CLIENTS_DIR / slug, ignore_errors=True)

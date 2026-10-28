@@ -5,9 +5,13 @@ Input: ``letter.json`` (text written by the Rivet agent) and ``profitability_mar
 the charts, tiles and table comes from the profitability report, never from the LLM.
 
 Layout
-- Header, key figures, greeting, performance, the two charts chosen by the agent and the highlights;
-  then macro scenario, suggestions, outlook, closing, results table and disclaimer, flowing over
-  the two pages.
+- Header; key figures in two labelled rows, the month and the 12-month window (return, result in reais,
+  and the difference to the CDI and to the profile benchmark in p.p.); greeting and opening; the month's
+  performance; the consolidated performance with the main chart (portfolio vs CDI, Ibovespa, inflation and
+  the profile benchmark over 12 months, or since the first investment; without that history, the month's
+  benchmarks and attribution charts); highlights; the XP scenario with the class table; assessment; points
+  to discuss; the per-asset table of the month; and, always last, the outlook, closing and signature,
+  right before the disclaimer.
 If the content does not fit in two pages, the layout is tightened (smaller type and table)
 and, failing that, the result is reported so the advisor can ask for a shorter letter.
 
@@ -29,6 +33,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+import matplotlib.ticker  # noqa: E402
 from pypdf import PdfReader, PdfWriter  # noqa: E402
 from reportlab.lib import colors  # noqa: E402
 from reportlab.lib.enums import TA_LEFT  # noqa: E402
@@ -39,7 +44,7 @@ from reportlab.platypus import (  # noqa: E402
     Image, KeepTogether, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle,
 )
 
-from core.briefing import CLASS_LABELS_PT, brl, pct  # noqa: E402
+from core.briefing import MONTHS_SHORT_PT, brl, class_contribution, pct, pp  # noqa: E402
 
 MAX_PAGES = 2
 
@@ -54,8 +59,8 @@ CHART_INK, CHART_YELLOW, CHART_GREY = "#141414", "#FFC709", "#B5B5B5"
 
 DISCLAIMER = (
     "Este material tem caráter informativo e não constitui oferta, solicitação ou recomendação de compra ou venda "
-    "de ativos. As sugestões apresentadas são pontos para conversa com o seu assessor e devem ser avaliadas de acordo "
-    "com o seu perfil de investidor. Rentabilidade passada não é garantia de rentabilidade futura. "
+    "de ativos. A avaliação e os pontos de atenção são para conversa com o seu assessor e devem ser considerados de "
+    "acordo com o seu perfil de investidor. Rentabilidade passada não é garantia de rentabilidade futura. "
     "Fontes: posições do extrato XP; preços de ações do Yahoo Finance (fechamento ajustado); cotas de fundos da CVM; "
     "CDI e IPCA-15 do Banco Central; cenário do relatório macro da XP."
 )
@@ -70,6 +75,7 @@ class Layout:
 
 
 COMFORTABLE, COMPACT = Layout(), Layout(body=8.9, leading=11.9, chart_height=60 * mm, table_body=7.0)
+TIGHT = Layout(body=8.6, leading=11.2, chart_height=54 * mm, table_body=6.8)   # last resort before "too long"
 
 
 # --------------------------------------------------------------------- charts
@@ -95,48 +101,6 @@ def _br(value: float, decimals: int = 1) -> str:
     return f"{value:.{decimals}f}".replace(".", ",")
 
 
-def chart_allocation(report: dict, width: float, height: float) -> Image:
-    """Share of total equity by asset class (funds split by type)."""
-    shares: dict[str, float] = {}
-    for p in report["positions"]:
-        key = p["sub_class"] if p["asset_class"] == "funds" else p["asset_class"]
-        label = CLASS_LABELS_PT.get(key, key)
-        shares[label] = shares.get(label, 0) + p["weight_pct"]
-    items = sorted(shares.items(), key=lambda kv: kv[1])
-    fig, ax = plt.subplots(figsize=(width / 72, height / 72))
-    bars = ax.barh([k for k, _ in items], [v for _, v in items], color=CHART_INK, height=0.6)
-    bars[-1].set_color(CHART_YELLOW)
-    for bar, (_, v) in zip(bars, items):
-        ax.text(bar.get_width() + 0.5, bar.get_y() + bar.get_height() / 2, f"{_br(v)}%", va="center", fontsize=7)
-    ax.set_xlim(0, max(v for _, v in items) * 1.25)
-    ax.set_title("Alocação por classe (% do patrimônio)", fontsize=8.5, loc="left", fontweight="bold")
-    _style_axes(ax)
-    ax.set_xticks([])
-    return _figure_to_image(fig, width, height)
-
-
-def chart_contribution(report: dict, width: float, height: float) -> Image:
-    """Contribution of each asset to the month's result, in R$ (largest movers)."""
-    rows = [p for p in report["positions"] if p["asset_class"] != "cash" and abs(p["contribution_brl"]) >= 0.5]
-    rows = sorted(rows, key=lambda p: abs(p["contribution_brl"]), reverse=True)[:8]
-    rows = sorted(rows, key=lambda p: p["contribution_brl"])
-    names = [_short(p["name"], 22) for p in rows]
-    values = [p["contribution_brl"] for p in rows]
-    fig, ax = plt.subplots(figsize=(width / 72, height / 72))
-    ax.barh(names, values, color=[GAIN if v >= 0 else LOSS for v in values], height=0.6)
-    span = max(abs(v) for v in values) or 1
-    for i, v in enumerate(values):
-        ax.text(v + (span * 0.03 if v >= 0 else -span * 0.03), i, brl(v).replace("R$ ", "R$"),
-                va="center", ha="left" if v >= 0 else "right", fontsize=6.5)
-    low, high = min(values + [0]), max(values + [0])
-    ax.set_xlim(low - span * 0.7 if low < 0 else 0, high + span * 0.5)
-    ax.axvline(0, color=CHART_GREY, linewidth=0.8)
-    ax.set_title("Contribuição para o resultado do mês (R$)", fontsize=8.5, loc="left", fontweight="bold")
-    _style_axes(ax)
-    ax.set_xticks([])
-    return _figure_to_image(fig, width, height)
-
-
 def chart_benchmarks(report: dict, width: float, height: float) -> Image:
     """Portfolio return versus CDI, Ibovespa, inflation and the profile benchmark."""
     bench = report["benchmarks_pct"]
@@ -159,7 +123,70 @@ def chart_benchmarks(report: dict, width: float, height: float) -> Image:
     return _figure_to_image(fig, width, height)
 
 
-CHARTS = {"allocation": chart_allocation, "contribution": chart_contribution, "benchmarks": chart_benchmarks}
+def chart_attribution(report: dict, width: float, height: float) -> Image:
+    """Where the month's result came from: contribution of each asset class, in p.p. of the portfolio return."""
+    rows = [r for r in class_contribution(report) if abs(r["contribution_brl"]) >= 0.5][::-1]
+    labels, values = [r["class"] for r in rows], [r["contribution_pp"] for r in rows]
+    fig, ax = plt.subplots(figsize=(width / 72, height / 72))
+    ax.barh(labels, values, color=[GAIN if v >= 0 else LOSS for v in values], height=0.6)
+    span = max([abs(v) for v in values] + [0.01])
+    for i, (r, v) in enumerate(zip(rows, values)):
+        ax.text(v + (span * 0.03 if v >= 0 else -span * 0.03), i,
+                f"{'+' if v >= 0 else ''}{_br(v, 2)} p.p. · {brl(r['contribution_brl']).replace('R$ ', 'R$')}",
+                va="center", ha="left" if v >= 0 else "right", fontsize=6.5)
+    low, high = min(values + [0]), max(values + [0])
+    ax.set_xlim(low - span * 0.9 if low < 0 else 0, high + span * 0.9)
+    ax.axvline(0, color=CHART_GREY, linewidth=0.8)
+    ax.set_title(f"De onde veio o resultado ({pct(report['return_pct'])})", fontsize=8.5, loc="left",
+                 fontweight="bold")
+    _style_axes(ax)
+    ax.set_xticks([])
+    return _figure_to_image(fig, width, height)
+
+
+def window_label(history: dict) -> str:
+    return "desde a primeira aplicação" if history["since_first_investment"] else f"últimos {history['months']} meses"
+
+
+def chart_history(history: dict, width: float, height: float) -> Image:
+    """Consolidated portfolio over the window (cumulative %) against CDI, Ibovespa, inflation and the profile benchmark."""
+    from datetime import date
+
+    days = [date.fromisoformat(p["date"]) for p in history["points"]]
+    lines = [("Benchmark do perfil", "PROFILE", CHART_INK, (0, (4, 2)), 1.2), ("CDI", "CDI", "#8C8C8C", "-", 1.2),
+             ("Ibovespa", "IBOV", "#C9C9C9", "-", 1.2), ("Inflação (IPCA-15)", "IPCA", "#8C8C8C", ":", 1.2),
+             ("Sua carteira", "portfolio", CHART_YELLOW, "-", 2.6)]
+    fig, ax = plt.subplots(figsize=(width / 72, height / 72))
+    x = list(range(len(days)))
+    ends = []
+    for label, key, color, style, lw in lines:
+        values = [p[key] for p in history["points"]]
+        ax.plot(x, values, color=color, linestyle=style, linewidth=lw, label=label, zorder=3 if key == "portfolio" else 2)
+        ends.append((values[-1], label, color))
+    # End labels, nudged apart so they never overlap.
+    span = max(abs(v) for v, _, _ in ends) or 1
+    placed: list[float] = []
+    for value, label, color in sorted(ends):
+        y = value
+        while any(abs(y - other) < span * 0.075 for other in placed):
+            y += span * 0.075
+        placed.append(y)
+        ax.text(x[-1] + 0.25, y, f"{'+' if value >= 0 else ''}{_br(value, 2)}%  {label}", va="center", fontsize=6.8,
+                color=INK.hexval().replace("0x", "#") if color == CHART_YELLOW else color,
+                fontweight="bold" if color == CHART_YELLOW else "normal")
+    ax.axhline(0, color=CHART_GREY, linewidth=0.6)
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"{MONTHS_SHORT_PT[d.month - 1]}/{d:%y}" for d in days], fontsize=6.5)
+    ax.set_xlim(0, x[-1] + 3.2)
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{_br(v, 0)}%"))
+    ax.tick_params(axis="y", labelsize=6.5, length=0)
+    ax.grid(axis="y", color="#EDEDED", linewidth=0.6)
+    ax.set_title(f"Sua carteira x referências · {window_label(history)} (rentabilidade acumulada)", fontsize=8.5, loc="left",
+                 fontweight="bold")
+    for side in ("top", "right", "left"):
+        ax.spines[side].set_visible(False)
+    ax.spines["bottom"].set_color(RULE.hexval().replace("0x", "#"))
+    return _figure_to_image(fig, width, height)
 
 
 # --------------------------------------------------------------------- layout
@@ -188,19 +215,52 @@ def _esc(text: str) -> str:
     return (text or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def _tiles(report: dict, st: dict, width: float) -> Table:
-    bench = report["benchmarks_pct"]
-    tiles = [("Rentabilidade no mês", pct(report["return_pct"])), ("Resultado em reais", brl(report["gain_brl"])),
-             ("CDI no mês", pct(bench["CDI"])), ("Benchmark do perfil", pct(bench["PROFILE"]))]
-    cells = [[Paragraph(label, st["tile_label"]), Paragraph(value, st["tile_value"])] for label, value in tiles]
-    table = Table([cells], colWidths=[width / 4] * 4)
+def _tile_row(caption: str, tiles: list[tuple], st: dict, width: float, accent: bool) -> Table:
+    """One labelled row of figures: the caption says which period every tile below it measures.
+    A tile is (label, value) or (label, value, note, colour) for a comparison."""
+    note_style = ParagraphStyle("tn", parent=st["tile_label"], fontSize=6.6, leading=8)
+    cells = []
+    for label, value, *extra in tiles:
+        note, colour = extra if extra else ("", None)
+        shown = f'<font color="{colour}">{value}</font>' if colour else value
+        cells.append([Paragraph(label, st["tile_label"]), Paragraph(shown, st["tile_value"])]
+                     + ([Paragraph(note, note_style)] if note else []))
+    table = Table([[Paragraph(caption, st["tag"])] + [""] * (len(tiles) - 1), cells],
+                  colWidths=[width / len(tiles)] * len(tiles))
     table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), LIGHT), ("LINEBEFORE", (1, 0), (-1, -1), 2, colors.white),
-        ("LINEABOVE", (0, 0), (0, 0), 2.2, YELLOW), ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
-        ("LEFTPADDING", (0, 0), (-1, -1), 8),
+        ("SPAN", (0, 0), (-1, 0)), ("BOTTOMPADDING", (0, 0), (-1, 0), 2), ("LEFTPADDING", (0, 0), (-1, 0), 0),
+        ("BACKGROUND", (0, 1), (-1, 1), LIGHT), ("LINEBEFORE", (1, 1), (-1, 1), 2, colors.white),
+        ("LINEABOVE", (0, 1), (0, 1), 2.2, YELLOW if accent else GREY), ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING", (0, 1), (-1, 1), 4), ("BOTTOMPADDING", (0, 1), (-1, 1), 5),
+        ("LEFTPADDING", (0, 1), (-1, 1), 8),
     ]))
     return table
+
+
+def _versus(label: str, short: str, portfolio: float, benchmark: float, period: str) -> tuple:
+    """The portfolio against a benchmark as a difference in p.p., with the benchmark itself as a note.
+    "CDI +11,45%" next to the portfolio read as "CDI + 11%"; the difference says who won."""
+    diff = portfolio - benchmark
+    return (f"Contra o {label}", pp(diff), f"{short} {period}: {pct(benchmark, signed=False)}", GAIN if diff >= 0 else LOSS)
+
+
+def _tiles(report: dict, client: dict, st: dict, width: float, history: dict | None = None) -> list:
+    """The month and the consolidated window in two labelled rows with the same four figures, so the client
+    reads one against the other and no figure is taken for the other period."""
+    bench, ret = report["benchmarks_pct"], report["return_pct"]
+    rows = [_tile_row(f"NO MÊS · {client['reference_month'].upper()}",
+                      [("Sua carteira", pct(ret)), ("Resultado em reais", brl(report["gain_brl"])),
+                       _versus("CDI", "CDI", ret, bench["CDI"], "no mês"),
+                       _versus("benchmark do perfil", "Benchmark", ret, bench["PROFILE"], "no mês")], st, width, True)]
+    if history and history.get("months", 0) >= 2:
+        total = history["total"]
+        rows += [Spacer(1, 2 * mm), _tile_row(
+            f"ACUMULADO · {window_label(history).upper()}",
+            [("Sua carteira", pct(total["portfolio"])),
+             ("Resultado em reais", brl(total["gain_brl"])) if "gain_brl" in total else ("Ibovespa", pct(total["IBOV"])),
+             _versus("CDI", "CDI", total["portfolio"], total["CDI"], "no período"),
+             _versus("benchmark do perfil", "Benchmark", total["portfolio"], total["PROFILE"], "no período")], st, width, False)]
+    return rows
 
 
 def _short(name: str, size: int) -> str:
@@ -231,17 +291,41 @@ def _highlights(letter_doc: dict, st: dict, width: float) -> Table:
     return table
 
 
-def _suggestion_cards(letter: dict, st: dict, width: float) -> list:
-    tags = {"opportunity": "OPORTUNIDADE", "protection": "PROTEÇÃO"}
+VIEW_PT = {"favorable": ("Favorável", GAIN), "neutral": ("Neutra", "#6B6B6B"), "unfavorable": ("Desfavorável", LOSS)}
+
+
+def _class_views(letter_doc: dict, st: dict, width: float) -> Table | None:
+    """The portfolio by class against the XP view: weights come from the portfolio facts, the view and the reading
+    for the profile from the agent's assessment (rows for classes the client does not hold are dropped)."""
+    weights = next((f["values"] for f in letter_doc["briefing"]["facts"]["facts"] if f["id"] == "class_weights"), {})
+    rows = [[Paragraph(f"<b>{h}</b>", st["cell"]) for h in ("Classe", "Peso", "Visão da XP", "Para o seu perfil")]]
+    for v in letter_doc["letter"].get("class_views", []):
+        if v.get("asset_class") not in weights:
+            continue
+        label, color = VIEW_PT.get(v.get("xp_view"), ("—", "#333333"))
+        rows.append([Paragraph(_esc(v["asset_class"]), st["cell"]), Paragraph(weights[v["asset_class"]], st["cell"]),
+                     Paragraph(f'<font color="{color}"><b>{label}</b></font>', st["cell"]),
+                     Paragraph(_esc(v.get("profile_fit_pt", "")), st["cell"])])
+    if len(rows) == 1:
+        return None
+    table = Table(rows, colWidths=[width * 0.22, width * 0.1, width * 0.14, width * 0.54], repeatRows=1)
+    table.setStyle(TableStyle([
+        ("LINEBELOW", (0, 0), (-1, 0), 0.8, INK), ("LINEBELOW", (0, 1), (-1, -1), 0.3, RULE),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"), ("TOPPADDING", (0, 0), (-1, -1), 2),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 2), ("LEFTPADDING", (0, 0), (-1, -1), 2),
+    ]))
+    return table
+
+
+def _attention_cards(letter: dict, st: dict, width: float) -> list:
     flow = []
-    for s in letter.get("suggestions", []):
-        accent = YELLOW if s.get("type") == "opportunity" else INK
-        content = [Paragraph(tags.get(s.get("type"), "SUGESTÃO"), st["tag"]),
+    for s in letter.get("attention_points", []):
+        content = [Paragraph("PONTO DE ATENÇÃO", st["tag"]),
                    Paragraph(_esc(s.get("title_pt", "")), st["card_title"]),
                    Paragraph(_esc(s.get("text_pt", "")), ParagraphStyle("c", parent=st["body"], spaceAfter=0))]
         card = Table([[content]], colWidths=[width])
         card.setStyle(TableStyle([
-            ("LINEBEFORE", (0, 0), (0, 0), 2.5, accent), ("BACKGROUND", (0, 0), (-1, -1), LIGHT),
+            ("LINEBEFORE", (0, 0), (0, 0), 2.5, YELLOW), ("BACKGROUND", (0, 0), (-1, -1), LIGHT),
             ("LEFTPADDING", (0, 0), (-1, -1), 9), ("TOPPADDING", (0, 0), (-1, -1), 5),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
         ]))
@@ -255,9 +339,12 @@ def _results_table(report: dict, st: dict, width: float) -> Table:
     positions = sorted(report["positions"], key=lambda p: -p["end_value"])
     for p in positions:
         color = GAIN if p["monthly_return_pct"] > 0 else LOSS if p["monthly_return_pct"] < 0 else "#333333"
+        # Cash and a matured bond have no return of the month: a 0,00% read as a bad result.
+        shown = ("—" if p["asset_class"] == "cash" else "vencido" if "matured" in p.get("note", "")
+                 else f'<font color="{color}">{pct(p["monthly_return_pct"])}</font>')
         rows.append([Paragraph(_esc(p["name"]), st["cell"]),
                      Paragraph(pct(p["weight_pct"], signed=False), st["cell"]),
-                     Paragraph(f'<font color="{color}">{pct(p["monthly_return_pct"])}</font>', st["cell"]),
+                     Paragraph(shown, st["cell"]),
                      Paragraph(brl(p["contribution_brl"]), st["cell"])])
     rows.append([Paragraph("<b>Total da carteira</b>", st["cell"]), Paragraph("100,00%", st["cell"]),
                  Paragraph(f"<b>{pct(report['return_pct'])}</b>", st["cell"]),
@@ -291,51 +378,72 @@ def _header_footer(client: dict):
         canvas.setFillColor(GREY)
         canvas.setFont("Helvetica", 6.8)
         canvas.drawString(16 * mm, 9 * mm, f"Assessor: {client['advisor_name']} ({client['advisor_code']})")
-        canvas.drawRightString(width - 16 * mm, 9 * mm, f"Página {doc.page} de {MAX_PAGES}")
+        canvas.drawRightString(width - 16 * mm, 9 * mm, f"Página {doc.page}")
         canvas.restoreState()
     return draw
 
 
-def build_story(letter_doc: dict, report: dict, layout: Layout, width: float) -> list:
+def build_story(letter_doc: dict, report: dict, layout: Layout, width: float, history: dict | None = None) -> list:
     st = _styles(layout)
     letter, client = letter_doc["letter"], letter_doc["client"]
     body = lambda text: Paragraph(_esc(text), st["body"])  # noqa: E731
 
-    charts = [c for c in letter.get("charts", []) if c in CHARTS][:2] or ["benchmarks", "contribution"]
-    if len(charts) == 1:
-        charts.append(next(c for c in ("benchmarks", "contribution", "allocation") if c != charts[0]))
-    gap = 6 * mm
-    chart_w = (width - gap) / 2
-    chart_row = Table([[CHARTS[c](report, chart_w, layout.chart_height) for c in charts]],
-                      colWidths=[chart_w + gap / 2, chart_w + gap / 2])
-    chart_row.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0)]))
-
-    story = [_tiles(report, st, width), Spacer(1, 7 * mm),
+    consolidated = bool(history and history.get("months", 0) >= 2)
+    story = [*_tiles(report, client, st, width, history if consolidated else None), Spacer(1, 4 * mm),
              body(letter.get("greeting_pt", f"Prezado(a) {client['first_name']},")),
              body(letter.get("opening_pt", "")),
-             Paragraph("Desempenho da carteira", st["h2"])]
+             Paragraph(f"Desempenho no mês · {client['reference_month']}", st["h2"])]
     story += [body(p) for p in letter.get("performance_pt", [])]
-    story += [Spacer(1, 2 * mm), chart_row, Spacer(1, 4 * mm), Paragraph("Destaques do mês", st["h2"]),
+    if consolidated:
+        # The consolidated view is the main chart; the month's detail by asset is in the table at the end.
+        story += [Paragraph(f"Desempenho acumulado · {window_label(history)}", st["h2"]),
+                  body(letter.get("consolidated_pt", ""))]
+        main_chart = [chart_history(history, width, layout.chart_height * 1.12)]
+        since = history.get("since_purchase")
+        if since:
+            start = since.get("first_investment")
+            start = f", desde {start[8:10]}/{start[5:7]}/{start[:4]}" if start else ""
+            main_chart.append(Paragraph(
+                f"<b>Desde a aplicação{start}</b> (preço médio das ações e valor aplicado nos fundos e títulos, contra o valor "
+                f"atual; não inclui o saldo em conta): {brl(since['cost'])} aplicados, hoje {brl(since['value'])}, "
+                f"resultado de <b>{brl(since['gain_brl'])} ({pct(since['return_pct'])})</b>.", st["cell"]))
+        main_chart.append(Paragraph(_esc(history["note"]), st["small"]))
+    else:
+        # No history yet (a new client): the month against its benchmarks and where the result came from.
+        gap = 6 * mm
+        chart_w = (width - gap) / 2
+        chart_row = Table([[chart_benchmarks(report, chart_w, layout.chart_height),
+                            chart_attribution(report, chart_w, layout.chart_height)]],
+                          colWidths=[chart_w + gap / 2, chart_w + gap / 2])
+        chart_row.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0)]))
+        main_chart = [chart_row]
+    story += [Spacer(1, 2 * mm), *main_chart, Spacer(1, 4 * mm), Paragraph("Destaques do mês", st["h2"]),
               _highlights(letter_doc, st, width), Spacer(1, 2 * mm),
-              Paragraph("Cenário econômico", st["h2"]), body(letter.get("macro_pt", "")),
-              Paragraph("Sugestões para conversarmos", st["h2"]), body(letter.get("suggestions_intro_pt", ""))]
-    story += _suggestion_cards(letter, st, width)
-    story += [Paragraph("O que esperar", st["h2"]), body(letter.get("outlook_pt", "")),
+              Paragraph("Cenário econômico e sua carteira", st["h2"]), body(letter.get("macro_pt", ""))]
+    views = _class_views(letter_doc, st, width)
+    if views:
+        story += [views, Spacer(1, 3 * mm)]
+    story += [body(letter.get("assessment_pt", ""))]
+    if letter.get("attention_points"):
+        story += [Paragraph("Pontos para conversarmos", st["h2"])]
+    story += _attention_cards(letter, st, width)
+    # Fixed order: the per-asset table, then the outlook, the closing and the signature, then the disclaimer.
+    story += [Paragraph("Resultado por ativo no mês", st["h2"]), _results_table(report, st, width),
+              Paragraph("O que esperar", st["h2"]), body(letter.get("outlook_pt", "")),
               body(letter.get("closing_pt", "")),
               Paragraph(f"Atenciosamente,<br/><b>{_esc(client['advisor_name'])}</b><br/>"
                         f"Assessor de Investimentos · XP Investimentos", st["body"]),
-              Spacer(1, 3 * mm), Paragraph("Resultado por ativo no mês", st["h2"]),
-              _results_table(report, st, width), Spacer(1, 3 * mm), Paragraph(DISCLAIMER, st["small"])]
+              Spacer(1, 3 * mm), Paragraph(DISCLAIMER, st["small"])]
     return story
 
 
-def render(letter_doc: dict, report: dict, out: Path, layout: Layout = COMFORTABLE) -> int:
+def render(letter_doc: dict, report: dict, out: Path, layout: Layout = COMFORTABLE, history: dict | None = None) -> int:
     """Write the PDF and return its number of pages."""
     doc = SimpleDocTemplate(str(out), pagesize=A4, leftMargin=16 * mm, rightMargin=16 * mm,
                             topMargin=30 * mm, bottomMargin=16 * mm,
                             title=f"Carta mensal - {letter_doc['client']['name']}", author="XP Investimentos")
     page = _header_footer(letter_doc["client"])
-    doc.build(build_story(letter_doc, report, layout, doc.width), onFirstPage=page, onLaterPages=page)
+    doc.build(build_story(letter_doc, report, layout, doc.width, history), onFirstPage=page, onLaterPages=page)
     return len(PdfReader(str(out)).pages)
 
 
@@ -350,10 +458,14 @@ def protect(path: Path, password: str) -> None:
 def build_pdf(month_dir: Path, password: str | None = None) -> tuple[Path, int]:
     letter_doc = json.loads((month_dir / "letter.json").read_text(encoding="utf-8"))
     report = json.loads((month_dir / "profitability_market.json").read_text(encoding="utf-8"))
+    history_path = month_dir / "history.json"
+    history = json.loads(history_path.read_text(encoding="utf-8")) if history_path.exists() else None
     out = month_dir / "letter.pdf"
-    pages = render(letter_doc, report, out)
-    if pages > MAX_PAGES:
-        pages = render(letter_doc, report, out, COMPACT)
+    pages = render(letter_doc, report, out, history=history)
+    for layout in (COMPACT, TIGHT):
+        if pages <= MAX_PAGES:
+            break
+        pages = render(letter_doc, report, out, layout, history)
     if password:
         protect(out, password)
     return out, pages
@@ -365,7 +477,7 @@ def main() -> None:
     parser.add_argument("--password", help="e.g. the first 6 digits of the client's CPF")
     args = parser.parse_args()
     out, pages = build_pdf(args.month_dir, args.password)
-    status = "ok" if pages <= MAX_PAGES else f"too long: ask the agent for a shorter letter"
+    status = "ok" if pages <= MAX_PAGES else "too long: ask the agent for a shorter letter"
     print(f"{out}: {pages} page(s), {status}")
 
 

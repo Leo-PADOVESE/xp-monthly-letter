@@ -55,7 +55,11 @@ def send_letter(month_dir: Path, to: str, cpf: str, subject: str, first_name: st
         protect(pdf, pdf_password(cpf, password_digits))
         msg = build_message(to, subject, first_name, advisor, pdf, password_digits)
         host, port = os.environ.get("SMTP_HOST", "smtp.gmail.com"), int(os.environ.get("SMTP_PORT", "587"))
-        with smtplib.SMTP(host, port, timeout=30) as smtp:
-            smtp.starttls()
-            smtp.login(user, password)
-            smtp.send_message(msg)
+        try:
+            with smtplib.SMTP(host, port, timeout=30) as smtp:
+                smtp.starttls()
+                smtp.login(user, password)
+                smtp.send_message(msg)
+        except (smtplib.SMTPAuthenticationError, smtplib.SMTPServerDisconnected) as exc:
+            raise MailError("O Gmail recusou o login: SMTP_PASSWORD precisa ser uma senha de app de 16 letras "
+                            "(myaccount.google.com/apppasswords), não a senha da conta") from exc

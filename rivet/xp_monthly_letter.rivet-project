@@ -154,9 +154,10 @@ data:
               3. Never promise or forecast returns for the client's portfolio.
               Talk about scenarios and possibilities, not certainties.
 
-              4. Every suggestion must be compatible with the client's risk
-              profile and grounded in the XP macro research provided. Present
-              suggestions as points to discuss with the advisor, not as orders.
+              4. Assess the portfolio against the client's risk profile and the
+              XP macro research provided; do not recommend buying or selling
+              specific assets. Present attention points as topics to discuss
+              with the advisor, not as orders.
 
               5. Client-facing text is written in Brazilian Portuguese (pt-BR),
               in a formal, warm and clear tone, without jargon overload.
@@ -176,17 +177,18 @@ data:
           visualData: 1150/0/280/null//
     monthly_letter:
       metadata:
-        description: Profile, performance analysis, suggestions, letter and critic for
-          one client. Every figure comes from the Python engine.
+        description: Analyst, Writer and Reviewer for one client. The only data input is
+          briefing.json, written by the Python engine with every figure already
+          calculated and formatted.
         id: monthly_letter
         name: 2. Monthly letter (per client)
       nodes:
-        '[monthly_letter__Analyst__performance_analysis__LLM_]:chat "Analyst: performance_analysis (LLM)"':
+        '[monthly_letter__Analyst__analyst__LLM_]:chat "Analyst: analyst (LLM)"':
           data:
             additionalParameters: []
             cache: false
             enableFunctionUse: false
-            maxTokens: 1200
+            maxTokens: 3000
             modalitiesIncludeAudio: false
             modalitiesIncludeText: false
             model: gpt-4o-mini
@@ -214,318 +216,156 @@ data:
             useUseTopPInput: false
             useUserInput: false
           outgoingConnections:
-            - 'response->"Analyst: recommendations (prompt)"
-              monthly_letter__Analyst__recommendations__prompt_/performance_analysis'
             - 'response->"Writer: letter_writer (prompt)"
-              monthly_letter__Writer__letter_writer__prompt_/performance_analysis'
-            - response->"out_performance_analysis"
-              monthly_letter__out_performance_analysis/value
-          visualData: 1510/320/240/null//
-        '[monthly_letter__Analyst__performance_analysis__prompt_]:prompt "Analyst: performance_analysis (prompt)"':
-          data:
-            enableFunctionCall: false
-            promptText: >-
-              ## Task: analyze the portfolio's performance in the month
-
-
-              You receive the portfolio, the profitability results already
-              calculated by our engine and the XP macro digest. Your job is to
-              choose what matters and explain it, never to recalculate.
-
-
-              Explain:
-
-              - the headline: the portfolio return versus CDI and versus the
-              profile benchmark;
-
-              - which asset rose the most and which fell the most (by return %),
-              and which asset contributed the most and the least in reais.
-              Mention when they are different assets and why (weight);
-
-              - how each asset class and each fund type behaved, with the right
-              sign: say which were positive and which negative;
-
-              - the assets that hurt the most in reais (bottom contributors),
-              not only the worst return;
-
-              - the most impactful movements in reais, and losses stated plainly
-              (asset, return and how much it took from the portfolio in reais);
-
-              - for each relevant loss or gain, a possible explanation from the
-              XP macro digest only when the digest supports it (e.g. a sector or
-              asset class it mentions); if the digest says nothing about it, do
-              not make up a cause;
-
-              - points of attention from the data (for example idle cash and its
-              opportunity cost, a matured bond, data caveats such as a proxy
-              used for a fund). A matured bond shows +0,00% because it already
-              paid out: describe it as an amount available to reinvest, never as
-              "sem retorno" or a loss.
-
-
-              Use the figures exactly as written in the results. Attribute each
-              figure only to what it measures:
-
-              - "classes" are whole asset classes (stocks, fixed income, cash);
-              funds are reported only by type in "fund_types", so name the type
-              ("fundos multimercado") with its own return; for one asset, use
-              "positions".
-
-              - Never present the return of a class as the return of a subset of
-              it, or the other way around. "Renda fixa (CDB)" is only the CDBs
-              held directly; fixed income funds are a fund type.
-
-              - A contribution in reais comes from weight and return together;
-              say "weight" only when the asset's weight is clearly larger than
-              the best performer's.
-
-              - "highlights" already ranks the assets: best and worst performer
-              by return, top and bottom contributor in reais.
-
-
-              Return JSON with this schema:
-
-              {
-                "headline_pt": "string (one sentence)",
-                "best_performer": {"asset": "string", "return": "string"},
-                "worst_performer": {"asset": "string", "return": "string"},
-                "top_contributor": {"asset": "string", "contribution": "string"},
-                "bottom_contributor": {"asset": "string", "contribution": "string"},
-                "class_comments_pt": [{"asset_class": "string", "comment": "string"}],
-                "attention_points_pt": ["string"],
-                "macro_links_pt": ["string (movement + the macro point that may explain it)"],
-                "paragraph_pt": "string (one paragraph in pt-BR, max 120 words, for the letter)"
-              }
-
-
-              ### Client
-
-              {{client}}
-
-
-              ### Portfolio (statement)
-
-              {{portfolio_text}}
-
-
-              ### XP macro digest
-
-              {{macro_digest}}
-
-
-              ### Profitability results (calculated by our engine; figures in
-              "formatted" are the ones to quote)
-
-              {{profitability}}
-            type: user
-            useTypeInput: false
-          outgoingConnections:
-            - 'output->"Analyst: performance_analysis (LLM)"
-              monthly_letter__Analyst__performance_analysis__LLM_/prompt'
-          visualData: 1150/320/320/null//
-        '[monthly_letter__Analyst__profile_summary__LLM_]:chat "Analyst: profile_summary (LLM)"':
-          data:
-            additionalParameters: []
-            cache: false
-            enableFunctionUse: false
-            maxTokens: 800
-            modalitiesIncludeAudio: false
-            modalitiesIncludeText: false
-            model: gpt-4o-mini
-            outputUsage: false
-            parallelFunctionCalling: true
-            reasoningEffort: ""
-            responseFormat: json
-            stop: ""
-            temperature: 0.1
-            top_p: 1
-            useAdditionalParametersInput: false
-            useAsGraphPartialOutput: false
-            useFrequencyPenaltyInput: false
-            useMaxTokensInput: false
-            useModelInput: true
-            usePredictedOutput: false
-            usePresencePenaltyInput: false
-            useReasoningEffortInput: false
-            useServerTokenCalculation: true
-            useStop: false
-            useStopInput: false
-            useTemperatureInput: false
-            useTopP: false
-            useTopPInput: false
-            useUseTopPInput: false
-            useUserInput: false
-          outgoingConnections:
-            - 'response->"Analyst: recommendations (prompt)"
-              monthly_letter__Analyst__recommendations__prompt_/profile_summary'
-            - 'response->"Reviewer: critic (prompt)"
-              monthly_letter__Reviewer__critic__prompt_/profile_summary'
-            - 'response->"Writer: letter_writer (prompt)"
-              monthly_letter__Writer__letter_writer__prompt_/profile_summary'
-            - response->"out_profile_summary"
-              monthly_letter__out_profile_summary/value
+              monthly_letter__Writer__letter_writer__prompt_/analysis'
+            - response->"out_analysis" monthly_letter__out_analysis/value
           visualData: 810/200/240/null//
-        '[monthly_letter__Analyst__profile_summary__prompt_]:prompt "Analyst: profile_summary (prompt)"':
+        '[monthly_letter__Analyst__analyst__prompt_]:prompt "Analyst: analyst (prompt)"':
           data:
             enableFunctionCall: false
             promptText: >-
-              ## Task: summarize the client's investor profile (suitability)
+              ## Task: analyze the client's month, in three parts
 
 
-              Read the client's risk profile document and extract what the
-              letter and the suggestions must respect.
+              The briefing below was prepared by our Python engine: the client,
+              the risk profile document, the statement, every result already
+              calculated and formatted, the portfolio facts and the XP macro
+              digest. Your job is to choose what matters and explain it, never
+              to recalculate. You do not recommend buying or selling assets.
+
+
+              ### Part 1: profile
+
+              From the risk profile document ("profile"), what the letter must
+              respect: horizon, tolerance to volatility, objectives, compatible
+              products and explicit restrictions (e.g. dividend-paying companies
+              only).
+
+
+              ### Part 2: performance (from "results")
+
+              - Two time frames, never mixed: everything in "results" is the
+              reference month only, except "consolidated_window" (the 12-month
+              window, or since the first investment). The statement's per-asset
+              "rentabilidade" is accumulated since each investment, not the
+              month: for the month use "positions" and "highlights".
+
+              - The headline: the month's return, then always the comparison
+              against the CDI and the profile benchmark as the difference in
+              p.p. with its direction (above or below), the benchmark's own
+              return only in parentheses; never as a percentage of the CDI. Then
+              inflation (real return). The same for the window.
+
+              - Where the result came from by asset class ("class_contribution",
+              in reais and p.p.).
+
+              - When "consolidated_window" is given, in "window_pt" and only
+              there: the portfolio over that window against the CDI, the
+              Ibovespa, inflation and the profile benchmark, and the result
+              since the first investment ("since_purchase", with its date), with
+              why the two differ when they do. It is rebuilt from the current
+              positions: say "considerando as posições atuais".
+
+              - The best and worst performer by return and the top and bottom
+              contributor in reais ("highlights"). A contribution comes from
+              weight and return together: mention weight only when the asset's
+              weight in "positions" is clearly larger than the best performer's.
+
+              - Losses stated plainly (asset, return, reais). A possible
+              explanation from the XP digest only when the digest supports it;
+              never "explain" a class by a scenario that points the other way.
+
+              - Points of attention from the data: idle cash and its opportunity
+              cost, a matured bond (already paid out: an amount available to
+              reinvest, never "sem retorno" nor a result of the month), a fund
+              priced by proxy. Cash and matured bonds have no return of the
+              month (their "return" in the briefing says so): never quote them
+              as a result.
+
+              - Attribution: "classes" are whole classes; funds appear only by
+              type in "fund_types"; one asset is in "positions". Never present
+              the return of a class as the return of a subset of it, or the
+              other way around. "Renda fixa (CDB)" is only the CDBs held
+              directly.
+
+
+              ### Part 3: assessment (portfolio vs profile and XP scenario)
+
+              - Class by class, using the classes and weights in the
+              "class_weights" portfolio fact (copied exactly). The XP view comes
+              from the digest's asset_class_implications ("favorable", "neutral"
+              or "unfavorable"); when the digest says nothing about a class, or
+              for "Saldo em conta", use "neutral".
+
+              - "profile_fit_pt": one short sentence on what the class does for
+              this client in this scenario (protection, liquidity, growth,
+              inflation defence, concentration risk), consistent with the XP
+              view: do not call a class "estável" or "proteção" when the digest
+              sees it as volatile or uncertain, and never mention "potencial de
+              retorno".
+
+              - When a class moved against the XP view in the month (e.g. stocks
+              rose while the XP view on Brazilian equities is unfavorable), say
+              so explicitly and keep both facts: one month's result does not
+              change the scenario, and the scenario is why the class deserves
+              attention. Never leave the two side by side unexplained.
+
+              - A class made only of matured bonds is "vencido, disponível para
+              reinvestir": no XP view on its return ("neutral").
+
+              - Do not qualify a weight ("exposição significativa", "alta
+              concentração") unless a portfolio fact says so; quote the weight
+              instead.
+
+              - "assessment_pt": is the mix coherent with the profile given the
+              scenario? Name the one or two classes that matter most for this
+              client, and the sectors the digest flags when the client holds
+              stocks in them. Balanced: what is well placed and what is exposed.
+
+              - "attention_points": 1 to 3 objective facts worth a conversation,
+              each citing the id of a portfolio fact and quoting its figure (the
+              amount, the weight or the opportunity cost written in that fact),
+              so the client sees what it is about. Phrase each as a topic to
+              discuss ("vale conversar com seu assessor sobre..."), never as an
+              order; never say where the money must go or name a product;
+              describe what a change would do (diversify, reduce concentration,
+              add liquidity, align with the profile), never that it would
+              improve returns.
+
+              - XP figures are projections with a horizon ("a XP projeta a Selic
+              em 15,50% ao fim de 2025").
+
+
+              Client-facing strings are in Brazilian Portuguese, address the
+              client as "você", never by name or in the third person, and never
+              mention the "digest" (it is "o cenário da XP"). Copy figures
+              exactly as written in the briefing. If revision notes are given,
+              fix what they say.
 
 
               Return JSON with this schema:
 
               {
-                "profile": "conservative|moderate|aggressive",
-                "profile_pt": "string (e.g. Moderado)",
-                "horizon": "string",
-                "volatility_tolerance": "string",
-                "objectives": ["string"],
-                "compatible_products": ["string"],
-                "restrictions": ["string (explicit rules from the document, e.g. dividend-paying companies only)"],
-                "summary_pt": "string (one sentence in pt-BR, max 40 words)"
+                "profile": {"profile_pt": "string", "horizon": "string", "volatility_tolerance": "string",
+                            "objectives": ["string"], "restrictions": ["string"], "summary_pt": "string (max 40 words)"},
+                "performance": {
+                  "headline_pt": "string", "attribution_pt": "string", "window_pt": "string (empty if no consolidated_window)",
+                  "movers_pt": "string (best/worst performer, top contributor and losses)",
+                  "attention_points_pt": ["string"], "macro_links_pt": ["string (movement + the XP point that may explain it)"]
+                },
+                "assessment": {
+                  "class_views": [{"asset_class": "string (copied)", "weight": "string (copied)",
+                                   "xp_view": "favorable|neutral|unfavorable", "profile_fit_pt": "string (max 18 words)"}],
+                  "assessment_pt": "string (max 90 words)",
+                  "attention_points": [{"fact_id": "string", "title_pt": "string (max 7 words)", "text_pt": "string (max 45 words)"}],
+                  "outlook_pt": "string (max 60 words: what to watch for the classes this client holds, named, from the XP scenario; no macro figures, no promise of returns, nothing generic)"
+                }
               }
 
 
-              ### Risk profile classification computed from the document
+              ### Briefing
 
-              {{profile_label}}
-
-
-              ### Risk profile document
-
-              {{risk_profile_text}}
-            type: user
-            useTypeInput: false
-          outgoingConnections:
-            - 'output->"Analyst: profile_summary (LLM)"
-              monthly_letter__Analyst__profile_summary__LLM_/prompt'
-          visualData: 450/200/320/null//
-        '[monthly_letter__Analyst__recommendations__LLM_]:chat "Analyst: recommendations (LLM)"':
-          data:
-            additionalParameters: []
-            cache: false
-            enableFunctionUse: false
-            maxTokens: 1200
-            modalitiesIncludeAudio: false
-            modalitiesIncludeText: false
-            model: gpt-4o-mini
-            outputUsage: false
-            parallelFunctionCalling: true
-            reasoningEffort: ""
-            responseFormat: json
-            stop: ""
-            temperature: 0.3
-            top_p: 1
-            useAdditionalParametersInput: false
-            useAsGraphPartialOutput: false
-            useFrequencyPenaltyInput: false
-            useMaxTokensInput: false
-            useModelInput: true
-            usePredictedOutput: false
-            usePresencePenaltyInput: false
-            useReasoningEffortInput: false
-            useServerTokenCalculation: true
-            useStop: false
-            useStopInput: false
-            useTemperatureInput: false
-            useTopP: false
-            useTopPInput: false
-            useUseTopPInput: false
-            useUserInput: false
-          outgoingConnections:
-            - 'response->"Writer: letter_writer (prompt)"
-              monthly_letter__Writer__letter_writer__prompt_/recommendations'
-            - response->"out_recommendations"
-              monthly_letter__out_recommendations/value
-          visualData: 2210/200/240/null//
-        '[monthly_letter__Analyst__recommendations__prompt_]:prompt "Analyst: recommendations (prompt)"':
-          data:
-            enableFunctionCall: false
-            promptText: >-
-              ## Task: suggest portfolio movements for the coming month
-
-
-              Our rules engine has already listed the movements that are
-              objectively justified for this client ("candidates"), each with
-              its type and its basis in the portfolio. Your job is to choose and
-              explain, not to invent movements.
-
-
-              Rules:
-
-              - Choose 2 or 3 candidates. Prefer, in this order: a matured bond
-              or idle cash to put to work, a protection need (no fixed income,
-              concentration, a heavy class that fell), and at most one macro
-              opportunity.
-
-              - Use a macro candidate only if the XP macro digest is favorable
-              or neutral for that asset class, and say which projection supports
-              it.
-
-              - Do not change the action of a candidate and do not name products
-              or tickers that the candidate does not name. Never state where the
-              money must go: every action is a possibility to discuss with the
-              advisor ("discutir com o assessor a possibilidade de...").
-
-              - Do not choose two candidates that point to the same instrument
-              for the same money.
-
-              - The rationale links three things: the candidate's basis (fact),
-              the client's profile and the XP scenario. Explain what the
-              movement does to the portfolio (diversifies, reduces
-              concentration, gives liquidity, puts idle money to work at the CDI
-              rate), never that it will improve or increase returns.
-
-              - XP figures are projections with a horizon (e.g. "a XP projeta a
-              Selic em 15,50% em 2025"), never current values.
-
-              - If revision notes are given, fix what they say about the
-              suggestions.
-
-
-              Return JSON with this schema:
-
-              {
-                "suggestions": [
-                  {
-                    "candidate_id": "string (id from the candidates)",
-                    "type": "opportunity|protection (copied from the candidate)",
-                    "title_pt": "string (max 8 words)",
-                    "action_pt": "string (the candidate's action, one sentence)",
-                    "rationale_pt": "string (fact + profile + XP scenario, max 60 words)"
-                  }
-                ],
-                "outlook_pt": "string (one paragraph in pt-BR, max 70 words: what to watch in the coming months given the scenario, without repeating the macro figures and without promising returns)"
-              }
-
-
-              ### Candidates (from our rules engine)
-
-              {{suggestion_candidates}}
-
-
-              ### Client profile
-
-              {{profile_summary}}
-
-
-              ### XP macro digest
-
-              {{macro_digest}}
-
-
-              ### Portfolio performance analysis
-
-              {{performance_analysis}}
-
-
-              ### Portfolio facts (calculated by our engine)
-
-              {{portfolio_facts}}
+              {{briefing}}
 
 
               ### Revision notes (empty on the first draft)
@@ -534,9 +374,9 @@ data:
             type: user
             useTypeInput: false
           outgoingConnections:
-            - 'output->"Analyst: recommendations (LLM)"
-              monthly_letter__Analyst__recommendations__LLM_/prompt'
-          visualData: 1850/200/320/null//
+            - 'output->"Analyst: analyst (LLM)"
+              monthly_letter__Analyst__analyst__LLM_/prompt'
+          visualData: 450/200/320/null//
         '[monthly_letter__Reviewer__critic__LLM_]:chat "Reviewer: critic (LLM)"':
           data:
             additionalParameters: []
@@ -571,7 +411,7 @@ data:
             useUserInput: false
           outgoingConnections:
             - response->"out_critic" monthly_letter__out_critic/value
-          visualData: 3610/200/240/null//
+          visualData: 2210/200/240/null//
         '[monthly_letter__Reviewer__critic__prompt_]:prompt "Reviewer: critic (prompt)"':
           data:
             enableFunctionCall: false
@@ -585,12 +425,31 @@ data:
               real client.
 
 
-              The suggestions were chosen from candidates produced by our rules
-              engine, which already checks suitability and grounding; do not
-              judge whether a suggestion fits the profile.
+              The letter assesses the portfolio against the client's profile and
+              the XP scenario; it does not recommend buying or selling. Each
+              attention point is anchored in a portfolio fact checked by code.
+
+
+              Time frames: every figure in "results" is for the reference month
+              only, except "consolidated_window" (the 12-month window and the
+              result since the first investment). The statement's per-asset
+              "rentabilidade" is accumulated since each investment, not the
+              month, so never use it to judge a month figure: the month's return
+              of each asset is in "results.positions". "performance_pt" is about
+              the month and "consolidated_pt" about the window.
 
 
               Check:
+
+              - "fatos" also covers the comparison with benchmarks: the
+              portfolio must be compared with the CDI and the profile benchmark
+              by the difference in p.p. and the right direction (above or
+              below), in the month and in the window. A sentence that lets a
+              benchmark's return read as the portfolio's, or calls the portfolio
+              "acima" when it was below, is high.
+
+              - "período": a figure presented in the wrong time frame (a
+              12-month figure called the month's, or the other way round). High.
 
               - "fatos": every statement about the portfolio agrees with the
               profitability results and the portfolio facts: which asset, class
@@ -600,12 +459,22 @@ data:
               not current values. A wrong statement is high. (Formatting of
               figures is checked elsewhere; check meaning only.)
 
-              - "coerência": no two passages contradict each other, and no
-              suggestion contradicts another. High.
+              - "coerência": no two passages contradict each other (e.g. the
+              scenario "explaining" a class that went the other way). High.
 
               - "nomes": correct client name, reference month and advisor; the
               letter speaks to the client as "você" (not in the third person).
               High.
+
+              - "estrutura": the letter ends with the outlook ("O que esperar"),
+              the closing and the advisor's signature, placed after the
+              per-asset table and right before the disclaimer (the PDF lays them
+              out in that order). An outlook or closing that does not work as
+              the ending, refers to content below it, or a sign-off or farewell
+              inside another section, is medium. An outlook that does not name
+              the client's own classes or assets, or a closing that does not
+              mention the attention points (generic text that would fit any
+              client), is medium.
 
               - "linguagem": Brazilian Portuguese, formal and clear tone; no
               repeated ideas or figures between sections. Medium or low.
@@ -613,6 +482,25 @@ data:
               - "promessa": wording that implies improved or guaranteed returns.
               An automatic check already blocks the obvious cases, so report it
               as medium at most, as a note for the advisor.
+
+
+              Not issues: calling the asset with the highest return in % the
+              best performer while another asset contributed more in reais (both
+              are true, they measure different things); saying the month was
+              driven by the class with the largest contribution in
+              class_contribution; explaining the top contributor in reais by its
+              larger weight when "positions" shows a larger weight than the best
+              performer's; a matured CDB at +0,00% does not make statements
+              about fixed income funds wrong; describing a class as the XP
+              digest does; leaving a portfolio fact out of the attention points
+              (there are at most 3, chosen by the Analyst); a 12-month result
+              different from the result since the first investment (they measure
+              different periods); giving a class's contribution in reais and
+              p.p. without its return (the return is in the table); mentioning
+              the Ibovespa next to the CDI and the profile benchmark in the
+              window (it is one of the chart's references); saying that a class
+              rose in the month despite an unfavorable XP view (that contrast is
+              required, it is not a contradiction).
 
 
               Report an issue only when you can quote the exact passage that
@@ -625,36 +513,17 @@ data:
 
               {
                 "approved": true,
-                "issues": [{"severity": "high|medium|low", "rule": "fatos|coerência|nomes|linguagem|promessa", "quote": "exact passage from the letter", "problem": "string", "fix": "string"}]
+                "issues": [{"severity": "high|medium|low", "rule": "fatos|período|coerência|nomes|estrutura|linguagem|promessa", "quote": "exact passage from the letter", "problem": "string", "fix": "string"}]
               }
 
               Write "problem" and "fix" in Brazilian Portuguese, for the
               advisor. Set "approved" to false only if there is a high issue.
 
 
-              ### Client
+              ### Briefing (client, profile document, results, portfolio facts
+              and XP macro digest)
 
-              {{client}}
-
-
-              ### Client profile
-
-              {{profile_summary}}
-
-
-              ### Profitability results
-
-              {{profitability}}
-
-
-              ### Portfolio facts
-
-              {{portfolio_facts}}
-
-
-              ### XP macro digest
-
-              {{macro_digest}}
+              {{briefing}}
 
 
               ### Draft letter
@@ -665,7 +534,7 @@ data:
           outgoingConnections:
             - 'output->"Reviewer: critic (LLM)"
               monthly_letter__Reviewer__critic__LLM_/prompt'
-          visualData: 3250/200/320/null//
+          visualData: 1850/200/320/null//
         '[monthly_letter__Writer__letter_writer__LLM_]:chat "Writer: letter_writer (LLM)"':
           data:
             additionalParameters: []
@@ -702,7 +571,7 @@ data:
             - 'response->"Reviewer: critic (prompt)"
               monthly_letter__Reviewer__critic__prompt_/letter'
             - response->"out_letter" monthly_letter__out_letter/value
-          visualData: 2910/320/240/null//
+          visualData: 1510/320/240/null//
         '[monthly_letter__Writer__letter_writer__prompt_]:prompt "Writer: letter_writer (prompt)"':
           data:
             enableFunctionCall: false
@@ -710,44 +579,101 @@ data:
               ## Task: write the monthly letter
 
 
-              Integrate the analyses below into the client's monthly letter, in
+              Turn the analysis below into the client's monthly letter, in
               Brazilian Portuguese. It will be laid out on two A4 pages together
-              with two charts and a small results table, so the whole text must
-              stay between 380 and 520 words.
+              with a chart of the consolidated portfolio against its benchmarks
+              over the last 12 months (or since the first investment), a table
+              of the portfolio by class with the XP view, and the per-asset
+              results table, so the whole text must stay between 330 and 480
+              words. The letter has two clearly separate time frames: the
+              reference month, and the consolidated window; every figure must
+              say which one it belongs to.
 
 
               Structure:
 
               1. greeting with the client's first name;
 
-              2. opening: one or two sentences with the month and the purpose of
-              the letter;
+              2. opening: one sentence that tells, in plain words and without
+              figures, how the month went and what drove it (e.g. "Abril foi um
+              mês positivo para sua carteira, puxado principalmente pelas
+              ações."). Never "apresentamos o desempenho" or similar;
 
-              3. performance: the month's result versus CDI and the profile
-              benchmark; the most impactful movements, with losses stated
-              plainly and, when the analysis links them to the XP scenario, that
-              possible explanation; the best performer and the worst performer
-              (by return); the top contributor in reais when it is a different
-              asset from the best performer, explaining that its weight in the
-              portfolio is larger; then the attention points;
+              3. performance of the month ("performance_pt", at most two
+              paragraphs, under the heading "Desempenho no mês"): only figures
+              of the reference month from "results" (never from
+              "consolidated_window"), and say "no mês" or name the month at
+              least once in each paragraph. First the month's consolidated
+              result, then the comparison against the CDI and against the
+              profile benchmark, always as the difference in p.p. with its
+              direction ("excess_vs_cdi", "excess_vs_profile_benchmark"):
+              "+3,95% no mês, 2,90 p.p. acima do CDI (1,06%) e 2,11 p.p. acima
+              do benchmark do perfil (1,85%)". The benchmark's own return goes
+              only in parentheses, never with a "+" next to the portfolio's
+              figure, and never as a percentage of the CDI; then inflation (real
+              return). Then where the month's result came from, by asset class
+              ("class_contribution"); then the most relevant movements by asset
+              (best and worst performer, and the top contributor in reais when
+              it is a different asset, explaining its larger weight), with
+              losses stated plainly; the per-asset detail is in the table, so do
+              not list every asset. Do not quote the 0,00% return of cash or of
+              a matured bond, and never name a matured bond in this section: the
+              worst performer is "highlights.worst_performer". An asset's return
+              in the statement ("statement") is accumulated since the
+              investment: for the month use "positions" and "highlights" only;
 
-              4. macro: how the XP scenario may affect the portfolio;
+              3b. consolidated performance ("consolidated_pt", one paragraph,
+              under the heading "Desempenho acumulado", only when
+              "consolidated_window" is given, otherwise empty): only figures of
+              "consolidated_window", always with the window ("nos últimos 12
+              meses"): the portfolio's return and result in reais ("gain"), then
+              the comparison against the CDI and against the profile benchmark
+              as the difference in p.p. with its direction ("excess_vs_cdi",
+              "excess_vs_profile_benchmark": "3,84 p.p. abaixo do CDI (11,45%) e
+              2,77 p.p. abaixo do benchmark do perfil (10,38%)"), and the
+              Ibovespa if relevant, saying it considers the current positions;
+              then the result since the first investment ("since_purchase", with
+              its date), explaining in plain words when it differs from the 12
+              months (older positions that are still below their purchase
+              price). Never mix a month figure into this paragraph;
 
-              5. suggestions: exactly the movements in "Suggestions", same
-              order, candidate_id and type copied; each text starts with
-              "Discutir com o assessor a possibilidade de..." (or a close
-              variation) and never states where the money must go, nor names a
-              product or ticker the suggestion does not name;
+              4. macro: the XP scenario in two or three sentences and what it
+              means for the assets this client actually holds (name the classes
+              or sectors, following the analyses). Quote each macro figure once;
 
-              6. outlook: what to expect, without promising returns;
+              5. assessment: the analysis' assessment_pt, tightened if needed,
+              keeping its balance (what is well placed and what is exposed);
 
-              7. closing: availability of the advisor for a conversation.
+              6. attention points: exactly the points in the analysis'
+              assessment, same order, fact_id copied; keep them as topics to
+              discuss with the advisor;
+
+              7. outlook ("O que esperar", two or three sentences, specific to
+              this client): the one or two points of the XP scenario that matter
+              most for the classes this client actually holds, named (shape
+              only, fill it with this client's classes: "com [ponto do cenário
+              da XP], [classe que o cliente tem] segue em foco; em [outra
+              classe], [o ponto a acompanhar]"), and what that means to watch in
+              the coming months, conditional and attributed to XP, without
+              figures already quoted and without promising returns. Never a
+              generic sentence that would fit any client ("o cenário apresenta
+              desafios", "a diversificação pode mitigar riscos");
+
+              8. closing (one or two sentences): invite the client to talk about
+              the attention points of this letter, naming them briefly, from
+              this letter's attention points, and the advisor's availability. No
+              "melhores estratégias", no promise of results. No sign-off and no
+              name: the PDF adds "Atenciosamente" and the advisor's signature.
 
 
-              Choose the two charts that best support the story, from:
-              "allocation" (portfolio by asset class), "contribution"
-              (contribution of each asset in R$), "benchmarks" (portfolio vs
-              CDI, Ibovespa and profile benchmark).
+              Layout order (fixed by the PDF, mandatory): tiles, greeting,
+              opening, month performance, consolidated performance with the
+              chart, highlights, macro with the class table, assessment,
+              attention points, the per-asset table of the month, and only then
+              the outlook ("O que esperar"), the closing and the advisor's
+              signature, right before the disclaimer. So the outlook and the
+              closing are the last words of the letter: they must not refer to
+              anything "abaixo" and must read as its ending.
 
 
               Quote figures exactly as they appear in the analyses and attribute
@@ -761,51 +687,50 @@ data:
               - Never state or imply that a movement will improve, increase or
               raise returns, gains or profitability ("pode melhorar a
               rentabilidade", "potencializar ganhos", "aumentar o retorno" are
-              not allowed). Describe instead what the movement does to the
+              not allowed). Describe instead what a change does to the
               portfolio: diversifies, reduces concentration, adds liquidity,
-              aligns the portfolio with the profile, puts idle money to work at
-              the CDI rate.
+              aligns the portfolio with the profile.
+
+              - The letter assesses; it does not recommend buying or selling
+              specific assets.
 
               - XP figures are projections: say "a XP projeta a Selic em 15,50%
               ao fim de 2025" (with the horizon from the digest), never "a Selic
-              deve permanecer em". Quote each macro figure once, in the macro
-              section; the outlook does not repeat them.
-
-              - Each sentence says what it means grammatically: "incluir renda
-              fixa pode trazer proteção", not "a carteira não possui renda fixa,
-              o que pode oferecer proteção".
+              deve permanecer em". The outlook does not repeat them.
 
               - Macro effects are conditional and attributed to XP: "o cenário
-              projetado pela XP tende a favorecer...", never "vai render".
+              projetado pela XP tende a favorecer...", never "vai render". Do
+              not use the scenario to explain a movement that went the other way
+              (a class that rose is not "explained" by an unfavorable view).
 
-              - A matured bond is money available to reinvest, not a bad result:
-              do not describe it as "sem retorno" or as a concern.
-
-              - Idle cash is "saldo parado sem rendimento"; you may quote its
+              - A matured bond is money available to reinvest, not a bad result.
+              Idle cash is "saldo parado sem rendimento"; you may quote its
               opportunity cost in reais, but not promise what it would earn.
 
-              - Address the client as "você" consistently; use correct
-              Portuguese ("custo de oportunidade", "ajudá-lo"), and avoid
-              starting sentences with "Apesar de" unless a contrast follows in
-              the same sentence.
+              - Each sentence says what it means grammatically. Address the
+              client as "você" consistently and use correct Portuguese.
 
+              - When a class moved against the XP view in the month, write both
+              facts in one sentence and how they fit ("as ações subiram no mês,
+              mas a XP segue cautelosa com a bolsa brasileira, por isso vale
+              acompanhar esse peso"). Do not qualify a weight ("significativa",
+              "alta") unless a portfolio fact says so.
 
-              Each suggestion text keeps the portfolio fact it rests on (e.g.
-              "sua carteira não tem renda fixa"), and its title says no more
-              than its text. Do not compare a result with an expectation, a
-              limit or an ideal that is not in the inputs (no "abaixo do
-              esperado", "acima do limite ideal"; the concentration fact gives
-              the 15% reference).
+              - Describe a class only with what the XP view and the portfolio
+              facts support; do not attribute qualities such as "estabilidade",
+              "proteção" or "potencial de retorno" that the inputs do not state.
 
+              - Never mention the "digest" or the analyses: the client reads "o
+              cenário da XP" or "o relatório macro da XP". Never refer to the
+              client by name or in the third person outside the greeting.
 
-              The greeting appears only in greeting_pt. performance_pt has at
-              most two paragraphs and each figure is quoted once in the whole
-              letter.
+              - The greeting appears only in greeting_pt. Each figure is quoted
+              once in the whole letter. Do not compare a result with an
+              expectation, a limit or an ideal that is not in the inputs.
 
 
               If revision notes are given, fix every issue they list and keep
-              the rest, including every suggestion that is grounded in a
-              portfolio fact.
+              the rest.
 
 
               Return JSON with this schema:
@@ -814,39 +739,25 @@ data:
                 "subject_pt": "string (e-mail subject)",
                 "greeting_pt": "string (e.g. Prezado Albert,)",
                 "opening_pt": "string",
-                "performance_pt": ["string (paragraphs)"],
+                "performance_pt": ["string (paragraphs, the month only)"],
+                "consolidated_pt": "string (the 12-month window and since the first investment; empty if no consolidated_window)",
                 "macro_pt": "string",
-                "suggestions_intro_pt": "string",
-                "suggestions": [{"candidate_id": "string (copied)", "type": "opportunity|protection (copied)", "title_pt": "string", "text_pt": "string"}],
+                "assessment_pt": "string",
+                "attention_points": [{"fact_id": "string (copied)", "title_pt": "string", "text_pt": "string"}],
                 "outlook_pt": "string",
-                "closing_pt": "string",
-                "charts": ["allocation|contribution|benchmarks", "allocation|contribution|benchmarks"]
+                "closing_pt": "string"
               }
 
 
-              ### Client
+              ### Briefing (client, results, portfolio facts and XP macro
+              digest)
 
-              {{client}}
-
-
-              ### Client profile
-
-              {{profile_summary}}
+              {{briefing}}
 
 
-              ### Portfolio performance analysis
+              ### Analysis (profile, performance and assessment, by the Analyst)
 
-              {{performance_analysis}}
-
-
-              ### XP macro digest
-
-              {{macro_digest}}
-
-
-              ### Suggestions
-
-              {{recommendations}}
+              {{analysis}}
 
 
               ### Revision notes (empty on the first draft)
@@ -857,37 +768,21 @@ data:
           outgoingConnections:
             - 'output->"Writer: letter_writer (LLM)"
               monthly_letter__Writer__letter_writer__LLM_/prompt'
-          visualData: 2550/320/320/null//
-        '[monthly_letter__in_client]:graphInput "in_client"':
+          visualData: 1150/320/320/null//
+        '[monthly_letter__in_briefing]:graphInput "in_briefing"':
           data:
             dataType: string
             defaultValue: ""
-            id: client
+            id: briefing
             useDefaultValueInput: false
           outgoingConnections:
-            - 'data->"Analyst: performance_analysis (prompt)"
-              monthly_letter__Analyst__performance_analysis__prompt_/client'
+            - 'data->"Analyst: analyst (prompt)"
+              monthly_letter__Analyst__analyst__prompt_/briefing'
             - 'data->"Reviewer: critic (prompt)"
-              monthly_letter__Reviewer__critic__prompt_/client'
+              monthly_letter__Reviewer__critic__prompt_/briefing'
             - 'data->"Writer: letter_writer (prompt)"
-              monthly_letter__Writer__letter_writer__prompt_/client'
+              monthly_letter__Writer__letter_writer__prompt_/briefing'
           visualData: 0/0/280/null//
-        '[monthly_letter__in_macro_digest]:graphInput "in_macro_digest"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: macro_digest
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: performance_analysis (prompt)"
-              monthly_letter__Analyst__performance_analysis__prompt_/macro_digest'
-            - 'data->"Analyst: recommendations (prompt)"
-              monthly_letter__Analyst__recommendations__prompt_/macro_digest'
-            - 'data->"Reviewer: critic (prompt)"
-              monthly_letter__Reviewer__critic__prompt_/macro_digest'
-            - 'data->"Writer: letter_writer (prompt)"
-              monthly_letter__Writer__letter_writer__prompt_/macro_digest'
-          visualData: 0/1120/280/null//
         '[monthly_letter__in_model]:graphInput "in_model"':
           data:
             dataType: string
@@ -895,57 +790,9 @@ data:
             id: model
             useDefaultValueInput: false
           outgoingConnections:
-            - 'data->"Analyst: performance_analysis (LLM)"
-              monthly_letter__Analyst__performance_analysis__LLM_/model'
-            - 'data->"Analyst: profile_summary (LLM)"
-              monthly_letter__Analyst__profile_summary__LLM_/model'
-            - 'data->"Analyst: recommendations (LLM)"
-              monthly_letter__Analyst__recommendations__LLM_/model'
-          visualData: 0/1440/280/null//
-        '[monthly_letter__in_portfolio_facts]:graphInput "in_portfolio_facts"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: portfolio_facts
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: recommendations (prompt)"
-              monthly_letter__Analyst__recommendations__prompt_/portfolio_facts'
-            - 'data->"Reviewer: critic (prompt)"
-              monthly_letter__Reviewer__critic__prompt_/portfolio_facts'
-          visualData: 0/800/280/null//
-        '[monthly_letter__in_portfolio_text]:graphInput "in_portfolio_text"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: portfolio_text
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: performance_analysis (prompt)"
-              monthly_letter__Analyst__performance_analysis__prompt_/portfolio_text'
-          visualData: 0/480/280/null//
-        '[monthly_letter__in_profile_label]:graphInput "in_profile_label"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: profile_label
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: profile_summary (prompt)"
-              monthly_letter__Analyst__profile_summary__prompt_/profile_label'
-          visualData: 0/160/280/null//
-        '[monthly_letter__in_profitability]:graphInput "in_profitability"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: profitability
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: performance_analysis (prompt)"
-              monthly_letter__Analyst__performance_analysis__prompt_/profitability'
-            - 'data->"Reviewer: critic (prompt)"
-              monthly_letter__Reviewer__critic__prompt_/profitability'
-          visualData: 0/640/280/null//
+            - 'data->"Analyst: analyst (LLM)"
+              monthly_letter__Analyst__analyst__LLM_/model'
+          visualData: 0/320/280/null//
         '[monthly_letter__in_revision_notes]:graphInput "in_revision_notes"':
           data:
             dataType: string
@@ -953,31 +800,11 @@ data:
             id: revision_notes
             useDefaultValueInput: false
           outgoingConnections:
-            - 'data->"Analyst: recommendations (prompt)"
-              monthly_letter__Analyst__recommendations__prompt_/revision_notes'
+            - 'data->"Analyst: analyst (prompt)"
+              monthly_letter__Analyst__analyst__prompt_/revision_notes'
             - 'data->"Writer: letter_writer (prompt)"
               monthly_letter__Writer__letter_writer__prompt_/revision_notes'
-          visualData: 0/1280/280/null//
-        '[monthly_letter__in_risk_profile_text]:graphInput "in_risk_profile_text"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: risk_profile_text
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: profile_summary (prompt)"
-              monthly_letter__Analyst__profile_summary__prompt_/risk_profile_text'
-          visualData: 0/320/280/null//
-        '[monthly_letter__in_suggestion_candidates]:graphInput "in_suggestion_candidates"':
-          data:
-            dataType: string
-            defaultValue: ""
-            id: suggestion_candidates
-            useDefaultValueInput: false
-          outgoingConnections:
-            - 'data->"Analyst: recommendations (prompt)"
-              monthly_letter__Analyst__recommendations__prompt_/suggestion_candidates'
-          visualData: 0/960/280/null//
+          visualData: 0/160/280/null//
         '[monthly_letter__in_writer_model]:graphInput "in_writer_model"':
           data:
             dataType: string
@@ -989,7 +816,7 @@ data:
               monthly_letter__Reviewer__critic__LLM_/model'
             - 'data->"Writer: letter_writer (LLM)"
               monthly_letter__Writer__letter_writer__LLM_/model'
-          visualData: 0/1600/280/null//
+          visualData: 0/480/280/null//
         '[monthly_letter__monthly_letter_system]:prompt "monthly_letter_system"':
           data:
             enableFunctionCall: false
@@ -1013,9 +840,10 @@ data:
               3. Never promise or forecast returns for the client's portfolio.
               Talk about scenarios and possibilities, not certainties.
 
-              4. Every suggestion must be compatible with the client's risk
-              profile and grounded in the XP macro research provided. Present
-              suggestions as points to discuss with the advisor, not as orders.
+              4. Assess the portfolio against the client's risk profile and the
+              XP macro research provided; do not recommend buying or selling
+              specific assets. Present attention points as topics to discuss
+              with the advisor, not as orders.
 
               5. Client-facing text is written in Brazilian Portuguese (pt-BR),
               in a formal, warm and clear tone, without jargon overload.
@@ -1025,42 +853,28 @@ data:
             type: system
             useTypeInput: false
           outgoingConnections:
-            - 'output->"Analyst: performance_analysis (LLM)"
-              monthly_letter__Analyst__performance_analysis__LLM_/systemPrompt'
-            - 'output->"Analyst: profile_summary (LLM)"
-              monthly_letter__Analyst__profile_summary__LLM_/systemPrompt'
-            - 'output->"Analyst: recommendations (LLM)"
-              monthly_letter__Analyst__recommendations__LLM_/systemPrompt'
+            - 'output->"Analyst: analyst (LLM)"
+              monthly_letter__Analyst__analyst__LLM_/systemPrompt'
             - 'output->"Reviewer: critic (LLM)"
               monthly_letter__Reviewer__critic__LLM_/systemPrompt'
             - 'output->"Writer: letter_writer (LLM)"
               monthly_letter__Writer__letter_writer__LLM_/systemPrompt'
           visualData: 400/-400/320/null//
+        '[monthly_letter__out_analysis]:graphOutput "out_analysis"':
+          data:
+            dataType: string
+            id: analysis
+          visualData: 2550/0/280/null//
         '[monthly_letter__out_critic]:graphOutput "out_critic"':
           data:
             dataType: string
             id: critic
-          visualData: 3950/640/280/null//
+          visualData: 2550/320/280/null//
         '[monthly_letter__out_letter]:graphOutput "out_letter"':
           data:
             dataType: string
             id: letter
-          visualData: 3950/480/280/null//
-        '[monthly_letter__out_performance_analysis]:graphOutput "out_performance_analysis"':
-          data:
-            dataType: string
-            id: performance_analysis
-          visualData: 3950/160/280/null//
-        '[monthly_letter__out_profile_summary]:graphOutput "out_profile_summary"':
-          data:
-            dataType: string
-            id: profile_summary
-          visualData: 3950/0/280/null//
-        '[monthly_letter__out_recommendations]:graphOutput "out_recommendations"':
-          data:
-            dataType: string
-            id: recommendations
-          visualData: 3950/320/280/null//
+          visualData: 2550/160/280/null//
     portfolio_extraction:
       metadata:
         description: Used only when the code reader does not recognise a statement; the
@@ -1208,9 +1022,10 @@ data:
               3. Never promise or forecast returns for the client's portfolio.
               Talk about scenarios and possibilities, not certainties.
 
-              4. Every suggestion must be compatible with the client's risk
-              profile and grounded in the XP macro research provided. Present
-              suggestions as points to discuss with the advisor, not as orders.
+              4. Assess the portfolio against the client's risk profile and the
+              XP macro research provided; do not recommend buying or selling
+              specific assets. Present attention points as topics to discuss
+              with the advisor, not as orders.
 
               5. Client-facing text is written in Brazilian Portuguese (pt-BR),
               in a formal, warm and clear tone, without jargon overload.
@@ -1224,7 +1039,7 @@ data:
               portfolio_extraction__portfolio_extraction__LLM_/systemPrompt
           visualData: 400/-400/320/null//
   metadata:
-    description: "Rivet decides, Python executes: analysis, suggestions and the
+    description: "Rivet decides, Python executes: analysis, assessment and the
       letter are written here; figures, charts, PDF and e-mail are produced by
       the Python platform."
     id: xp_monthly_letter
