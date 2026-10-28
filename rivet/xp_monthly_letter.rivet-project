@@ -590,10 +590,11 @@ data:
               the top contributor in reais when it is a different asset,
               explaining its larger weight), with losses stated plainly; the
               per-asset detail is in the table, so do not list every asset. Do
-              not quote the 0,00% return of cash or of a matured bond. An
-              asset's return in the statement ("statement") is accumulated since
-              the investment: for the month use "positions" and "highlights"
-              only;
+              not quote the 0,00% return of cash or of a matured bond, and never
+              name a matured bond in this section: the worst performer is
+              "highlights.worst_performer". An asset's return in the statement
+              ("statement") is accumulated since the investment: for the month
+              use "positions" and "highlights" only;
 
               3b. consolidated performance ("consolidated_pt", one paragraph,
               under the heading "Desempenho acumulado", only when
@@ -621,7 +622,9 @@ data:
               7. outlook: what to watch, without promising returns;
 
               8. closing: availability of the advisor for a conversation,
-              without promising "melhores estratégias" or results.
+              without promising "melhores estratégias" or results. No sign-off
+              and no name: the PDF adds "Atenciosamente" and the advisor's
+              signature.
 
 
               Layout order (fixed by the PDF, mandatory): tiles, greeting,

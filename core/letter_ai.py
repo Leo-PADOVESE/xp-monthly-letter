@@ -109,6 +109,8 @@ def macro_digest(macro_pdf: Path, letter_date: date, model: str) -> dict:
 # ---------------------------------------------------------------------- checks
 
 GREETING = re.compile(r"^(?:Car[oa]|Prezad[oa])\s+[^\s,]+,\s*")
+# The PDF signs the letter; a sign-off inside the text ("Atenciosamente, Antonio Bicudo.") would sign it twice.
+SIGN_OFF = re.compile(r"\s*(?:Atenciosamente|Cordialmente|Abraços|Um abraço)\b.*$", re.IGNORECASE | re.DOTALL)
 
 
 def _client_voice(text: str, client_name: str) -> str:
@@ -131,6 +133,8 @@ def tidy(letter: dict, client_name: str = "") -> dict:
     letter["performance_pt"] = [_client_voice(p[:1].upper() + p[1:], client_name) for p in paragraphs if p]
     for key in ("opening_pt", "consolidated_pt", "macro_pt", "assessment_pt", "outlook_pt", "closing_pt"):
         letter[key] = _client_voice(letter.get(key, ""), client_name)
+    for key in ("outlook_pt", "closing_pt"):
+        letter[key] = SIGN_OFF.sub("", letter[key])
     for s in letter.get("attention_points", []):
         s["text_pt"] = _client_voice(s.get("text_pt", ""), client_name)
     return letter
@@ -178,6 +182,14 @@ def check_scope(letter: dict, results: dict) -> list[str]:
     problems += [f"{f} é do mês, mas está no parágrafo do acumulado"
                  for f in NUMBER.findall(letter.get("consolidated_pt", "")) if _norm(f) in month_only]
     return sorted(set(problems))
+
+
+def check_matured_as_result(letter: dict, facts: dict) -> list[str]:
+    """A matured bond quoted in the month's performance: its 0,00% is a payout already received, not a result,
+    and it is left out of the best and worst performers ("menor retorno" once named the matured CDB)."""
+    matured = [f["id"].split(":", 1)[1] for f in facts["facts"] if f["id"].startswith("matured:")]
+    text = " ".join(letter.get("performance_pt", []))
+    return [name for name in matured if name in text]
 
 
 def check_promises(letter: dict) -> list[str]:
@@ -272,6 +284,12 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         if wrong_points:
             issues.append({"severity": "high", "rule": "pontos de atenção", "problem": "; ".join(wrong_points),
                            "fix": "Use de 1 a 3 pontos, cada um com o fact_id de um fato da carteira."})
+        quoted_matured = check_matured_as_result(letter, facts)
+        if quoted_matured:
+            issues.append({"severity": "high", "rule": "fatos",
+                           "problem": f"Título vencido citado no desempenho do mês: {', '.join(quoted_matured)}",
+                           "fix": "Não cite o título vencido no desempenho; o pior desempenho é o de 'worst_performer'. "
+                                  "O vencimento é um ponto de atenção (valor disponível para reinvestir)."})
         mixed = check_scope(letter, results)
         if mixed:
             issues.append({"severity": "high", "rule": "período", "problem": "; ".join(mixed),
