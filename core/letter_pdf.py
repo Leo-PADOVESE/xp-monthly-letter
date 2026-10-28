@@ -42,7 +42,7 @@ from reportlab.platypus import (  # noqa: E402
     Image, KeepTogether, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle,
 )
 
-from core.briefing import CLASS_LABELS_PT, brl, class_contribution, pct  # noqa: E402
+from core.briefing import CLASS_LABELS_PT, brl, class_contribution, pct, pp  # noqa: E402
 
 MAX_PAGES = 2
 
@@ -220,9 +220,16 @@ def _esc(text: str) -> str:
     return (text or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def _tile_row(caption: str, tiles: list[tuple[str, str]], st: dict, width: float, accent: bool) -> Table:
-    """One labelled row of figures: the caption says which period every tile below it measures."""
-    cells = [[Paragraph(label, st["tile_label"]), Paragraph(value, st["tile_value"])] for label, value in tiles]
+def _tile_row(caption: str, tiles: list[tuple], st: dict, width: float, accent: bool) -> Table:
+    """One labelled row of figures: the caption says which period every tile below it measures.
+    A tile is (label, value) or (label, value, note, colour) for a comparison."""
+    note_style = ParagraphStyle("tn", parent=st["tile_label"], fontSize=6.6, leading=8)
+    cells = []
+    for label, value, *extra in tiles:
+        note, colour = extra if extra else ("", None)
+        shown = f'<font color="{colour}">{value}</font>' if colour else value
+        cells.append([Paragraph(label, st["tile_label"]), Paragraph(shown, st["tile_value"])]
+                     + ([Paragraph(note, note_style)] if note else []))
     table = Table([[Paragraph(caption, st["tag"])] + [""] * (len(tiles) - 1), cells],
                   colWidths=[width / len(tiles)] * len(tiles))
     table.setStyle(TableStyle([
@@ -235,20 +242,29 @@ def _tile_row(caption: str, tiles: list[tuple[str, str]], st: dict, width: float
     return table
 
 
+def _versus(label: str, short: str, portfolio: float, benchmark: float, period: str) -> tuple:
+    """The portfolio against a benchmark as a difference in p.p., with the benchmark itself as a note.
+    "CDI +11,45%" next to the portfolio read as "CDI + 11%"; the difference says who won."""
+    diff = portfolio - benchmark
+    return (f"Contra o {label}", pp(diff), f"{short} {period}: {pct(benchmark, signed=False)}", GAIN if diff >= 0 else LOSS)
+
+
 def _tiles(report: dict, client: dict, st: dict, width: float, history: dict | None = None) -> list:
     """The month and the consolidated window in two labelled rows with the same four figures, so the client
     reads one against the other and no figure is taken for the other period."""
-    bench = report["benchmarks_pct"]
+    bench, ret = report["benchmarks_pct"], report["return_pct"]
     rows = [_tile_row(f"NO MÊS · {client['reference_month'].upper()}",
-                      [("Sua carteira", pct(report["return_pct"])), ("Resultado em reais", brl(report["gain_brl"])),
-                       ("CDI", pct(bench["CDI"])), ("Benchmark do perfil", pct(bench["PROFILE"]))], st, width, True)]
+                      [("Sua carteira", pct(ret)), ("Resultado em reais", brl(report["gain_brl"])),
+                       _versus("CDI", "CDI", ret, bench["CDI"], "no mês"),
+                       _versus("benchmark do perfil", "Benchmark", ret, bench["PROFILE"], "no mês")], st, width, True)]
     if history and history.get("months", 0) >= 2:
         total = history["total"]
         rows += [Spacer(1, 2 * mm), _tile_row(
             f"ACUMULADO · {window_label(history).upper()}",
             [("Sua carteira", pct(total["portfolio"])),
              ("Resultado em reais", brl(total["gain_brl"])) if "gain_brl" in total else ("Ibovespa", pct(total["IBOV"])),
-             ("CDI", pct(total["CDI"])), ("Benchmark do perfil", pct(total["PROFILE"]))], st, width, False)]
+             _versus("CDI", "CDI", total["portfolio"], total["CDI"], "no período"),
+             _versus("benchmark do perfil", "Benchmark", total["portfolio"], total["PROFILE"], "no período")], st, width, False)]
     return rows
 
 
