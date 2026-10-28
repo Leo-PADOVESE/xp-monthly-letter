@@ -27,7 +27,7 @@ from typing import Protocol
 import openpyxl
 import yaml
 
-from core import market_data
+from core import market_data, periods
 from core.ingestion import load_portfolio, parse_number, parse_risk_profile_label, pdf_to_text
 from core.models import CASH, FIXED_INCOME, FUNDS, STOCKS, Portfolio, Position
 
@@ -321,7 +321,8 @@ def run(month_dir: Path, source_name: str = "market", profile: str | None = None
     """Compute and save profitability_<source>.json and validation_<source>.xlsx for one client month."""
     profile = profile or parse_risk_profile_label(pdf_to_text(month_dir.parent / "risk_profile.pdf"))
     settings = load_settings()
-    start, end = settings["period_start"], settings["period_end"]
+    period = periods.from_folder(month_dir.name)
+    start, end = period.start, period.end
     portfolio = load_portfolio(month_dir)
     market = MarketSource(settings.get("ticker_map"))
     source: PriceSource = (DocumentedSource(month_dir / "profitability_calc_wip.xlsx", fallback=market)

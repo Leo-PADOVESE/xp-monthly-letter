@@ -20,14 +20,14 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from core import crm, pipeline  # noqa: E402
+from core import crm, macro_panel, periods, pipeline  # noqa: E402
 from core.letter_ai import load_env  # noqa: E402
 from core.mailer import MailError, send_letter  # noqa: E402
 from core.profitability import load_settings  # noqa: E402
 
 load_env()
 SETTINGS = load_settings()
-MONTH = pipeline.current_month()
+MONTHS_PT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
 PROFILE_PT = {"conservative": "Conservador", "moderate": "Moderado", "aggressive": "Arrojado"}
 STATUS_ICON = {"pending": "⚪", "generating": "⏳", "generated": "🟢", "needs_review": "🟠", "approved": "✅",
                "sent": "📨", "error": "🔴"}
@@ -86,12 +86,12 @@ def jobs() -> dict:
     return {"current": None}
 
 
-def start_batch(slugs: list[str], workers: int) -> None:
+def start_batch(slugs: list[str], month: str, workers: int) -> None:
     job = {"total": len(slugs), "done": [], "start": time.time(), "end": None}
 
     def run() -> None:
         try:
-            pipeline.generate_batch(slugs, MONTH, workers, job["done"].append)
+            pipeline.generate_batch(slugs, month, workers, job["done"].append)
         finally:
             job["end"] = time.time()
 
@@ -116,6 +116,14 @@ def letter_doc(slug: str) -> dict | None:
 
 def title(text: str) -> None:
     st.markdown(f'<p class="xp-title">{text}</p><div class="xp-rule"></div>', unsafe_allow_html=True)
+
+
+def month_label(period: periods.Period) -> str:
+    return f"{MONTHS_PT[period.reference.month - 1]}/{period.reference:%Y}"
+
+
+def download(label: str, path: Path, name: str, key: str) -> None:
+    st.download_button(label, path.read_bytes(), name, "application/pdf", key=key, width="stretch")
 
 
 def mask_cpf(cpf: str | None) -> str:
@@ -156,12 +164,14 @@ if "advisor" not in st.session_state:
     st.stop()
 
 ADVISOR = st.session_state.advisor
+MONTH = st.session_state.setdefault("folder", pipeline.current_month())   # letters' folder, e.g. 2025-05
+PERIOD = periods.from_folder(MONTH)
 rows = crm.clients(MONTH, ADVISOR["code"])
 
 with st.sidebar:
     st.markdown('<div class="xp-logo" style="font-size:2.4rem">XP<small>INVESTIMENTOS</small></div>'
                 '<div style="height:28px"></div>', unsafe_allow_html=True)
-    page = st.radio("Menu", ["Clientes", "Relatórios"], label_visibility="collapsed")
+    page = st.radio("Menu", ["Macro", "Clientes", "Relatórios"], index=1, label_visibility="collapsed")
     st.markdown('<div style="height:40vh"></div>', unsafe_allow_html=True)
     if st.button("Sair", width="stretch"):
         del st.session_state.advisor
@@ -221,6 +231,34 @@ def edit_client(row: dict) -> None:
             st.rerun()
 
 
+@st.dialog("Documentos do cliente", width="large")
+def client_documents(row: dict) -> None:
+    folder = crm.CLIENTS_DIR / row["slug"]
+    st.markdown(f"**{row['name']}** · conta {row['account']}")
+    suitability = folder / "risk_profile.pdf"
+    st.markdown("**Suitability**")
+    if suitability.exists():
+        download("Baixar suitability", suitability, f"suitability_{row['slug']}.pdf", "doc_suit")
+    else:
+        st.caption("Não anexado. Use Editar para anexar.")
+    months = sorted((p for p in folder.glob("*/portfolio.pdf")), reverse=True)
+    st.markdown("**Extratos e cartas**")
+    if not months:
+        st.caption("Nenhum extrato ainda. Anexe em Relatórios.")
+    for statement in months:
+        period = periods.from_folder(statement.parent.name)
+        label, left, right = st.columns([2, 2, 2], vertical_alignment="center")
+        label.write(f"Referência {month_label(period)}")
+        with left:
+            download("Extrato", statement, f"extrato_{row['slug']}_{period.key}.pdf", f"st_{period.key}")
+        letter = statement.parent / "letter.pdf"
+        with right:
+            if letter.exists():
+                download("Carta", letter, f"carta_{row['slug']}_{period.key}.pdf", f"lt_{period.key}")
+            else:
+                st.caption("Carta não gerada")
+
+
 @st.dialog("Excluir cliente")
 def delete_client(row: dict) -> None:
     st.write(f"Excluir **{row['name']}** (conta {row['account']})? O cadastro, os extratos e as cartas desse cliente "
@@ -246,14 +284,79 @@ if page == "Clientes":
           "Carta do mês": f"{STATUS_ICON[r['status']]} {crm.STATUS_PT[r['status']]}"} for r in rows],
         width="stretch", hide_index=True, on_select="rerun", selection_mode="single-row", key="clients_table")
     picked = table.selection.rows
-    st.caption(f"{len(rows)} clientes · selecione uma linha para editar ou excluir")
+    st.caption(f"{len(rows)} clientes · carta de referência {month_label(PERIOD)} · selecione uma linha para ver "
+               "documentos, editar ou excluir")
     if picked:
         chosen = rows[picked[0]]
-        edit, remove, _ = st.columns([1, 1, 4])
+        docs, edit, remove, _ = st.columns([1.2, 1, 1, 3])
+        if docs.button("Documentos", width="stretch"):
+            client_documents(chosen)
         if edit.button("Editar", width="stretch"):
             edit_client(chosen)
         if remove.button("Excluir", width="stretch"):
             delete_client(chosen)
+
+
+# ------------------------------------------------------------------------ macro
+
+@st.cache_data(ttl=6 * 3600, show_spinner="Buscando dados de mercado (Yahoo Finance e Banco Central)...")
+def macro_data(start, end, month_start) -> dict:
+    data = {name: macro_panel.index_series(name, start, end) for name in macro_panel.INDICES}
+    changes = {name: macro_panel.month_change(s, month_start, end) if s is not None else None
+               for name, s in data.items()}
+    rates = {"Selic meta (% a.a.)": macro_panel.rate_series(macro_panel.SGS_SELIC_TARGET, start, end, "Selic"),
+             "IPCA 12 meses (%)": macro_panel.rate_series(macro_panel.SGS_IPCA_12M, start, end, "IPCA 12m")}
+    return {"indices": data, "changes": changes, "rates": rates}
+
+
+def macro_page() -> None:
+    head, pick = st.columns([3, 1], vertical_alignment="bottom")
+    with head:
+        title("Macro")
+    options = periods.recent(count=24)
+    keys = [p.key for p in options]
+    default = keys.index(PERIOD.key) if PERIOD.key in keys else 0
+    period = options[pick.selectbox("Mês de referência", range(len(options)), index=default,
+                                    format_func=lambda i: month_label(options[i]), key="macro_month")]
+
+    start, end = macro_panel.window(period.end)
+    data = macro_data(start, end, period.start)
+    cols = st.columns(len(data["changes"]))
+    for col, (name, change) in zip(cols, data["changes"].items()):
+        col.metric(f"{name} no mês", "—" if change is None else f"{change * 100:+.2f}%".replace(".", ","))
+    left, right = st.columns(2)
+    charts = list(data["indices"].items()) + list(data["rates"].items())
+    for i, (name, series) in enumerate(charts):
+        with (left if i % 2 == 0 else right):
+            st.markdown(f"**{name}** · 12 meses")
+            if series is None or series.empty:
+                st.caption("Sem dados disponíveis agora.")
+            else:
+                st.line_chart(series, color="#FFC709", height=220)
+
+    title("Macro research XP")
+    with st.expander("Anexar research do mês"):
+        target = st.selectbox("Mês de referência do research", range(len(options)), index=default,
+                              format_func=lambda i: month_label(options[i]), key="research_month")
+        upload = st.file_uploader("Research (PDF)", type="pdf", key="research_pdf")
+        if st.button("Salvar research", type="primary", disabled=not upload):
+            periods.MACRO_DIR.mkdir(parents=True, exist_ok=True)
+            options[target].macro_report.write_bytes(upload.getvalue())
+            st.success(f"Research de {month_label(options[target])} salvo.")
+            st.rerun()
+    reports = sorted(periods.MACRO_DIR.glob("*.pdf"), reverse=True)
+    if not reports:
+        st.caption("Nenhum research anexado.")
+    for report in reports:
+        p = periods.from_key(report.stem)
+        name, button = st.columns([4, 1], vertical_alignment="center")
+        name.write(f"Research XP · referência {month_label(p)}")
+        with button:
+            download("Baixar", report, f"macro_research_xp_{p.key}.pdf", f"macro_{p.key}")
+
+
+if page == "Macro":
+    macro_page()
 
 
 # ------------------------------------------------------------------- relatórios
@@ -280,8 +383,10 @@ def batch_progress() -> None:
 def generate_tab() -> None:
     ready = [r for r in rows if pipeline.has_statement(r["slug"], MONTH)]
     missing = [r for r in rows if r not in ready]
+    if not PERIOD.macro_report.exists():
+        st.warning(f"Falta o macro research de {month_label(PERIOD)}. Anexe na tela **Macro** antes de gerar.")
     if missing:
-        with st.expander(f"Extrato do mês pendente: {len(missing)} cliente(s)"):
+        with st.expander(f"Extrato de {month_label(PERIOD)} pendente: {len(missing)} cliente(s)"):
             chosen = {r["name"]: r for r in missing}
             row = chosen[st.selectbox("Cliente", list(chosen))]
             statement = st.file_uploader("Extrato XP do mês (PDF)", type="pdf", key="statement")
@@ -294,15 +399,16 @@ def generate_tab() -> None:
                     except Exception as exc:
                         st.error(str(exc))
     if not ready:
-        st.info("Nenhum cliente com extrato do mês.")
+        st.info(f"Nenhum cliente com extrato de {month_label(PERIOD)}.")
         return
     names = {f"{STATUS_ICON[r['status']]} {r['name']}": r["slug"] for r in ready}
     pending = [k for k, r in zip(names, ready) if r["status"] in ("pending", "error")]
     selected = st.multiselect("Clientes", list(names), default=pending or list(names))
     job = jobs()["current"]
     running = bool(job and not job["end"])
-    if st.button(f"Gerar {len(selected)} carta(s)", type="primary", disabled=running or not selected):
-        start_batch([names[k] for k in selected], pipeline.BATCH_WORKERS)
+    if st.button(f"Gerar {len(selected)} carta(s)", type="primary",
+                 disabled=running or not selected or not PERIOD.macro_report.exists()):
+        start_batch([names[k] for k in selected], MONTH, pipeline.BATCH_WORKERS)
         st.rerun()
     if running:
         st.caption("As cartas estão sendo escritas no servidor. Pode trocar de página: o lote continua.")
@@ -371,7 +477,20 @@ def review_tab() -> None:
 
 
 if page == "Relatórios":
-    title(f"Relatórios · carta de {SETTINGS['letter_date']:%d/%m/%Y}")
+    head, pick = st.columns([3, 1], vertical_alignment="bottom")
+    with head:
+        title("Relatórios")
+    options = {p.folder: p for p in periods.recent(count=24)}
+    for folder in sorted({p.parent.name for p in crm.CLIENTS_DIR.glob("*/*/portfolio.pdf")}, reverse=True):
+        options.setdefault(folder, periods.from_folder(folder))
+    options = dict(sorted(options.items(), reverse=True))
+    chosen = pick.selectbox("Mês de referência", list(options), index=list(options).index(MONTH),
+                            format_func=lambda f: month_label(options[f]))
+    if chosen != MONTH:
+        st.session_state.folder = chosen
+        st.rerun()
+    st.caption(f"Carta de {PERIOD.letter_date:%d/%m/%Y} · desempenho de {PERIOD.start:%d/%m/%Y} a {PERIOD.end:%d/%m/%Y}"
+               f" · macro research {'anexado' if PERIOD.macro_report.exists() else 'pendente'}")
     generate, review = st.tabs(["Gerar cartas", "Revisar e enviar"])
     with generate:
         generate_tab()

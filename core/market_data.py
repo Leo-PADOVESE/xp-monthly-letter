@@ -57,8 +57,8 @@ def _silence_yfinance_warnings() -> None:
 
 
 def yahoo_ticker(ticker: str) -> str:
-    """B3 tickers need the .SA suffix on Yahoo; indices start with ^."""
-    return ticker if ticker.startswith("^") or ticker.endswith(".SA") else f"{ticker}.SA"
+    """B3 tickers need the .SA suffix on Yahoo; indices start with ^ and currencies end with =X."""
+    return ticker if ticker.startswith("^") or "." in ticker or "=" in ticker else f"{ticker}.SA"
 
 
 def stock_history(ticker: str, start: date, end: date) -> pd.Series:

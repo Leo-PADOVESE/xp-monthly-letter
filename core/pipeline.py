@@ -17,11 +17,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Callable
 
-from core import crm
+from core import crm, periods
 from core.briefing import PROFILE_PT
 from core.ingestion import (IngestionError, load_portfolio, parse_risk_profile_label, parse_xp_portfolio, pdf_to_text,
                             portfolio_from_extraction, portfolio_to_text)
-from core.letter_ai import ROOT, generate, load_env, macro_digest, parse_json, run_graph
+from core.letter_ai import generate, load_env, macro_digest, macro_report, parse_json, run_graph
 from core.letter_pdf import build_pdf
 from core.profitability import load_settings
 from core.profitability import run as run_profitability
@@ -30,8 +30,9 @@ BATCH_WORKERS = 8
 
 
 def current_month() -> str:
-    """Folder of the letter being prepared: the month of the letter date (e.g. 2025-05)."""
-    return f"{load_settings()['letter_date']:%Y-%m}"
+    """Folder of the latest letters prepared (e.g. 2025-05, the letters of April 2025)."""
+    folders = sorted({p.parent.name for p in crm.CLIENTS_DIR.glob("*/*/portfolio.pdf")})
+    return folders[-1] if folders else periods.recent()[0].folder
 
 
 def month_dir(slug: str, month: str | None = None) -> Path:
@@ -160,7 +161,8 @@ def generate_batch(slugs: list[str], month: str | None = None, workers: int = BA
     """Generate many letters at once; the macro digest is prepared first so it is shared, not repeated."""
     settings = load_settings()
     load_env()
-    macro_digest(ROOT / settings["macro_report"], settings["letter_date"], settings.get("llm", {}).get("model", "gpt-4o-mini"))
+    period = periods.from_folder(month or current_month())
+    macro_digest(macro_report(period), period.letter_date, settings.get("llm", {}).get("model", "gpt-4o-mini"))
     results = []
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures = [pool.submit(generate_letter, slug, month) for slug in slugs]

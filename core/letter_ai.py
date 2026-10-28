@@ -25,6 +25,7 @@ import tempfile
 from datetime import date
 from pathlib import Path
 
+from core import periods
 from core.briefing import client_card, formatted_results, portfolio_facts
 from core.ingestion import load_portfolio, parse_risk_profile_label, pdf_to_text, portfolio_to_text
 from core.profitability import load_settings
@@ -80,6 +81,12 @@ def parse_json(raw: str | None, step: str) -> dict:
 
 
 # ----------------------------------------------------------------- macro digest
+
+def macro_report(period: periods.Period) -> Path:
+    if not period.macro_report.exists():
+        raise LetterError(f"Macro research de {period.reference:%m/%Y} não encontrado: anexe na tela Macro")
+    return period.macro_report
+
 
 def macro_digest(macro_pdf: Path, letter_date: date, model: str) -> dict:
     """Digest the month's XP macro report once and cache it for every client."""
@@ -180,7 +187,8 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
     llm = settings.get("llm", {})
     model = llm.get("model", "gpt-4o-mini")
     writer_model = llm.get("writer_model", model)
-    letter_date, period_end = settings["letter_date"], settings["period_end"]
+    period = periods.from_folder(month_dir.name)
+    letter_date, period_end = period.letter_date, period.end
 
     portfolio = load_portfolio(month_dir)
     risk_text = pdf_to_text(month_dir.parent / "risk_profile.pdf")
@@ -190,7 +198,7 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         raise LetterError(f"{report_path} not found: run python -m core.profitability {month_dir} first")
     report = json.loads(report_path.read_text(encoding="utf-8"))
 
-    digest = macro_digest(ROOT / settings["macro_report"], letter_date, model)
+    digest = macro_digest(macro_report(period), letter_date, model)
     results = formatted_results(report)
     weights = settings["benchmarks"][profile]
     results["formatted"]["profile_benchmark_composition"] = " + ".join(
