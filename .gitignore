@@ -6,6 +6,10 @@ output/
 data/crm.db
 data/cache/*
 !data/cache/macro_digest_*.json
+# Market data for the demo clients (CVM quotas trimmed to their funds), so the server never parses the full CVM files
+!data/cache/cvm_inf_diario_*.csv
+!data/cache/sgs_*.json
+!data/cache/yahoo_*.csv
 
 # Rivet runner dependencies
 rivet/node_modules/
