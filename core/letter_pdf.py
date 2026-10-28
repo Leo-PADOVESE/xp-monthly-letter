@@ -144,8 +144,6 @@ def chart_attribution(report: dict, width: float, height: float) -> Image:
     return _figure_to_image(fig, width, height)
 
 
-
-
 def window_label(history: dict) -> str:
     return "desde a primeira aplicação" if history["since_first_investment"] else f"últimos {history['months']} meses"
 
@@ -189,8 +187,6 @@ def chart_history(history: dict, width: float, height: float) -> Image:
         ax.spines[side].set_visible(False)
     ax.spines["bottom"].set_color(RULE.hexval().replace("0x", "#"))
     return _figure_to_image(fig, width, height)
-
-
 
 
 # --------------------------------------------------------------------- layout

@@ -314,9 +314,7 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         letter["class_views"] = steps["analysis"].get("assessment", {}).get("class_views", [])
         unknown = check_numbers(letter, results, facts, digest_for_llm)
         words = word_count(letter)
-        # Figures are verified by check_numbers; the critic judges meaning and tone. Its high findings on facts,
-        # coherence and names force a rewrite (a wrong statement once reached the advisor as a mere note); on
-        # promises it is advisory, since it blocked correct sentences in tests and the code check covers them.
+        # Figures are verified by check_numbers; the critic judges meaning and tone.
         notes = critic.get("issues", [])
         # The critic's high findings force a rewrite only on meaning (facts, time frames, coherence, names) and only
         # when the passage it quotes is really in the letter: in tests it contradicted itself ("+0,41 p.p., não
