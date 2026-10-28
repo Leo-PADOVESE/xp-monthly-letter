@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import time
 import warnings
 import zipfile
 from datetime import date, timedelta
@@ -124,18 +125,27 @@ def stock_close_raw(ticker: str, start: date, end: date) -> pd.Series:
 
 # ------------------------------------------------------------- Banco Central (SGS)
 
+def _get_json(url: str, params: dict, attempts: int = 4) -> list:
+    """The Banco Central API fails on and off (timeouts, 502, empty bodies): retry with backoff."""
+    for attempt in range(attempts):
+        try:
+            response = requests.get(url, params=params, timeout=30)
+            response.raise_for_status()
+            return response.json()
+        except (requests.RequestException, ValueError):
+            if attempt == attempts - 1:
+                raise
+            time.sleep(2 ** attempt)
+    return []
+
+
 def sgs_series(series: int, start: date, end: date) -> pd.Series:
     path = _cache(f"sgs_{series}_{start}_{end}.json")
     if path.exists():
         rows = json.loads(path.read_text(encoding="utf-8"))
     else:
-        response = requests.get(
-            SGS_URL.format(series=series),
-            params={"formato": "json", "dataInicial": f"{start:%d/%m/%Y}", "dataFinal": f"{end:%d/%m/%Y}"},
-            timeout=30,
-        )
-        response.raise_for_status()
-        rows = response.json()
+        rows = _get_json(SGS_URL.format(series=series),
+                         {"formato": "json", "dataInicial": f"{start:%d/%m/%Y}", "dataFinal": f"{end:%d/%m/%Y}"})
         path.write_text(json.dumps(rows), encoding="utf-8")
     if not rows:
         raise MarketDataError(f"SGS series {series} returned no data for {start}..{end}")

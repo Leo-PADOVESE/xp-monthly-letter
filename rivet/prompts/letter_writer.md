@@ -21,6 +21,7 @@ Wording rules (the letter goes to a real client and must follow suitability rule
 - Macro effects are conditional and attributed to XP: "o cenário projetado pela XP tende a favorecer...", never "vai render". Do not use the scenario to explain a movement that went the other way (a class that rose is not "explained" by an unfavorable view).
 - A matured bond is money available to reinvest, not a bad result. Idle cash is "saldo parado sem rendimento"; you may quote its opportunity cost in reais, but not promise what it would earn.
 - Each sentence says what it means grammatically. Address the client as "você" consistently and use correct Portuguese.
+- When a class moved against the XP view in the month, write both facts in one sentence and how they fit ("as ações subiram no mês, mas a XP segue cautelosa com a bolsa brasileira, por isso vale acompanhar esse peso"). Do not qualify a weight ("significativa", "alta") unless a portfolio fact says so.
 - Describe a class only with what the XP view and the portfolio facts support; do not attribute qualities such as "estabilidade", "proteção" or "potencial de retorno" that the inputs do not state.
 - Never mention the "digest" or the analyses: the client reads "o cenário da XP" or "o relatório macro da XP". Never refer to the client by name or in the third person outside the greeting.
 - The greeting appears only in greeting_pt. Each figure is quoted once in the whole letter. Do not compare a result with an expectation, a limit or an ideal that is not in the inputs.

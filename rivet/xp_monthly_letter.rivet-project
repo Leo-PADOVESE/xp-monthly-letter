@@ -293,6 +293,19 @@ data:
               sees it as volatile or uncertain, and never mention "potencial de
               retorno".
 
+              - When a class moved against the XP view in the month (e.g. stocks
+              rose while the XP view on Brazilian equities is unfavorable), say
+              so explicitly and keep both facts: one month's result does not
+              change the scenario, and the scenario is why the class deserves
+              attention. Never leave the two side by side unexplained.
+
+              - A class made only of matured bonds is "vencido, disponível para
+              reinvestir": no XP view on its return ("neutral").
+
+              - Do not qualify a weight ("exposição significativa", "alta
+              concentração") unless a portfolio fact says so; quote the weight
+              instead.
+
               - "assessment_pt": is the mix coherent with the profile given the
               scenario? Name the one or two classes that matter most for this
               client, and the sectors the digest flags when the client holds
@@ -593,6 +606,12 @@ data:
 
               - Each sentence says what it means grammatically. Address the
               client as "você" consistently and use correct Portuguese.
+
+              - When a class moved against the XP view in the month, write both
+              facts in one sentence and how they fit ("as ações subiram no mês,
+              mas a XP segue cautelosa com a bolsa brasileira, por isso vale
+              acompanhar esse peso"). Do not qualify a weight ("significativa",
+              "alta") unless a portfolio fact says so.
 
               - Describe a class only with what the XP view and the portfolio
               facts support; do not attribute qualities such as "estabilidade",
