@@ -489,8 +489,11 @@ def review_tab() -> None:
             letter = doc["letter"]
             with st.form("edit"):
                 letter["opening_pt"] = st.text_area("Abertura", letter.get("opening_pt", ""))
-                letter["performance_pt"] = [st.text_area(f"Desempenho {i + 1}", p, height=140)
+                letter["performance_pt"] = [st.text_area(f"Desempenho no mês {i + 1}", p, height=140)
                                             for i, p in enumerate(letter.get("performance_pt", []))]
+                if "consolidated_pt" in letter:
+                    letter["consolidated_pt"] = st.text_area("Desempenho acumulado (12 meses)",
+                                                             letter["consolidated_pt"], height=110)
                 letter["macro_pt"] = st.text_area("Cenário econômico", letter.get("macro_pt", ""), height=120)
                 letter["assessment_pt"] = st.text_area("Avaliação da carteira", letter.get("assessment_pt", ""),
                                                        height=120)

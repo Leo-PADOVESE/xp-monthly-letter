@@ -90,11 +90,12 @@ def build(portfolio: Portfolio, source: PriceSource, end: date, profile_weights:
         points.append({"date": e.isoformat(), **{key: (v - 1) * 100 for key, v in cumulative.items()}})
 
     first = min((p.investment_date for p in portfolio.positions if p.investment_date), default=ends[0])
+    since = since_purchase(portfolio)
     return {
         "start": ends[0].isoformat(), "end": ends[-1].isoformat(), "months": len(windows),
         "since_first_investment": first >= ends[0],
         "points": points, "total": points[-1],
-        "since_purchase": since_purchase(portfolio),
+        "since_purchase": since and {**since, "first_investment": first.isoformat()},
         "note": "Simulação com as posições atuais do extrato e as cotações históricas de cada ativo, a partir da "
                 "data de aplicação; aportes e resgates do período não constam do extrato.",
     }

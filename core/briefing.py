@@ -80,13 +80,6 @@ def class_contribution(report: dict) -> list[dict]:
     return sorted(rows, key=lambda r: -r["contribution_brl"])
 
 
-def pct_of_cdi(report: dict) -> float | None:
-    """The month's return as a share of the CDI ("373% do CDI"), the way Brazilian investors read fixed income.
-    Only meaningful when both are positive."""
-    cdi = report["benchmarks_pct"]["CDI"]
-    return report["return_pct"] / cdi * 100 if cdi > 0 and report["return_pct"] > 0 else None
-
-
 def formatted_history(history: dict) -> dict:
     """The consolidated window (12 months, or since the first investment) with quotable figures."""
     total, since = history["total"], history.get("since_purchase")
@@ -102,6 +95,8 @@ def formatted_history(history: dict) -> dict:
     if since:
         out["since_purchase"] = {"invested": brl(since["cost"]), "current_value": brl(since["value"]),
                                  "result": brl(since["gain_brl"]), "return": pct(since["return_pct"]),
+                                 **({"first_investment": f"{date.fromisoformat(since['first_investment']):%d/%m/%Y}"}
+                                    if since.get("first_investment") else {}),
                                  "basis": "preço médio das ações e valor aplicado nos fundos e títulos, "
                                           "contra o valor atual do extrato"}
     return out
@@ -125,6 +120,9 @@ def formatted_results(report: dict) -> dict:
         return row
 
     return {
+        # "% do CDI" was dropped: on a month driven by stocks it read as a fixed income yield ("374% do CDI").
+        "scope": "Tudo em 'results', exceto 'consolidated_window', é do mês de referência apenas; "
+                 "'consolidated_window' é o acumulado da janela de 12 meses (ou desde a primeira aplicação).",
         "period": f"{month_pt(date.fromisoformat(report['period_end']))} "
                   f"(fechamento de {date.fromisoformat(report['period_start']):%d/%m/%Y} "
                   f"a {date.fromisoformat(report['period_end']):%d/%m/%Y})",
@@ -140,8 +138,6 @@ def formatted_results(report: dict) -> dict:
             "excess_vs_cdi": pp(report["excess_vs_cdi_pp"]),
             "excess_vs_profile_benchmark": pp(report["excess_vs_profile_pp"]),
             "real_return": pct(report["real_return_pct"]),
-            "return_as_pct_of_cdi": (f"{pct_of_cdi(report):.0f}% do CDI" if pct_of_cdi(report) else
-                                     "não se aplica (retorno ou CDI não positivo)"),
             "cash_opportunity_cost": brl(report["cash_opportunity_cost_brl"]),
         },
         "highlights": {

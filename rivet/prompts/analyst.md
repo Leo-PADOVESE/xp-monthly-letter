@@ -6,9 +6,10 @@ The briefing below was prepared by our Python engine: the client, the risk profi
 From the risk profile document ("profile"), what the letter must respect: horizon, tolerance to volatility, objectives, compatible products and explicit restrictions (e.g. dividend-paying companies only).
 
 ### Part 2: performance (from "results")
-- The headline: the month's consolidated return versus the CDI (as a % of the CDI when "return_as_pct_of_cdi" applies), the profile benchmark and inflation (real return).
+- Two time frames, never mixed: everything in "results" is the reference month only, except "consolidated_window" (the 12-month window, or since the first investment). The statement's per-asset "rentabilidade" is accumulated since each investment, not the month: for the month use "positions" and "highlights".
+- The headline: the month's return versus the CDI, the profile benchmark and inflation (real return), as differences in p.p. or side by side; never as a percentage of the CDI.
 - Where the result came from by asset class ("class_contribution", in reais and p.p.).
-- When "consolidated_window" is given: the portfolio over that window against the CDI, the Ibovespa, inflation and the profile benchmark, and the result since purchase. It is rebuilt from the current positions: say "considerando as posições atuais".
+- When "consolidated_window" is given, in "window_pt" and only there: the portfolio over that window against the CDI, the Ibovespa, inflation and the profile benchmark, and the result since the first investment ("since_purchase", with its date), with why the two differ when they do. It is rebuilt from the current positions: say "considerando as posições atuais".
 - The best and worst performer by return and the top and bottom contributor in reais ("highlights"). A contribution comes from weight and return together: mention weight only when the asset's weight in "positions" is clearly larger than the best performer's.
 - Losses stated plainly (asset, return, reais). A possible explanation from the XP digest only when the digest supports it; never "explain" a class by a scenario that points the other way.
 - Points of attention from the data: idle cash and its opportunity cost, a matured bond (+0,00% because it already paid out: an amount available to reinvest, never "sem retorno"), a fund priced by proxy. Never quote the 0,00% of cash or of a matured bond as a class result.

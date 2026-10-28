@@ -41,8 +41,6 @@ PROMISE = re.compile(
     r"|(?:melhor|aument|elev|potencializ|maximiz|turbin)\w*\s+(?:a |o |os |as |sua |seu |seus |suas )?"
     r"(?:rentabilidade|retornos?|ganhos?|rendimentos?|resultados?)\b",
     re.IGNORECASE)
-# "superou o CDI em 374%" reads as 374 p.p. above the CDI; the figure is a share of it ("374% do CDI").
-CDI_MISREAD = re.compile(r"(?:super\w*|acima d\w*|bat\w*)\s+(?:o\s+)?CDI\s+em\s+\d+%", re.IGNORECASE)
 NUMBER = re.compile(r"R\$\s?-?[\d.]+,\d{2}|[+-]?\d+(?:,\d+)?\s?%|[+-]?\d+(?:,\d+)?\s?p\.p\.")
 
 
@@ -131,7 +129,7 @@ def tidy(letter: dict, client_name: str = "") -> dict:
     speaks to the client ("a carteira de Carla Mendes" -> "sua carteira") and no internal jargon reaches it."""
     paragraphs = [GREETING.sub("", p) for p in letter.get("performance_pt", [])]
     letter["performance_pt"] = [_client_voice(p[:1].upper() + p[1:], client_name) for p in paragraphs if p]
-    for key in ("opening_pt", "macro_pt", "assessment_pt", "outlook_pt", "closing_pt"):
+    for key in ("opening_pt", "consolidated_pt", "macro_pt", "assessment_pt", "outlook_pt", "closing_pt"):
         letter[key] = _client_voice(letter.get(key, ""), client_name)
     for s in letter.get("attention_points", []):
         s["text_pt"] = _client_voice(s.get("text_pt", ""), client_name)
@@ -142,6 +140,7 @@ def letter_text(letter: dict) -> str:
     parts = [letter.get(k, "") for k in ("subject_pt", "greeting_pt", "opening_pt", "macro_pt",
                                           "assessment_pt", "outlook_pt", "closing_pt")]
     parts += letter.get("performance_pt", [])
+    parts.append(letter.get("consolidated_pt", ""))
     parts += [f"{s.get('title_pt', '')}. {s.get('text_pt', '')}" for s in letter.get("attention_points", [])]
     parts += [v.get("profile_fit_pt", "") for v in letter.get("class_views", [])]
     return "\n".join(p for p in parts if p)
@@ -162,6 +161,23 @@ def check_numbers(letter: dict, *sources: object) -> list[str]:
     allowed = {_norm(m) for s in sources for m in NUMBER.findall(json.dumps(s, ensure_ascii=False))}
     found = NUMBER.findall(letter_text(letter))
     return sorted({f for f in found if _norm(f) not in allowed})
+
+
+def check_scope(letter: dict, results: dict) -> list[str]:
+    """Figures quoted in the wrong period: a 12-month figure in the month's paragraphs, or a month figure in the
+    consolidated paragraph. The PDF lays them out under "No mês" and "Últimos 12 meses", so a mix misleads."""
+    window = results.get("consolidated_window")
+    if not window:
+        return []
+    values = lambda data: {_norm(m) for m in NUMBER.findall(json.dumps(data, ensure_ascii=False))}  # noqa: E731
+    window_only = values({k: v for k, v in window.items() if k != "how_it_was_built"}) - values(results["formatted"])
+    month_only = values(results["formatted"]) - values(window)
+    month_text = " ".join(letter.get("performance_pt", []))
+    problems = [f"{f} é do acumulado de 12 meses, mas está no parágrafo do mês"
+                for f in NUMBER.findall(month_text) if _norm(f) in window_only]
+    problems += [f"{f} é do mês, mas está no parágrafo do acumulado"
+                 for f in NUMBER.findall(letter.get("consolidated_pt", "")) if _norm(f) in month_only]
+    return sorted(set(problems))
 
 
 def check_promises(letter: dict) -> list[str]:
@@ -221,6 +237,9 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
     briefing = {
         "client": client,
         "profile": {"label": profile, "document_text": risk_text},
+        # The statement's "rentabilidade" columns run since each investment; the month's figures are in "results".
+        "statement_note": "No extrato, a rentabilidade de cada ativo é acumulada desde a aplicação; o retorno do mês "
+                          "de cada ativo está em results.positions.",
         "statement": portfolio_text,
         "results": results,
         "portfolio_facts": facts,
@@ -244,7 +263,7 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         # promises it is advisory, since it blocked correct sentences in tests and the code check covers them.
         notes = critic.get("issues", [])
         issues: list[dict] = [{**n, "rule": n.get("rule", "fatos")} for n in notes
-                              if n.get("severity") == "high" and n.get("rule") in ("fatos", "coerência", "nomes")]
+                              if n.get("severity") == "high" and n.get("rule") in ("fatos", "período", "coerência", "nomes")]
         if unknown:
             issues.append({"severity": "high", "rule": "números",
                            "problem": f"Valores que não existem nos dados: {', '.join(unknown)}",
@@ -253,10 +272,10 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         if wrong_points:
             issues.append({"severity": "high", "rule": "pontos de atenção", "problem": "; ".join(wrong_points),
                            "fix": "Use de 1 a 3 pontos, cada um com o fact_id de um fato da carteira."})
-        misread = sorted({m.group(0) for m in CDI_MISREAD.finditer(letter_text(letter))})
-        if misread:
-            issues.append({"severity": "high", "rule": "fatos", "problem": f"% do CDI lido como diferença: {', '.join(misread)}",
-                           "fix": "Escreva 'o equivalente a X% do CDI'; a diferença para o CDI está em p.p."})
+        mixed = check_scope(letter, results)
+        if mixed:
+            issues.append({"severity": "high", "rule": "período", "problem": "; ".join(mixed),
+                           "fix": "Em performance_pt só números do mês; em consolidated_pt só os da janela de 12 meses."})
         promises = check_promises(letter)
         if promises:
             issues.append({"severity": "high", "rule": "3", "problem": f"Promessa de retorno: {', '.join(promises)}",

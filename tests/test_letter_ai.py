@@ -1,4 +1,4 @@
-from core.letter_ai import check_attention_points, check_numbers, check_promises, tidy
+from core.letter_ai import check_attention_points, check_numbers, check_promises, check_scope, tidy
 
 
 def letter(text: str) -> dict:
@@ -32,3 +32,14 @@ def test_attention_points_must_cite_a_portfolio_fact():
     bad = {"attention_points": [{"fact_id": "buy_petr4"}, {"fact_id": "idle_cash"}, {"fact_id": "idle_cash"}]}
     assert check_attention_points(bad, facts) == ["ponto de atenção sem fato da carteira: buy_petr4",
                                                   "fato repetido: idle_cash"]
+
+
+def test_month_and_window_figures_stay_in_their_paragraphs():
+    results = {"formatted": {"portfolio_return": "+3,95%", "cdi": "+1,06%"},
+               "consolidated_window": {"portfolio": "+7,61%", "cdi": "+11,45%"}}
+    ok = {"performance_pt": ["No mês, +3,95% contra +1,06% do CDI."],
+          "consolidated_pt": "Nos últimos 12 meses, +7,61% contra +11,45% do CDI."}
+    assert check_scope(ok, results) == []
+    mixed = {"performance_pt": ["No mês, +7,61%."], "consolidated_pt": "Em 12 meses, +3,95%."}
+    assert len(check_scope(mixed, results)) == 2
+    assert check_scope(mixed, {"formatted": results["formatted"]}) == []   # no window, nothing to mix

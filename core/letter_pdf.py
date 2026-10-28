@@ -42,7 +42,7 @@ from reportlab.platypus import (  # noqa: E402
     Image, KeepTogether, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle,
 )
 
-from core.briefing import CLASS_LABELS_PT, brl, class_contribution, pct, pct_of_cdi  # noqa: E402
+from core.briefing import CLASS_LABELS_PT, brl, class_contribution, pct  # noqa: E402
 
 MAX_PAGES = 2
 
@@ -144,6 +144,10 @@ def chart_attribution(report: dict, width: float, height: float) -> Image:
 MONTHS_SHORT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
 
 
+def window_label(history: dict) -> str:
+    return "desde a primeira aplicação" if history["since_first_investment"] else f"últimos {history['months']} meses"
+
+
 def chart_history(history: dict, width: float, height: float) -> Image:
     """Consolidated portfolio over the window (cumulative %) against CDI, Ibovespa, inflation and the profile benchmark."""
     from datetime import date
@@ -177,8 +181,7 @@ def chart_history(history: dict, width: float, height: float) -> Image:
     ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{_br(v, 0)}%"))
     ax.tick_params(axis="y", labelsize=6.5, length=0)
     ax.grid(axis="y", color="#EDEDED", linewidth=0.6)
-    window = "desde a primeira aplicação" if history["since_first_investment"] else f"últimos {history['months']} meses"
-    ax.set_title(f"Sua carteira x referências · {window} (rentabilidade acumulada)", fontsize=8.5, loc="left",
+    ax.set_title(f"Sua carteira x referências · {window_label(history)} (rentabilidade acumulada)", fontsize=8.5, loc="left",
                  fontweight="bold")
     for side in ("top", "right", "left"):
         ax.spines[side].set_visible(False)
@@ -216,20 +219,34 @@ def _esc(text: str) -> str:
     return (text or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def _tiles(report: dict, st: dict, width: float) -> Table:
-    bench = report["benchmarks_pct"]
-    tiles = [("Rentabilidade no mês", pct(report["return_pct"])), ("Resultado em reais", brl(report["gain_brl"])),
-             (("Em % do CDI", f"{pct_of_cdi(report):.0f}%") if pct_of_cdi(report) else ("CDI no mês", pct(bench["CDI"]))),
-             ("Benchmark do perfil", pct(bench["PROFILE"]))]
+def _tile_row(caption: str, tiles: list[tuple[str, str]], st: dict, width: float, accent: bool) -> Table:
+    """One labelled row of figures: the caption says which period every tile below it measures."""
     cells = [[Paragraph(label, st["tile_label"]), Paragraph(value, st["tile_value"])] for label, value in tiles]
-    table = Table([cells], colWidths=[width / 4] * 4)
+    table = Table([[Paragraph(caption, st["tag"])] + [""] * (len(tiles) - 1), cells],
+                  colWidths=[width / len(tiles)] * len(tiles))
     table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), LIGHT), ("LINEBEFORE", (1, 0), (-1, -1), 2, colors.white),
-        ("LINEABOVE", (0, 0), (0, 0), 2.2, YELLOW), ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
-        ("LEFTPADDING", (0, 0), (-1, -1), 8),
+        ("SPAN", (0, 0), (-1, 0)), ("BOTTOMPADDING", (0, 0), (-1, 0), 2), ("LEFTPADDING", (0, 0), (-1, 0), 0),
+        ("BACKGROUND", (0, 1), (-1, 1), LIGHT), ("LINEBEFORE", (1, 1), (-1, 1), 2, colors.white),
+        ("LINEABOVE", (0, 1), (0, 1), 2.2, YELLOW if accent else GREY), ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING", (0, 1), (-1, 1), 6), ("BOTTOMPADDING", (0, 1), (-1, 1), 7),
+        ("LEFTPADDING", (0, 1), (-1, 1), 8),
     ]))
     return table
+
+
+def _tiles(report: dict, client: dict, st: dict, width: float, history: dict | None = None) -> list:
+    """The month and the consolidated window in two separate, labelled rows, so no figure reads as the other."""
+    bench = report["benchmarks_pct"]
+    rows = [_tile_row(f"NO MÊS · {client['reference_month'].upper()}",
+                      [("Sua carteira", pct(report["return_pct"])), ("Resultado em reais", brl(report["gain_brl"])),
+                       ("CDI", pct(bench["CDI"])), ("Benchmark do perfil", pct(bench["PROFILE"]))], st, width, True)]
+    if history and history.get("months", 0) >= 2:
+        total = history["total"]
+        rows += [Spacer(1, 3 * mm), _tile_row(
+            f"ACUMULADO · {window_label(history).upper()}",
+            [("Sua carteira", pct(total["portfolio"])), ("CDI", pct(total["CDI"])),
+             ("Benchmark do perfil", pct(total["PROFILE"])), ("Ibovespa", pct(total["IBOV"]))], st, width, False)]
+    return rows
 
 
 def _short(name: str, size: int) -> str:
@@ -361,20 +378,25 @@ def build_story(letter_doc: dict, report: dict, layout: Layout, width: float, hi
                       colWidths=[chart_w + gap / 2, chart_w + gap / 2])
     chart_row.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0)]))
 
-    story = [_tiles(report, st, width), Spacer(1, 7 * mm),
+    consolidated = bool(history and history.get("months", 0) >= 2)
+    story = [*_tiles(report, client, st, width, history if consolidated else None), Spacer(1, 6 * mm),
              body(letter.get("greeting_pt", f"Prezado(a) {client['first_name']},")),
              body(letter.get("opening_pt", "")),
-             Paragraph("Desempenho da carteira", st["h2"])]
+             Paragraph(f"Desempenho no mês · {client['reference_month']}", st["h2"])]
     story += [body(p) for p in letter.get("performance_pt", [])]
-    if history and history.get("months", 0) >= 2:
+    if consolidated:
         # The consolidated view is the main chart; the month's detail by asset is in the table at the end.
+        story += [Paragraph(f"Desempenho acumulado · {window_label(history)}", st["h2"]),
+                  body(letter.get("consolidated_pt", ""))]
         main_chart = [chart_history(history, width, layout.chart_height * 1.12)]
         since = history.get("since_purchase")
         if since:
+            start = since.get("first_investment")
+            start = f", desde {start[8:10]}/{start[5:7]}/{start[:4]}" if start else ""
             main_chart.append(Paragraph(
-                f"<b>Desde a aplicação</b> (preço médio das ações e valor aplicado nos fundos e títulos, contra o valor "
-                f"atual): {brl(since['cost'])} aplicados, hoje {brl(since['value'])}, resultado de "
-                f"<b>{brl(since['gain_brl'])} ({pct(since['return_pct'])})</b>.", st["cell"]))
+                f"<b>Desde a aplicação{start}</b> (preço médio das ações e valor aplicado nos fundos e títulos, contra o valor "
+                f"atual; não inclui o saldo em conta): {brl(since['cost'])} aplicados, hoje {brl(since['value'])}, "
+                f"resultado de <b>{brl(since['gain_brl'])} ({pct(since['return_pct'])})</b>.", st["cell"]))
         main_chart.append(Paragraph(_esc(history["note"]), st["small"]))
     else:
         main_chart = [chart_row]

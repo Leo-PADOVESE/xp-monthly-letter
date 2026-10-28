@@ -26,7 +26,7 @@ ANALYSIS = {"profile": {"summary_pt": "Perfil moderado."},
                            "attention_points": [{"fact_id": "idle_cash", "title_pt": "Saldo parado",
                                                  "text_pt": "Vale conversar com seu assessor sobre o saldo parado."}]}}
 LETTER = {"subject_pt": "Sua carta de abril", "greeting_pt": "Prezado Albert,", "opening_pt": "Abril foi positivo.",
-          "performance_pt": ["Sua carteira rendeu +3,95% no mês, o equivalente a 374% do CDI. "
+          "performance_pt": ["Sua carteira rendeu +3,95% no mês, contra +1,06% do CDI. "
                              + "O resultado veio principalmente das ações. " * 40],
           "macro_pt": "A XP projeta a Selic em 15,50% ao fim de 2025.",
           "assessment_pt": "O portfólio de Albert está coerente com o perfil, segundo o digest macro da XP.",
@@ -77,8 +77,9 @@ def test_letter_graph_reads_one_briefing(fake_openai, tmp_path):
 
     assert len(fake_openai.prompts) == 3                     # Analyst, Writer, Reviewer
     briefing = json.loads((month / "briefing.json").read_text(encoding="utf-8"))
-    assert set(briefing) == {"client", "profile", "statement", "results", "portfolio_facts", "macro_digest"}
-    assert all("374% do CDI" in prompt for prompt in fake_openai.prompts)   # every step reads the same briefing
+    assert set(briefing) == {"client", "profile", "statement_note", "statement", "results", "portfolio_facts",
+                             "macro_digest"}
+    assert all("mês de referência" in prompt for prompt in fake_openai.prompts)   # every step reads the same briefing
     assert doc["status"] == "approved", doc["attempts"][-1]["issues"]
     assert doc["letter"]["class_views"][0]["asset_class"] == "Ações"
     assert doc["letter"]["assessment_pt"].startswith("Seu portfólio")     # third person and jargon tidied
