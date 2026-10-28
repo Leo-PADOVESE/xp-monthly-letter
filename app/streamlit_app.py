@@ -219,6 +219,18 @@ def edit_client(row: dict) -> None:
             st.rerun()
 
 
+@st.dialog("Excluir cliente")
+def delete_client(row: dict) -> None:
+    st.write(f"Excluir **{row['name']}** (conta {row['account']})? O cadastro, os extratos e as cartas desse cliente "
+             "serão apagados. Essa ação não pode ser desfeita.")
+    cancel, confirm = st.columns(2)
+    if cancel.button("Cancelar", width="stretch"):
+        st.rerun()
+    if confirm.button("Excluir", type="primary", width="stretch"):
+        crm.delete_client(row["slug"])
+        st.rerun()
+
+
 if page == "Clientes":
     head, button = st.columns([5, 1], vertical_alignment="bottom")
     with head:
@@ -232,9 +244,14 @@ if page == "Clientes":
           "Carta do mês": f"{STATUS_ICON[r['status']]} {crm.STATUS_PT[r['status']]}"} for r in rows],
         width="stretch", hide_index=True, on_select="rerun", selection_mode="single-row", key="clients_table")
     picked = table.selection.rows
-    st.caption(f"{len(rows)} clientes · selecione uma linha para editar")
-    if picked and st.button(f"Editar {rows[picked[0]]['name']}"):
-        edit_client(rows[picked[0]])
+    st.caption(f"{len(rows)} clientes · selecione uma linha para editar ou excluir")
+    if picked:
+        chosen = rows[picked[0]]
+        edit, remove, _ = st.columns([1, 1, 4])
+        if edit.button("Editar", width="stretch"):
+            edit_client(chosen)
+        if remove.button("Excluir", width="stretch"):
+            delete_client(chosen)
 
 
 # ------------------------------------------------------------------- relatórios

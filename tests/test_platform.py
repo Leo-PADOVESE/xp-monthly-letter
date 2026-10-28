@@ -63,3 +63,6 @@ def test_advisor_login_and_own_clients(tmp_path: Path):
     crm.upsert_client("ana_souza", "Ana Souza", "123", advisor_code="A7699", path=db)
     crm.upsert_client("joao_lima", "João Lima", "456", advisor_code="B1", path=db)
     assert [c["slug"] for c in crm.clients("2025-05", "A7699", path=db)] == ["ana_souza"]
+    crm.set_letter("ana_souza", "2025-05", "generated", path=db)
+    crm.delete_client("ana_souza", path=db)
+    assert crm.client("ana_souza", path=db) is None and crm.clients("2025-05", "A7699", path=db) == []

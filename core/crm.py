@@ -172,3 +172,14 @@ def reset_interrupted(path: Path = DB_PATH) -> None:
     with connect(path) as conn:
         conn.execute("UPDATE letters SET status = 'error', error = 'Geração interrompida (servidor reiniciou)', "
                      "updated_at = ? WHERE status = 'generating'", (_now(),))
+
+
+def delete_client(slug: str, path: Path = DB_PATH) -> None:
+    """Remove the client, its letters and its files (statements, results, letters)."""
+    import shutil
+
+    with connect(path) as conn:
+        conn.execute("DELETE FROM letters WHERE slug = ?", (slug,))
+        conn.execute("DELETE FROM clients WHERE slug = ?", (slug,))
+    if path == DB_PATH:
+        shutil.rmtree(CLIENTS_DIR / slug, ignore_errors=True)
