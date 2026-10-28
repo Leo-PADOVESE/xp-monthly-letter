@@ -1,6 +1,6 @@
 ## Task: summarize the client's investor profile (suitability)
 
-Read the client's risk profile document and extract what the letter and the suggestions must respect.
+Read the client's risk profile document and extract what the letter and the portfolio assessment must respect.
 
 Return JSON with this schema:
 {

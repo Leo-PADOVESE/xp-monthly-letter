@@ -3,11 +3,12 @@
 Flow (Rivet decides, Python executes):
 1. Macro digest: graph ``macro_digest`` runs once per month and is cached for every client.
 2. Briefing: statement, profile, formatted results and portfolio facts (``core.briefing``).
-3. Graph ``monthly_letter``: profile, performance analysis, the choice among the rule-based suggestion
-   candidates (``core.suggestions``), letter and critic.
-4. Checks: the critic's verdict plus a deterministic one, every figure in the letter must exist
-   in the briefing. If either fails, the letter is rewritten once with the issues as revision
-   notes; if it still fails it is saved as ``needs_review`` for the advisor.
+3. Graph ``monthly_letter``: profile, performance analysis, an assessment of the portfolio against the
+   client's profile and the XP scenario (no buy/sell orders), letter and critic.
+4. Checks, deterministic: every figure in the letter must exist in the briefing, no promise of returns,
+   every attention point cites a portfolio fact, the length fits; plus the critic's high-severity findings
+   on facts, coherence and names. If any fails, the letter is rewritten (up to twice) with the issues as
+   revision notes; if it still fails it is saved as ``needs_review`` for the advisor.
 
 CLI:
     python -m core.letter_ai data/clients/albert_da_silva/2025-05
@@ -29,7 +30,6 @@ from core import periods
 from core.briefing import client_card, formatted_results, portfolio_facts
 from core.ingestion import load_portfolio, parse_risk_profile_label, pdf_to_text, portfolio_to_text
 from core.profitability import load_settings
-from core.suggestions import candidates
 
 ROOT = Path(__file__).resolve().parents[1]
 RIVET_RUNNER = ROOT / "rivet" / "run_graph.mjs"
@@ -124,18 +124,19 @@ def tidy(letter: dict, client_name: str = "") -> dict:
     speaks to the client ("a carteira de Carla Mendes" -> "sua carteira") and no internal jargon reaches it."""
     paragraphs = [GREETING.sub("", p) for p in letter.get("performance_pt", [])]
     letter["performance_pt"] = [_client_voice(p[:1].upper() + p[1:], client_name) for p in paragraphs if p]
-    for key in ("opening_pt", "macro_pt", "suggestions_intro_pt", "outlook_pt", "closing_pt"):
+    for key in ("opening_pt", "macro_pt", "assessment_pt", "outlook_pt", "closing_pt"):
         letter[key] = _client_voice(letter.get(key, ""), client_name)
-    for s in letter.get("suggestions", []):
+    for s in letter.get("attention_points", []):
         s["text_pt"] = _client_voice(s.get("text_pt", ""), client_name)
     return letter
 
 
 def letter_text(letter: dict) -> str:
     parts = [letter.get(k, "") for k in ("subject_pt", "greeting_pt", "opening_pt", "macro_pt",
-                                          "suggestions_intro_pt", "outlook_pt", "closing_pt")]
+                                          "assessment_pt", "outlook_pt", "closing_pt")]
     parts += letter.get("performance_pt", [])
-    parts += [f"{s.get('title_pt', '')}. {s.get('text_pt', '')}" for s in letter.get("suggestions", [])]
+    parts += [f"{s.get('title_pt', '')}. {s.get('text_pt', '')}" for s in letter.get("attention_points", [])]
+    parts += [v.get("profile_fit_pt", "") for v in letter.get("class_views", [])]
     return "\n".join(p for p in parts if p)
 
 
@@ -161,17 +162,14 @@ def check_promises(letter: dict) -> list[str]:
     return sorted({m.group(0) for m in PROMISE.finditer(letter_text(letter))})
 
 
-def check_suggestions(letter: dict, options: list[dict]) -> list[str]:
-    """Problems with the chosen suggestions: unknown or repeated candidates, a changed type, too few or many."""
-    by_id = {o["id"]: o for o in options}
-    chosen = letter.get("suggestions", [])
-    ids = [s.get("candidate_id") for s in chosen]
-    problems = [f"sugestão fora das candidatas: {i}" for i in ids if i not in by_id]
-    problems += [f"candidata repetida: {i}" for i in sorted({i for i in ids if ids.count(i) > 1})]
-    problems += [f"tipo trocado em {s['candidate_id']}" for s in chosen
-                 if s.get("candidate_id") in by_id and s.get("type") != by_id[s["candidate_id"]]["type"]]
-    if not 2 <= len(chosen) <= 3 and len(options) >= 2:
-        problems.append(f"{len(chosen)} sugestões (o esperado é 2 ou 3)")
+def check_attention_points(letter: dict, facts: dict) -> list[str]:
+    """Problems with the attention points: not anchored in a portfolio fact, repeated, or more than three."""
+    known = {f["id"] for f in facts["facts"]}
+    ids = [s.get("fact_id") for s in letter.get("attention_points", [])]
+    problems = [f"ponto de atenção sem fato da carteira: {i}" for i in ids if i not in known]
+    problems += [f"fato repetido: {i}" for i in sorted({i for i in ids if ids.count(i) > 1})]
+    if len(ids) > 3:
+        problems.append(f"{len(ids)} pontos de atenção (o máximo é 3)")
     return problems
 
 
@@ -205,7 +203,6 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         f"{w * 100:.0f}% {'Ibovespa' if k == 'IBOV' else k}" for k, w in weights.items())
     facts = portfolio_facts(portfolio, report, profile)
     client = client_card(portfolio, profile, letter_date, period_end)
-    options = candidates(portfolio, report, facts, profile, weights)
     # Data-quality warnings (stale quota dates, cent differences) are for the advisor, not the client.
     portfolio_text = portfolio_to_text(portfolio).split("\nData warnings:")[0].rstrip()
     digest_for_llm = {k: v for k, v in digest.items() if not k.startswith("_")}
@@ -217,7 +214,6 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         "portfolio_text": portfolio_text,
         "profitability": json.dumps(results, ensure_ascii=False, indent=1),
         "portfolio_facts": json.dumps(facts, ensure_ascii=False, indent=1),
-        "suggestion_candidates": json.dumps(options, ensure_ascii=False, indent=1),
         "macro_digest": json.dumps(digest_for_llm, ensure_ascii=False, indent=1),
         "revision_notes": "",
         "model": model,
@@ -229,21 +225,24 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         outputs, usage = run_graph("monthly_letter", inputs)
         steps = {name: parse_json(raw, name) for name, raw in outputs.items()}
         letter, critic = tidy(steps["letter"], client["name"]), steps["critic"]
-        unknown = check_numbers(letter, results, facts, digest_for_llm, options)
+        # The class table comes from the Analyst's assessment; weights are laid out from the facts by the PDF.
+        letter["class_views"] = steps["profile_assessment"].get("class_views", [])
+        unknown = check_numbers(letter, results, facts, digest_for_llm)
         words = word_count(letter)
-        # Figures are verified by check_numbers; the critic judges suitability, tone and promises.
-        # The reviewer is advisory: in tests it blocked correct sentences (e.g. "0,99% beat 1,06%"), so its
-        # findings go to the advisor as notes; blocking checks are deterministic (figures, promises, suggestions).
-        issues: list[dict] = []
+        # Figures are verified by check_numbers; the critic judges meaning and tone. Its high findings on facts,
+        # coherence and names force a rewrite (a wrong statement once reached the advisor as a mere note); on
+        # promises it is advisory, since it blocked correct sentences in tests and the code check covers them.
         notes = critic.get("issues", [])
+        issues: list[dict] = [{**n, "rule": n.get("rule", "fatos")} for n in notes
+                              if n.get("severity") == "high" and n.get("rule") in ("fatos", "coerência", "nomes")]
         if unknown:
             issues.append({"severity": "high", "rule": "números",
                            "problem": f"Valores que não existem nos dados: {', '.join(unknown)}",
                            "fix": "Use apenas os valores exatamente como aparecem nos dados fornecidos."})
-        wrong_suggestions = check_suggestions(letter, options)
-        if wrong_suggestions:
-            issues.append({"severity": "high", "rule": "sugestões", "problem": "; ".join(wrong_suggestions),
-                           "fix": "Escolha de 2 a 3 sugestões entre as candidatas, copiando candidate_id e type."})
+        wrong_points = check_attention_points(letter, facts)
+        if wrong_points:
+            issues.append({"severity": "high", "rule": "pontos de atenção", "problem": "; ".join(wrong_points),
+                           "fix": "Use de 1 a 3 pontos, cada um com o fact_id de um fato da carteira."})
         promises = check_promises(letter)
         if promises:
             issues.append({"severity": "high", "rule": "3", "problem": f"Promessa de retorno: {', '.join(promises)}",
@@ -251,7 +250,7 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
                                   "dá liquidez, alinha ao perfil), sem dizer que melhora ou aumenta o retorno."})
         if not 300 <= words <= 600:
             issues.append({"severity": "high", "rule": "tamanho", "problem": f"{words} palavras",
-                           "fix": "Ajuste o texto para ficar entre 380 e 520 palavras."})
+                           "fix": "Ajuste o texto para ficar entre 330 e 480 palavras."})
         approved = not issues
         attempts.append({"attempt": attempt + 1, "usage": usage, "words": words, "unknown_numbers": unknown,
                          "critic": critic, "issues": issues, "advisor_notes": notes})
@@ -262,7 +261,7 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
     result = {
         "status": "approved" if approved else "needs_review",
         "client": client, "letter": letter, "steps": steps,
-        "briefing": {"results": results, "facts": facts, "suggestion_candidates": options},
+        "briefing": {"results": results, "facts": facts},
         "advisor_notes": attempts[-1]["advisor_notes"],
         "macro_digest": digest_for_llm, "attempts": attempts, "model": model, "writer_model": writer_model,
     }

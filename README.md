@@ -15,9 +15,9 @@ number and runs the checks; the Rivet graph only analyses and writes, from those
 |---|---|---|
 | 1. Read the statement | `core/ingestion.py` | XP statement PDF to structured JSON, with reconciliation checks. Unknown layouts fall back to the Rivet `portfolio_extraction` graph, whose output passes the same checks. |
 | 2. Profitability | `core/profitability.py`, `core/market_data.py`, `core/fund_resolver.py` | Monthly return per asset, class and portfolio, vs CDI, Ibovespa and IPCA (Yahoo Finance, CVM, Banco Central). |
-| 3. Suggestion candidates | `core/suggestions.py` | Rule-based list of what is worth discussing (idle cash, matured bonds, concentration, distance from the risk profile). No product names. |
-| 4. Letter | `rivet/` + `core/letter_ai.py` | Analyst, Writer and Reviewer agents in Rivet. Deterministic gates in Python: every figure must exist in the data, no promises of return, suggestions only from the candidates, 300 to 600 words. Up to 2 rewrites; the Reviewer's remarks become notes for the advisor. |
-| 5. PDF and e-mail | `core/letter_pdf.py`, `core/mailer.py` | Two-page XP-styled PDF; sent by SMTP, protected with the first 6 CPF digits. |
+| 3. Portfolio facts | `core/briefing.py` | Objective facts the letter may discuss (class weights, idle cash, matured bonds, concentration), plus every figure pre-formatted, including the return as % of the CDI and the contribution of each class. |
+| 4. Letter | `rivet/` + `core/letter_ai.py` | Analyst, Writer and Reviewer agents in Rivet. The Analyst assesses the portfolio against the client's profile and the XP scenario, class by class (no buy/sell orders). Deterministic gates in Python: every figure must exist in the data, no promises of return, attention points anchored in portfolio facts, 300 to 600 words; the Reviewer's high findings on facts force a rewrite. Up to 2 rewrites; its other remarks become notes for the advisor. |
+| 5. PDF and e-mail | `core/letter_pdf.py`, `core/mailer.py` | Two-page XP-styled PDF: portfolio vs CDI, Ibovespa, inflation and the profile benchmark, where the result came from by class, the class table with the XP view, and the per-asset monthly results. Sent by SMTP, protected with the first 6 CPF digits. |
 | 6. Advisor platform | `app/`, `core/crm.py`, `core/pipeline.py` | Streamlit app: client CRM, batch generation in parallel, review, edit, approve and send. |
 
 `docs/mvp_original/` keeps the output of the original Rivet MVP, for comparison.

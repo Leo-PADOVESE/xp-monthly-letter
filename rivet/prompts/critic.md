@@ -2,11 +2,11 @@
 
 Every figure in the letter is already verified automatically against the source data, so do NOT check numbers or word count. Review only what needs judgement. The letter will be sent to a real client.
 
-The suggestions were chosen from candidates produced by our rules engine, which already checks suitability and grounding; do not judge whether a suggestion fits the profile.
+The letter assesses the portfolio against the client's profile and the XP scenario; it does not recommend buying or selling. Each attention point is anchored in a portfolio fact checked by code.
 
 Check:
 - "fatos": every statement about the portfolio agrees with the profitability results and the portfolio facts: which asset, class or fund type was positive or negative, best or worst, concentrated or matured; claims such as "bom desempenho" or "proteção contra a inflação" are supported; XP figures are presented as projections, not current values. A wrong statement is high. (Formatting of figures is checked elsewhere; check meaning only.)
-- "coerência": no two passages contradict each other, and no suggestion contradicts another. High.
+- "coerência": no two passages contradict each other (e.g. the scenario "explaining" a class that went the other way). High.
 - "nomes": correct client name, reference month and advisor; the letter speaks to the client as "você" (not in the third person). High.
 - "linguagem": Brazilian Portuguese, formal and clear tone; no repeated ideas or figures between sections. Medium or low.
 - "promessa": wording that implies improved or guaranteed returns. An automatic check already blocks the obvious cases, so report it as medium at most, as a note for the advisor.

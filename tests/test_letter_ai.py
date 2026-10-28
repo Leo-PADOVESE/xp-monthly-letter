@@ -1,4 +1,4 @@
-from core.letter_ai import check_numbers, check_promises, tidy
+from core.letter_ai import check_attention_points, check_numbers, check_promises, tidy
 
 
 def letter(text: str) -> dict:
@@ -24,3 +24,11 @@ def test_numbers_match_by_value():
 def test_tidy_removes_repeated_greeting():
     out = tidy({"performance_pt": ["Caro Bruno, em abril sua carteira caiu.", "Segundo parágrafo."]})
     assert out["performance_pt"] == ["Em abril sua carteira caiu.", "Segundo parágrafo."]
+
+
+def test_attention_points_must_cite_a_portfolio_fact():
+    facts = {"facts": [{"id": "idle_cash"}, {"id": "class_weights"}]}
+    assert check_attention_points({"attention_points": [{"fact_id": "idle_cash"}]}, facts) == []
+    bad = {"attention_points": [{"fact_id": "buy_petr4"}, {"fact_id": "idle_cash"}, {"fact_id": "idle_cash"}]}
+    assert check_attention_points(bad, facts) == ["ponto de atenção sem fato da carteira: buy_petr4",
+                                                  "fato repetido: idle_cash"]

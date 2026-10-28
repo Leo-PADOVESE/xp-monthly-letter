@@ -1,11 +1,11 @@
 """What the Rivet agent receives about a client: formatted results and portfolio facts.
 
-The agent writes the analysis and the suggestions, but it never calculates. Everything it may
+The agent writes the analysis and the assessment, but it never calculates. Everything it may
 quote is prepared here, already in Brazilian format ("+3,95%", "R$ 14.711,97"), so the letter
 copies figures instead of re-deriving them, and ``letter_ai.check_numbers`` can verify that every
 figure in the letter exists in this briefing.
 
-Portfolio facts are objective observations the suggestions must be anchored in (idle cash,
+Portfolio facts are objective observations the attention points must be anchored in (idle cash,
 matured bonds, class weights, concentration); they are not recommendations by themselves.
 """
 
@@ -70,6 +70,23 @@ def _fund_types(report: dict) -> list[dict]:
     return rows
 
 
+def class_contribution(report: dict) -> list[dict]:
+    """Where the month's result came from: contribution of each class (funds by type) in R$ and p.p."""
+    groups: dict[str, list[dict]] = {}
+    for p in report["positions"]:
+        groups.setdefault(_class_key(p), []).append(p)
+    rows = [{"class": CLASS_LABELS_PT.get(key, key), "contribution_brl": sum(p["contribution_brl"] for p in ps),
+             "contribution_pp": sum(p["contribution_pp"] for p in ps)} for key, ps in groups.items()]
+    return sorted(rows, key=lambda r: -r["contribution_brl"])
+
+
+def pct_of_cdi(report: dict) -> float | None:
+    """The month's return as a share of the CDI ("373% do CDI"), the way Brazilian investors read fixed income.
+    Only meaningful when both are positive."""
+    cdi = report["benchmarks_pct"]["CDI"]
+    return report["return_pct"] / cdi * 100 if cdi > 0 and report["return_pct"] > 0 else None
+
+
 def formatted_results(report: dict) -> dict:
     """The profitability report with every quotable figure pre-formatted."""
     invested = [p for p in report["positions"] if p["asset_class"] != CASH]
@@ -103,6 +120,8 @@ def formatted_results(report: dict) -> dict:
             "excess_vs_cdi": pp(report["excess_vs_cdi_pp"]),
             "excess_vs_profile_benchmark": pp(report["excess_vs_profile_pp"]),
             "real_return": pct(report["real_return_pct"]),
+            "return_as_pct_of_cdi": (f"{pct_of_cdi(report):.0f}% do CDI" if pct_of_cdi(report) else
+                                     "não se aplica (retorno ou CDI não positivo)"),
             "cash_opportunity_cost": brl(report["cash_opportunity_cost_brl"]),
         },
         "highlights": {
@@ -120,12 +139,16 @@ def formatted_results(report: dict) -> dict:
                      "weight": pct(c["weight_pct"], signed=False), "return": pct(c["monthly_return_pct"])}
                     for c in report["classes"] if c["asset_class"] != FUNDS],
         "fund_types": _fund_types(report),
+        # Attribution: which classes produced the month's result (the per-asset detail is in "positions").
+        "class_contribution": [{"class": r["class"], "contribution": brl(r["contribution_brl"]),
+                                "contribution_pp": pp(r["contribution_pp"])}
+                               for r in class_contribution(report) if abs(r["contribution_brl"]) >= 0.5],
         "positions": [position_row(p) for p in report["positions"]],
     }
 
 
 def portfolio_facts(portfolio: Portfolio, report: dict, profile: str) -> dict:
-    """Objective facts about the portfolio, each with an id the suggestions can cite."""
+    """Objective facts about the portfolio, each with an id the attention points can cite."""
     equity = portfolio.total_equity
     facts: list[dict] = []
 

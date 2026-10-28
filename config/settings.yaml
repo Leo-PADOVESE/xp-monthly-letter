@@ -19,7 +19,7 @@ benchmarks:
 
 # LLM used by the Rivet graphs (OpenAI key in .env, see .env.example).
 llm:
-  model: gpt-4o             # macro digest, profile, performance analysis, suggestions (gpt-4o-mini misread
+  model: gpt-4o             # macro digest, profile, performance analysis, assessment (gpt-4o-mini misread
                             # signs and attributions in tests: "resultados mistos" for two positive fund types)
   writer_model: gpt-4o      # letter writer and critic
 

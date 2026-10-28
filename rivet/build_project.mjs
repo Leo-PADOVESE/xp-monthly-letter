@@ -18,7 +18,7 @@ const prompt = (name) => readFileSync(join(HERE, 'prompts', `${name}.md`), 'utf8
 // named in `model` (default "model"). `vars` maps every {{variable}} of the prompt
 // to a graph input ("input:<id>") or to the response of an earlier step ("step:<id>").
 // Roles in the letter graph: the Analyst agent relates the figures to the client's profile and the
-// macro scenario; the Writer agent only turns that analysis into the letter, following its rules;
+// macro scenario (an assessment, not buy/sell orders); the Writer agent only turns that analysis into the letter, following its rules;
 // the Reviewer checks suitability and tone before the code checks every figure.
 const GRAPHS = [
   {
@@ -34,29 +34,29 @@ const GRAPHS = [
   {
     id: 'monthly_letter',
     name: '2. Monthly letter (per client)',
-    description: 'Profile, performance analysis, suggestions, letter and critic for one client. Every figure comes from the Python engine.',
+    description: 'Profile, performance analysis, assessment against profile and XP scenario, letter and critic for one client. Every figure comes from the Python engine.',
     inputs: ['client', 'profile_label', 'risk_profile_text', 'portfolio_text', 'profitability', 'portfolio_facts',
-             'suggestion_candidates', 'macro_digest', 'revision_notes', 'model', 'writer_model'],
+             'macro_digest', 'revision_notes', 'model', 'writer_model'],
     steps: [
       { id: 'profile_summary', role: 'Analyst', vars: { profile_label: 'input:profile_label', risk_profile_text: 'input:risk_profile_text' },
         temperature: 0.1, maxTokens: 800 },
       { id: 'performance_analysis', role: 'Analyst', vars: { client: 'input:client', portfolio_text: 'input:portfolio_text', profitability: 'input:profitability',
           macro_digest: 'input:macro_digest' },
         temperature: 0.2, maxTokens: 1200 },
-      { id: 'recommendations', role: 'Analyst', vars: { profile_summary: 'step:profile_summary', macro_digest: 'input:macro_digest',
+      { id: 'profile_assessment', role: 'Analyst', vars: { profile_summary: 'step:profile_summary', macro_digest: 'input:macro_digest',
           performance_analysis: 'step:performance_analysis', portfolio_facts: 'input:portfolio_facts',
-          suggestion_candidates: 'input:suggestion_candidates', revision_notes: 'input:revision_notes' },
+          revision_notes: 'input:revision_notes' },
         temperature: 0.3, maxTokens: 1200 },
       { id: 'letter_writer', role: 'Writer', vars: { client: 'input:client', profile_summary: 'step:profile_summary',
           performance_analysis: 'step:performance_analysis', macro_digest: 'input:macro_digest',
-          recommendations: 'step:recommendations', revision_notes: 'input:revision_notes' },
+          profile_assessment: 'step:profile_assessment', revision_notes: 'input:revision_notes' },
         temperature: 0.4, maxTokens: 2500, model: 'writer_model' },
       { id: 'critic', role: 'Reviewer', vars: { client: 'input:client', profile_summary: 'step:profile_summary',
           profitability: 'input:profitability', portfolio_facts: 'input:portfolio_facts', macro_digest: 'input:macro_digest', letter: 'step:letter_writer' },
         temperature: 0, maxTokens: 1200, model: 'writer_model' },
     ],
     outputs: { profile_summary: 'profile_summary', performance_analysis: 'performance_analysis',
-               recommendations: 'recommendations', letter: 'letter_writer', critic: 'critic' },
+               profile_assessment: 'profile_assessment', letter: 'letter_writer', critic: 'critic' },
   },
   {
     id: 'portfolio_extraction',
@@ -134,7 +134,7 @@ const project = {
   metadata: {
     id: 'xp_monthly_letter',
     title: 'XP Monthly Letter',
-    description: 'Rivet decides, Python executes: analysis, suggestions and the letter are written here; '
+    description: 'Rivet decides, Python executes: analysis, assessment and the letter are written here; '
       + 'figures, charts, PDF and e-mail are produced by the Python platform.',
     mainGraphId: 'monthly_letter',
   },

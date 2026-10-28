@@ -482,8 +482,8 @@ def review_tab() -> None:
         for n in notes:
             st.warning(f"**{n.get('rule', '')}** · “{n.get('quote', '')}”\n\n{n.get('problem', '')}\n\n"
                        f"*Sugestão:* {n.get('fix', '')}")
-        st.caption(f"Checagens automáticas: números conferidos com os dados, sem promessa de retorno, sugestões "
-                   f"dentro das regras. Custo: US$ {row['cost_usd'] or 0:.3f}.")
+        st.caption(f"Checagens automáticas: números conferidos com os dados, sem promessa de retorno, pontos de "
+                   f"atenção ligados a fatos da carteira. Custo: US$ {row['cost_usd'] or 0:.3f}.")
 
         with st.expander("Editar texto da carta"):
             letter = doc["letter"]
@@ -492,8 +492,11 @@ def review_tab() -> None:
                 letter["performance_pt"] = [st.text_area(f"Desempenho {i + 1}", p, height=140)
                                             for i, p in enumerate(letter.get("performance_pt", []))]
                 letter["macro_pt"] = st.text_area("Cenário econômico", letter.get("macro_pt", ""), height=120)
-                for i, s in enumerate(letter.get("suggestions", [])):
-                    s["text_pt"] = st.text_area(f"Sugestão {i + 1}: {s.get('title_pt', '')}", s.get("text_pt", ""))
+                letter["assessment_pt"] = st.text_area("Avaliação da carteira", letter.get("assessment_pt", ""),
+                                                       height=120)
+                for i, s in enumerate(letter.get("attention_points", [])):
+                    s["text_pt"] = st.text_area(f"Ponto de atenção {i + 1}: {s.get('title_pt', '')}",
+                                                s.get("text_pt", ""))
                 letter["outlook_pt"] = st.text_area("O que esperar", letter.get("outlook_pt", ""))
                 if st.form_submit_button("Salvar e refazer o PDF"):
                     pipeline.save_letter_edits(row["slug"], letter, MONTH)
