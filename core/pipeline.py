@@ -104,7 +104,7 @@ def register_client(account: str, name: str, cpf: str, email: str, advisor: dict
 def ensure_demo_advisor(email: str, password: str) -> None:
     """The advisor of the demo clients, with the login given by the server's settings."""
     pdf = next(iter(sorted(crm.CLIENTS_DIR.glob("*/*/portfolio.pdf"))), None)
-    if pdf:
+    if pdf and not crm.login(email, password):          # unchanged password keeps open sessions valid
         portfolio = load_portfolio(pdf.parent)
         crm.set_advisor(email, portfolio.advisor_name, portfolio.advisor_code, password)
 
