@@ -126,11 +126,13 @@ def mask_cpf(cpf: str | None) -> str:
 
 def login_page() -> None:
     st.markdown("<style>[data-testid='stSidebar'], [data-testid='stSidebarCollapsedControl'] {display:none;}"
-                ".stTextInput input {background:#fff; color:#141414; height:46px;}"
-                ".stTextInput input::placeholder {color:#8A8A8A;}"
-                ".stTextInput [data-baseweb='input'] > div, .stTextInput button {background:#fff; color:#141414;}"
-                ".stTextInput [data-baseweb='input'], .stTextInput [data-baseweb='base-input'] {background:#fff;"
-                " border:0; border-radius:4px;}</style>", unsafe_allow_html=True)
+                "[data-testid='stTextInputRootElement'] {background:#fff; border:0; border-radius:4px;}"
+                "[data-testid='stTextInputRootElement'] input {background:#fff; color:#141414; height:46px;}"
+                "[data-testid='stTextInputRootElement'] input::placeholder {color:#8A8A8A;}"
+                "[data-testid='stTextInputRootElement'] input:-webkit-autofill {-webkit-box-shadow:0 0 0 40px #fff inset;"
+                " -webkit-text-fill-color:#141414;}"
+                "[data-testid='stTextInputRootElement'] button {background:transparent; color:#141414;}"
+                "</style>", unsafe_allow_html=True)
     _, center, _ = st.columns([1.3, 1, 1.3])
     with center:
         st.markdown('<div style="height:14vh"></div><div class="xp-logo" style="font-size:5.5rem; text-align:center">'
