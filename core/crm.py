@@ -5,7 +5,7 @@ data/clients/<slug>/<yyyy-mm>/ (statement, results, letter); the database only k
 contact data the statement does not have (e-mail, CPF for the PDF password) and the letter's
 life cycle:
 
-    generated / needs_review  ->  approved  ->  sent
+    generating -> generated / needs_review  ->  approved  ->  sent
                  \\-> error (the advisor sees why and can retry)
 """
 
@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS letters (
 );
 """
 
-STATUS_PT = {"generated": "Pronta para revisão", "needs_review": "Revisar com atenção", "approved": "Aprovada",
-             "sent": "Enviada", "error": "Erro", "pending": "Não gerada"}
+STATUS_PT = {"generating": "Gerando...", "generated": "Pronta para revisão", "needs_review": "Revisar com atenção",
+             "approved": "Aprovada", "sent": "Enviada", "error": "Erro", "pending": "Não gerada"}
 
 
 def slugify(name: str) -> str:
@@ -123,3 +123,10 @@ def mark_sent(slug: str, month: str, email: str, path: Path = DB_PATH) -> None:
     with connect(path) as conn:
         conn.execute("UPDATE letters SET status = 'sent', sent_to = ?, sent_at = ?, updated_at = ? "
                      "WHERE slug = ? AND month = ?", (email, _now(), _now(), slug, month))
+
+
+def reset_interrupted(path: Path = DB_PATH) -> None:
+    """Letters left "generating" by a server restart go back to the queue as errors the advisor can retry."""
+    with connect(path) as conn:
+        conn.execute("UPDATE letters SET status = 'error', error = 'Geração interrompida (servidor reiniciou)', "
+                     "updated_at = ? WHERE status = 'generating'", (_now(),))

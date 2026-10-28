@@ -1,0 +1,100 @@
+{
+  "report_date": "6 de fevereiro de 2025",
+  "report_title": "Brasil Macro Mensal: Pax brasileira ou calmaria antes de outra tempestade?",
+  "projections": [
+    {
+      "indicator": "Crescimento do PIB",
+      "value": "2,0%",
+      "horizon": "2025"
+    },
+    {
+      "indicator": "Crescimento do PIB",
+      "value": "1,0%",
+      "horizon": "2026"
+    },
+    {
+      "indicator": "IPCA",
+      "value": "6,1%",
+      "horizon": "2025"
+    },
+    {
+      "indicator": "IPCA",
+      "value": "4,5%",
+      "horizon": "2026"
+    },
+    {
+      "indicator": "SELIC",
+      "value": "15,50%",
+      "horizon": "2025"
+    },
+    {
+      "indicator": "Taxa de Câmbio",
+      "value": "6,20",
+      "horizon": "2025"
+    },
+    {
+      "indicator": "Taxa de Câmbio",
+      "value": "6,40",
+      "horizon": "2026"
+    },
+    {
+      "indicator": "Resultado primário do governo central",
+      "value": "-0,7%",
+      "horizon": "2025"
+    },
+    {
+      "indicator": "Resultado primário do governo central",
+      "value": "-0,9%",
+      "horizon": "2026"
+    }
+  ],
+  "sentiment": "O mercado está em um equilíbrio frágil, com riscos de inflação e crescimento econômico desacelerado.",
+  "risks": [
+    "Incerteza política e fiscal no Brasil",
+    "Inflação persistente nos EUA",
+    "Volatilidade cambial",
+    "Desaceleração econômica global"
+  ],
+  "asset_class_implications": [
+    {
+      "asset_class": "post-fixed income",
+      "view": "favorable",
+      "why": "Taxa Selic elevada favorece retornos."
+    },
+    {
+      "asset_class": "inflation-linked bonds",
+      "view": "neutral",
+      "why": "Inflação alta, mas com perspectiva de controle em 2026."
+    },
+    {
+      "asset_class": "credit",
+      "view": "neutral",
+      "why": "Desaceleração econômica pode impactar risco de crédito."
+    },
+    {
+      "asset_class": "multimarket funds",
+      "view": "neutral",
+      "why": "Cenário de incerteza e volatilidade."
+    },
+    {
+      "asset_class": "Brazilian equities",
+      "view": "unfavorable",
+      "why": "Crescimento econômico desacelerado e incertezas políticas."
+    },
+    {
+      "asset_class": "international",
+      "view": "neutral",
+      "why": "Cenário global misto, com riscos de inflação nos EUA."
+    }
+  ],
+  "sector_notes": [
+    "Setores de commodities podem se beneficiar da recuperação dos preços.",
+    "Setores ligados ao consumo interno podem enfrentar desafios devido à inflação e desaceleração econômica."
+  ],
+  "summary_pt": "O cenário econômico brasileiro apresenta desafios com inflação alta e crescimento desacelerado. A taxa Selic elevada pode beneficiar investimentos pós-fixados, enquanto a incerteza política e fiscal traz riscos. Setores de commodities podem se beneficiar, mas o consumo interno enfrenta dificuldades. Discuta com seu assessor as melhores estratégias para seu perfil.",
+  "_usage": {
+    "requestTokens": 13557,
+    "responseTokens": 681,
+    "cost": 0.078
+  }
+}

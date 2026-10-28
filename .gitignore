@@ -4,7 +4,8 @@ __pycache__/
 .env
 output/
 data/crm.db
-data/cache/
+data/cache/*
+!data/cache/macro_digest_*.json
 
 # Rivet runner dependencies
 rivet/node_modules/
@@ -12,5 +13,3 @@ rivet/node_modules/
 # Generated per run
 data/clients/*/*/portfolio_raw.txt
 data/clients/*/*/validation_*.xlsx
-data/clients/*/*/letter.json
-data/clients/*/*/letter.pdf

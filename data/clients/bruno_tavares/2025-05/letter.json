@@ -1,0 +1,583 @@
+{
+  "status": "approved",
+  "client": {
+    "name": "Bruno Tavares",
+    "first_name": "Bruno",
+    "account": "640218",
+    "profile_pt": "Arrojado",
+    "advisor_name": "Antonio Bicudo",
+    "advisor_code": "A7699",
+    "letter_date": "07/05/2025",
+    "reference_month": "abril de 2025"
+  },
+  "letter": {
+    "subject_pt": "Análise Mensal - Abril de 2025",
+    "greeting_pt": "Prezado Bruno,",
+    "opening_pt": "Neste mês de abril de 2025, apresentamos a análise do desempenho do seu portfólio e discutimos possíveis ajustes para alinhá-lo ao cenário econômico atual.",
+    "performance_pt": [
+      "Em abril de 2025, o portfólio de Bruno Tavares apresentou um retorno de -2,45%, inferior ao CDI (+1,06%) e ao benchmark do perfil (+2,37%). O destaque positivo foi ITUB4, com retorno de +13,34%, enquanto PETR4 teve o pior desempenho, com -17,30%. A classe de ações teve um retorno negativo de -7,35%, possivelmente impactada pelo cenário econômico desfavorável, com crescimento econômico desacelerado e incertezas políticas. Por outro lado, os fundos multimercado e de ações tiveram desempenhos positivos, com retornos de +1,40% e +12,20%, respectivamente.",
+      "O saldo disponível de R$ 8.500,00 não gerou retorno, resultando em um custo de oportunidade de R$ 89,75. Recomenda-se discutir com o assessor Antonio Bicudo possíveis ajustes para otimizar o portfólio."
+    ],
+    "macro_pt": "O cenário projetado pela XP indica um crescimento econômico desacelerado, com o PIB estimado em 2,0% para 2025 e 1,0% para 2026. A inflação alta, com o IPCA projetado em 6,1% para 2025, e a taxa Selic elevada, estimada em 15,50%, podem impactar diferentes classes de ativos. A XP vê um cenário desfavorável para ações brasileiras devido às incertezas políticas e fiscais, enquanto a renda fixa pós-fixada é favorecida pela alta da Selic. A diversificação em títulos atrelados à inflação é considerada uma estratégia neutra, mas potencialmente interessante para um perfil arrojado.",
+    "suggestions_intro_pt": "Com base na análise do portfólio e no cenário macroeconômico, sugerimos discutir com seu assessor as seguintes possibilidades de ajuste:",
+    "suggestions": [
+      {
+        "candidate_id": "idle_cash",
+        "type": "opportunity",
+        "title_pt": "Aproveitar saldo parado",
+        "text_pt": "Discutir com o assessor a possibilidade de aplicar parte do saldo parado em conta (R$ 8.500,00) em renda fixa pós-fixada de liquidez diária, mantendo a reserva que o perfil pede. O saldo parado de R$ 8.500,00 não gerou retorno, resultando em um custo de oportunidade de R$ 89,75. Com a Selic projetada em 15,50% para 2025, aplicar em renda fixa pós-fixada pode ser vantajoso para um perfil arrojado."
+      },
+      {
+        "candidate_id": "concentration:Kapitalo Kappa Advisory FIC FIM",
+        "type": "protection",
+        "title_pt": "Reduzir concentração em um único ativo",
+        "text_pt": "Discutir com o assessor a possibilidade de reduzir aos poucos a posição em Kapitalo Kappa Advisory FIC FIM (16,62% do patrimônio), distribuindo entre outros ativos da mesma classe. Kapitalo Kappa Advisory FIC FIM representa 16,62% do patrimônio, acima do limite de 15,00%. Reduzir a concentração pode mitigar riscos, alinhando-se ao perfil arrojado que busca crescimento com diversificação."
+      },
+      {
+        "candidate_id": "macro:inflation_linked",
+        "type": "opportunity",
+        "title_pt": "Diversificar com títulos atrelados à inflação",
+        "text_pt": "Discutir com o assessor a possibilidade de incluir títulos atrelados à inflação para diversificar os indexadores da carteira. A XP vê títulos atrelados à inflação com uma visão neutra, devido à alta inflação atual e perspectiva de controle. Para um investidor arrojado, essa diversificação pode ser uma estratégia interessante."
+      }
+    ],
+    "outlook_pt": "Nos próximos meses, é importante monitorar a inflação e a política fiscal no Brasil, que podem impactar o cenário econômico. A taxa Selic elevada oferece oportunidades em renda fixa pós-fixada, enquanto a diversificação continua sendo uma estratégia prudente para mitigar riscos em um ambiente de incerteza.",
+    "closing_pt": "Estou à disposição para uma conversa mais detalhada sobre seu portfólio. Entre em contato para agendarmos uma reunião.",
+    "charts": [
+      "benchmarks",
+      "allocation"
+    ]
+  },
+  "steps": {
+    "profile_summary": {
+      "profile": "aggressive",
+      "profile_pt": "Arrojado",
+      "horizon": "longo",
+      "volatility_tolerance": "aceita oscilações relevantes, inclusive perdas temporárias",
+      "objectives": [
+        "crescimento do patrimônio"
+      ],
+      "compatible_products": [
+        "Ações de empresas de diferentes setores",
+        "Fundos multimercado",
+        "Fundos de ações com gestão ativa",
+        "Renda fixa, incluindo crédito privado e títulos atrelados à inflação"
+      ],
+      "restrictions": [],
+      "summary_pt": "Bruno tem perfil arrojado, busca crescimento patrimonial e aceita oscilações, investindo em ações, fundos multimercado e renda fixa diversificada."
+    },
+    "performance_analysis": {
+      "headline_pt": "O retorno do portfólio de Bruno Tavares em abril de 2025 foi de -2,45%, abaixo do CDI (+1,06%) e do benchmark do perfil (+2,37%).",
+      "best_performer": {
+        "asset": "ITUB4",
+        "return": "+13,34%"
+      },
+      "worst_performer": {
+        "asset": "PETR4",
+        "return": "-17,30%"
+      },
+      "top_contributor": {
+        "asset": "ITUB4",
+        "contribution": "R$ 4.004,05"
+      },
+      "bottom_contributor": {
+        "asset": "PETR4",
+        "contribution": "-R$ 7.603,16"
+      },
+      "class_comments_pt": [
+        {
+          "asset_class": "Ações",
+          "comment": "A classe de ações teve um retorno negativo de -7,35%."
+        },
+        {
+          "asset_class": "Saldo em conta",
+          "comment": "O saldo em conta não gerou retorno (+0,00%)."
+        },
+        {
+          "asset_class": "Fundos multimercado",
+          "comment": "Os fundos multimercado tiveram um retorno positivo de +1,40%."
+        },
+        {
+          "asset_class": "Fundos de ações",
+          "comment": "Os fundos de ações apresentaram um retorno positivo de +12,20%."
+        }
+      ],
+      "attention_points_pt": [
+        "O saldo disponível de R$ 8.500,00 não gerou retorno, resultando em um custo de oportunidade de R$ 89,75."
+      ],
+      "macro_links_pt": [
+        "O desempenho negativo das ações brasileiras pode estar relacionado ao cenário econômico desfavorável, com crescimento econômico desacelerado e incertezas políticas.",
+        "Os fundos multimercado, apesar da incerteza e volatilidade, conseguiram um retorno positivo, alinhado à visão neutra do cenário macroeconômico."
+      ],
+      "paragraph_pt": "Em abril de 2025, o portfólio de Bruno Tavares apresentou um retorno de -2,45%, inferior ao CDI e ao benchmark do perfil. O destaque positivo foi ITUB4, com retorno de +13,34%, enquanto PETR4 teve o pior desempenho, com -17,30%. As ações brasileiras enfrentaram desafios devido ao cenário econômico desfavorável. Os fundos multimercado e de ações, por outro lado, tiveram desempenhos positivos. O saldo disponível não gerou retorno, resultando em um custo de oportunidade. Recomenda-se discutir com o assessor Antonio Bicudo possíveis ajustes para otimizar o portfólio."
+    },
+    "recommendations": {
+      "suggestions": [
+        {
+          "candidate_id": "idle_cash",
+          "type": "opportunity",
+          "title_pt": "Aproveitar saldo parado",
+          "action_pt": "Aplicar parte do saldo parado em conta (R$ 8.500,00) em renda fixa pós-fixada de liquidez diária, mantendo a reserva que o perfil pede",
+          "rationale_pt": "O saldo parado de R$ 8.500,00 não gerou retorno, resultando em um custo de oportunidade de R$ 89,75. Com a Selic projetada em 15,50% para 2025, aplicar em renda fixa pós-fixada pode ser vantajoso para um perfil arrojado."
+        },
+        {
+          "candidate_id": "concentration:Kapitalo Kappa Advisory FIC FIM",
+          "type": "protection",
+          "title_pt": "Reduzir concentração em um único ativo",
+          "action_pt": "Reduzir aos poucos a posição em Kapitalo Kappa Advisory FIC FIM (16,62% do patrimônio), distribuindo entre outros ativos da mesma classe",
+          "rationale_pt": "Kapitalo Kappa Advisory FIC FIM representa 16,62% do patrimônio, acima do limite de 15,00%. Reduzir a concentração pode mitigar riscos, alinhando-se ao perfil arrojado que busca crescimento com diversificação."
+        },
+        {
+          "candidate_id": "macro:inflation_linked",
+          "type": "opportunity",
+          "title_pt": "Diversificar com títulos atrelados à inflação",
+          "action_pt": "Incluir títulos atrelados à inflação para diversificar os indexadores da carteira",
+          "rationale_pt": "A XP vê títulos atrelados à inflação com uma visão neutra, devido à alta inflação atual e perspectiva de controle. Para um investidor arrojado, essa diversificação pode ser uma estratégia interessante."
+        }
+      ],
+      "outlook_pt": "Nos próximos meses, é importante monitorar a inflação e a política fiscal no Brasil, que podem impactar o cenário econômico. A taxa Selic elevada oferece oportunidades em renda fixa pós-fixada, enquanto a diversificação continua sendo uma estratégia prudente para mitigar riscos em um ambiente de incerteza."
+    },
+    "letter": {
+      "subject_pt": "Análise Mensal - Abril de 2025",
+      "greeting_pt": "Prezado Bruno,",
+      "opening_pt": "Neste mês de abril de 2025, apresentamos a análise do desempenho do seu portfólio e discutimos possíveis ajustes para alinhá-lo ao cenário econômico atual.",
+      "performance_pt": [
+        "Em abril de 2025, o portfólio de Bruno Tavares apresentou um retorno de -2,45%, inferior ao CDI (+1,06%) e ao benchmark do perfil (+2,37%). O destaque positivo foi ITUB4, com retorno de +13,34%, enquanto PETR4 teve o pior desempenho, com -17,30%. A classe de ações teve um retorno negativo de -7,35%, possivelmente impactada pelo cenário econômico desfavorável, com crescimento econômico desacelerado e incertezas políticas. Por outro lado, os fundos multimercado e de ações tiveram desempenhos positivos, com retornos de +1,40% e +12,20%, respectivamente.",
+        "O saldo disponível de R$ 8.500,00 não gerou retorno, resultando em um custo de oportunidade de R$ 89,75. Recomenda-se discutir com o assessor Antonio Bicudo possíveis ajustes para otimizar o portfólio."
+      ],
+      "macro_pt": "O cenário projetado pela XP indica um crescimento econômico desacelerado, com o PIB estimado em 2,0% para 2025 e 1,0% para 2026. A inflação alta, com o IPCA projetado em 6,1% para 2025, e a taxa Selic elevada, estimada em 15,50%, podem impactar diferentes classes de ativos. A XP vê um cenário desfavorável para ações brasileiras devido às incertezas políticas e fiscais, enquanto a renda fixa pós-fixada é favorecida pela alta da Selic. A diversificação em títulos atrelados à inflação é considerada uma estratégia neutra, mas potencialmente interessante para um perfil arrojado.",
+      "suggestions_intro_pt": "Com base na análise do portfólio e no cenário macroeconômico, sugerimos discutir com seu assessor as seguintes possibilidades de ajuste:",
+      "suggestions": [
+        {
+          "candidate_id": "idle_cash",
+          "type": "opportunity",
+          "title_pt": "Aproveitar saldo parado",
+          "text_pt": "Discutir com o assessor a possibilidade de aplicar parte do saldo parado em conta (R$ 8.500,00) em renda fixa pós-fixada de liquidez diária, mantendo a reserva que o perfil pede. O saldo parado de R$ 8.500,00 não gerou retorno, resultando em um custo de oportunidade de R$ 89,75. Com a Selic projetada em 15,50% para 2025, aplicar em renda fixa pós-fixada pode ser vantajoso para um perfil arrojado."
+        },
+        {
+          "candidate_id": "concentration:Kapitalo Kappa Advisory FIC FIM",
+          "type": "protection",
+          "title_pt": "Reduzir concentração em um único ativo",
+          "text_pt": "Discutir com o assessor a possibilidade de reduzir aos poucos a posição em Kapitalo Kappa Advisory FIC FIM (16,62% do patrimônio), distribuindo entre outros ativos da mesma classe. Kapitalo Kappa Advisory FIC FIM representa 16,62% do patrimônio, acima do limite de 15,00%. Reduzir a concentração pode mitigar riscos, alinhando-se ao perfil arrojado que busca crescimento com diversificação."
+        },
+        {
+          "candidate_id": "macro:inflation_linked",
+          "type": "opportunity",
+          "title_pt": "Diversificar com títulos atrelados à inflação",
+          "text_pt": "Discutir com o assessor a possibilidade de incluir títulos atrelados à inflação para diversificar os indexadores da carteira. A XP vê títulos atrelados à inflação com uma visão neutra, devido à alta inflação atual e perspectiva de controle. Para um investidor arrojado, essa diversificação pode ser uma estratégia interessante."
+        }
+      ],
+      "outlook_pt": "Nos próximos meses, é importante monitorar a inflação e a política fiscal no Brasil, que podem impactar o cenário econômico. A taxa Selic elevada oferece oportunidades em renda fixa pós-fixada, enquanto a diversificação continua sendo uma estratégia prudente para mitigar riscos em um ambiente de incerteza.",
+      "closing_pt": "Estou à disposição para uma conversa mais detalhada sobre seu portfólio. Entre em contato para agendarmos uma reunião.",
+      "charts": [
+        "benchmarks",
+        "allocation"
+      ]
+    },
+    "critic": {
+      "approved": false,
+      "issues": [
+        {
+          "severity": "high",
+          "rule": "fatos",
+          "quote": "A classe de ações teve um retorno negativo de -7,35%, possivelmente impactada pelo cenário econômico desfavorável, com crescimento econômico desacelerado e incertezas políticas.",
+          "problem": "A afirmação de que o retorno negativo das ações foi possivelmente impactado pelo cenário econômico desfavorável não está diretamente suportada pelos dados fornecidos. O cenário macroeconômico da XP menciona um cenário desfavorável para ações brasileiras, mas não há uma ligação direta estabelecida com o desempenho específico da classe de ações no portfólio.",
+          "fix": "Reformule a frase para indicar que o desempenho negativo das ações pode estar alinhado com a visão macroeconômica da XP sobre o cenário desfavorável para ações brasileiras, sem afirmar uma causalidade direta."
+        },
+        {
+          "severity": "medium",
+          "rule": "linguagem",
+          "quote": "A diversificação em títulos atrelados à inflação é considerada uma estratégia neutra, mas potencialmente interessante para um perfil arrojado.",
+          "problem": "A frase pode ser interpretada como uma recomendação direta, o que não é adequado.",
+          "fix": "Reformule para: 'A diversificação em títulos atrelados à inflação é vista como neutra pela XP, mas pode ser discutida como uma possibilidade interessante para um perfil arrojado.'"
+        }
+      ]
+    }
+  },
+  "briefing": {
+    "results": {
+      "period": "abril de 2025 (fechamento de 31/03/2025 a 30/04/2025)",
+      "formatted": {
+        "portfolio_return": "-2,45%",
+        "portfolio_return_invested_only": "-2,52%",
+        "gain": "-R$ 6.771,54",
+        "equity_end": "R$ 270.058,45",
+        "cdi": "+1,06%",
+        "ibovespa": "+3,69%",
+        "inflation_ipca15": "+0,43%",
+        "profile_benchmark": "+2,37%",
+        "excess_vs_cdi": "-3,50 p.p.",
+        "excess_vs_profile_benchmark": "-4,82 p.p.",
+        "real_return": "-2,86%",
+        "cash_opportunity_cost": "R$ 89,75",
+        "profile_benchmark_composition": "50% CDI + 50% Ibovespa"
+      },
+      "highlights": {
+        "best_performer": {
+          "asset": "ITUB4",
+          "return": "+13,34%"
+        },
+        "worst_performer": {
+          "asset": "PETR4",
+          "return": "-17,30%"
+        },
+        "top_contributor": {
+          "asset": "ITUB4",
+          "contribution": "R$ 4.004,05"
+        },
+        "bottom_contributor": {
+          "asset": "PETR4",
+          "contribution": "-R$ 7.603,16"
+        },
+        "assets_with_negative_return": [
+          "PETR4",
+          "VALE3",
+          "WEGE3",
+          "PRIO3"
+        ]
+      },
+      "classes": [
+        {
+          "class": "Ações",
+          "weight": "53,97%",
+          "return": "-7,35%"
+        },
+        {
+          "class": "Saldo em conta",
+          "weight": "3,15%",
+          "return": "+0,00%"
+        }
+      ],
+      "fund_types": [
+        {
+          "type": "Fundos multimercado",
+          "funds": [
+            "Kapitalo Kappa Advisory FIC FIM",
+            "SPX Nimitz Feeder FIC FIM"
+          ],
+          "weight": "30,40%",
+          "return": "+1,40%"
+        },
+        {
+          "type": "Fundos de ações",
+          "funds": [
+            "Dynamo Cougar FIC FIA"
+          ],
+          "weight": "12,48%",
+          "return": "+12,20%"
+        }
+      ],
+      "positions": [
+        {
+          "asset": "PETR4",
+          "class": "Ações",
+          "weight": "13,46%",
+          "value_end": "R$ 36.348,00",
+          "return": "-17,30%",
+          "contribution": "-R$ 7.603,16",
+          "contribution_pp": "-2,75 p.p."
+        },
+        {
+          "asset": "VALE3",
+          "class": "Ações",
+          "weight": "9,79%",
+          "value_end": "R$ 26.450,00",
+          "return": "-6,77%",
+          "contribution": "-R$ 1.921,45",
+          "contribution_pp": "-0,69 p.p."
+        },
+        {
+          "asset": "WEGE3",
+          "class": "Ações",
+          "weight": "6,21%",
+          "value_end": "R$ 16.780,00",
+          "return": "-1,41%",
+          "contribution": "-R$ 240,57",
+          "contribution_pp": "-0,09 p.p."
+        },
+        {
+          "asset": "PRIO3",
+          "class": "Ações",
+          "weight": "11,91%",
+          "value_end": "R$ 32.157,00",
+          "return": "-15,30%",
+          "contribution": "-R$ 5.809,44",
+          "contribution_pp": "-2,10 p.p."
+        },
+        {
+          "asset": "ITUB4",
+          "class": "Ações",
+          "weight": "12,60%",
+          "value_end": "R$ 34.020,00",
+          "return": "+13,34%",
+          "contribution": "R$ 4.004,05",
+          "contribution_pp": "+1,45 p.p."
+        },
+        {
+          "asset": "Kapitalo Kappa Advisory FIC FIM",
+          "class": "Fundos multimercado",
+          "weight": "16,62%",
+          "value_end": "R$ 44.880,15",
+          "return": "+1,72%",
+          "contribution": "R$ 757,05",
+          "contribution_pp": "+0,27 p.p."
+        },
+        {
+          "asset": "SPX Nimitz Feeder FIC FIM",
+          "class": "Fundos multimercado",
+          "weight": "13,78%",
+          "value_end": "R$ 37.210,40",
+          "return": "+1,02%",
+          "contribution": "R$ 377,05",
+          "contribution_pp": "+0,14 p.p."
+        },
+        {
+          "asset": "Dynamo Cougar FIC FIA",
+          "class": "Fundos de ações",
+          "weight": "12,48%",
+          "value_end": "R$ 33.712,90",
+          "return": "+12,20%",
+          "contribution": "R$ 3.664,94",
+          "contribution_pp": "+1,32 p.p."
+        },
+        {
+          "asset": "Saldo disponível",
+          "class": "Saldo em conta",
+          "weight": "3,15%",
+          "value_end": "R$ 8.500,00",
+          "return": "+0,00%",
+          "contribution": "R$ 0,00",
+          "contribution_pp": "+0,00 p.p."
+        }
+      ]
+    },
+    "facts": {
+      "profile": "aggressive",
+      "profile_pt": "Arrojado",
+      "total_equity": "R$ 270.058,45",
+      "facts": [
+        {
+          "id": "class_weights",
+          "fact": "Peso de cada classe no patrimônio total",
+          "values": {
+            "Ações": "53,97%",
+            "Fundos multimercado": "30,40%",
+            "Fundos de ações": "12,48%",
+            "Saldo em conta": "3,15%"
+          }
+        },
+        {
+          "id": "idle_cash",
+          "fact": "Saldo parado em conta de R$ 8.500,00 (3,15% do patrimônio), sem rendimento",
+          "opportunity_cost_month": "R$ 89,75"
+        },
+        {
+          "id": "concentration:Kapitalo Kappa Advisory FIC FIM",
+          "fact": "Kapitalo Kappa Advisory FIC FIM representa 16,62% do patrimônio (acima de 15,00% em um único ativo)"
+        },
+        {
+          "id": "no_fixed_income",
+          "fact": "A carteira não tem renda fixa nem fundos de renda fixa"
+        }
+      ]
+    },
+    "suggestion_candidates": [
+      {
+        "id": "idle_cash",
+        "type": "opportunity",
+        "action_pt": "Aplicar parte do saldo parado em conta (R$ 8.500,00) em renda fixa pós-fixada de liquidez diária, mantendo a reserva que o perfil pede",
+        "basis_pt": "Saldo parado em conta de R$ 8.500,00 (3,15% do patrimônio), sem rendimento; custo de oportunidade no mês de R$ 89,75"
+      },
+      {
+        "id": "concentration:Kapitalo Kappa Advisory FIC FIM",
+        "type": "protection",
+        "action_pt": "Reduzir aos poucos a posição em Kapitalo Kappa Advisory FIC FIM (16,62% do patrimônio), distribuindo entre outros ativos da mesma classe",
+        "basis_pt": "Kapitalo Kappa Advisory FIC FIM representa 16,62% do patrimônio (acima de 15,00% em um único ativo)"
+      },
+      {
+        "id": "no_fixed_income",
+        "type": "protection",
+        "action_pt": "Criar uma parcela de renda fixa pós-fixada como proteção e liquidez",
+        "basis_pt": "A carteira não tem renda fixa nem fundos de renda fixa"
+      },
+      {
+        "id": "stocks_drawdown",
+        "type": "protection",
+        "action_pt": "Direcionar novos aportes para outras classes, em vez de ampliar as ações, sem vender por causa da queda do mês",
+        "basis_pt": "Ações são 53,97% da carteira e renderam -7,35% no mês"
+      },
+      {
+        "id": "macro:inflation_linked",
+        "type": "opportunity",
+        "action_pt": "Incluir títulos atrelados à inflação para diversificar os indexadores da carteira",
+        "basis_pt": "Usar somente se o resumo macro da XP for favorável a essa classe"
+      },
+      {
+        "id": "macro:equity_fund",
+        "type": "opportunity",
+        "action_pt": "Usar fundos de ações diversificados, em vez de ampliar posições individuais",
+        "basis_pt": "Usar somente se o resumo macro da XP for favorável a essa classe"
+      }
+    ]
+  },
+  "advisor_notes": [
+    {
+      "severity": "high",
+      "rule": "fatos",
+      "quote": "A classe de ações teve um retorno negativo de -7,35%, possivelmente impactada pelo cenário econômico desfavorável, com crescimento econômico desacelerado e incertezas políticas.",
+      "problem": "A afirmação de que o retorno negativo das ações foi possivelmente impactado pelo cenário econômico desfavorável não está diretamente suportada pelos dados fornecidos. O cenário macroeconômico da XP menciona um cenário desfavorável para ações brasileiras, mas não há uma ligação direta estabelecida com o desempenho específico da classe de ações no portfólio.",
+      "fix": "Reformule a frase para indicar que o desempenho negativo das ações pode estar alinhado com a visão macroeconômica da XP sobre o cenário desfavorável para ações brasileiras, sem afirmar uma causalidade direta."
+    },
+    {
+      "severity": "medium",
+      "rule": "linguagem",
+      "quote": "A diversificação em títulos atrelados à inflação é considerada uma estratégia neutra, mas potencialmente interessante para um perfil arrojado.",
+      "problem": "A frase pode ser interpretada como uma recomendação direta, o que não é adequado.",
+      "fix": "Reformule para: 'A diversificação em títulos atrelados à inflação é vista como neutra pela XP, mas pode ser discutida como uma possibilidade interessante para um perfil arrojado.'"
+    }
+  ],
+  "macro_digest": {
+    "report_date": "6 de fevereiro de 2025",
+    "report_title": "Brasil Macro Mensal: Pax brasileira ou calmaria antes de outra tempestade?",
+    "projections": [
+      {
+        "indicator": "Crescimento do PIB",
+        "value": "2,0%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Crescimento do PIB",
+        "value": "1,0%",
+        "horizon": "2026"
+      },
+      {
+        "indicator": "IPCA",
+        "value": "6,1%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "IPCA",
+        "value": "4,5%",
+        "horizon": "2026"
+      },
+      {
+        "indicator": "SELIC",
+        "value": "15,50%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Taxa de Câmbio",
+        "value": "6,20",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Taxa de Câmbio",
+        "value": "6,40",
+        "horizon": "2026"
+      },
+      {
+        "indicator": "Resultado primário do governo central",
+        "value": "-0,7%",
+        "horizon": "2025"
+      },
+      {
+        "indicator": "Resultado primário do governo central",
+        "value": "-0,9%",
+        "horizon": "2026"
+      }
+    ],
+    "sentiment": "O mercado está em um equilíbrio frágil, com riscos de inflação e crescimento econômico desacelerado.",
+    "risks": [
+      "Incerteza política e fiscal no Brasil",
+      "Inflação persistente nos EUA",
+      "Volatilidade cambial",
+      "Desaceleração econômica global"
+    ],
+    "asset_class_implications": [
+      {
+        "asset_class": "post-fixed income",
+        "view": "favorable",
+        "why": "Taxa Selic elevada favorece retornos."
+      },
+      {
+        "asset_class": "inflation-linked bonds",
+        "view": "neutral",
+        "why": "Inflação alta, mas com perspectiva de controle em 2026."
+      },
+      {
+        "asset_class": "credit",
+        "view": "neutral",
+        "why": "Desaceleração econômica pode impactar risco de crédito."
+      },
+      {
+        "asset_class": "multimarket funds",
+        "view": "neutral",
+        "why": "Cenário de incerteza e volatilidade."
+      },
+      {
+        "asset_class": "Brazilian equities",
+        "view": "unfavorable",
+        "why": "Crescimento econômico desacelerado e incertezas políticas."
+      },
+      {
+        "asset_class": "international",
+        "view": "neutral",
+        "why": "Cenário global misto, com riscos de inflação nos EUA."
+      }
+    ],
+    "sector_notes": [
+      "Setores de commodities podem se beneficiar da recuperação dos preços.",
+      "Setores ligados ao consumo interno podem enfrentar desafios devido à inflação e desaceleração econômica."
+    ],
+    "summary_pt": "O cenário econômico brasileiro apresenta desafios com inflação alta e crescimento desacelerado. A taxa Selic elevada pode beneficiar investimentos pós-fixados, enquanto a incerteza política e fiscal traz riscos. Setores de commodities podem se beneficiar, mas o consumo interno enfrenta dificuldades. Discuta com seu assessor as melhores estratégias para seu perfil."
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "usage": {
+        "requestTokens": 14707,
+        "responseTokens": 2558,
+        "cost": 0.111905
+      },
+      "words": 511,
+      "unknown_numbers": [],
+      "critic": {
+        "approved": false,
+        "issues": [
+          {
+            "severity": "high",
+            "rule": "fatos",
+            "quote": "A classe de ações teve um retorno negativo de -7,35%, possivelmente impactada pelo cenário econômico desfavorável, com crescimento econômico desacelerado e incertezas políticas.",
+            "problem": "A afirmação de que o retorno negativo das ações foi possivelmente impactado pelo cenário econômico desfavorável não está diretamente suportada pelos dados fornecidos. O cenário macroeconômico da XP menciona um cenário desfavorável para ações brasileiras, mas não há uma ligação direta estabelecida com o desempenho específico da classe de ações no portfólio.",
+            "fix": "Reformule a frase para indicar que o desempenho negativo das ações pode estar alinhado com a visão macroeconômica da XP sobre o cenário desfavorável para ações brasileiras, sem afirmar uma causalidade direta."
+          },
+          {
+            "severity": "medium",
+            "rule": "linguagem",
+            "quote": "A diversificação em títulos atrelados à inflação é considerada uma estratégia neutra, mas potencialmente interessante para um perfil arrojado.",
+            "problem": "A frase pode ser interpretada como uma recomendação direta, o que não é adequado.",
+            "fix": "Reformule para: 'A diversificação em títulos atrelados à inflação é vista como neutra pela XP, mas pode ser discutida como uma possibilidade interessante para um perfil arrojado.'"
+          }
+        ]
+      },
+      "issues": [],
+      "advisor_notes": [
+        {
+          "severity": "high",
+          "rule": "fatos",
+          "quote": "A classe de ações teve um retorno negativo de -7,35%, possivelmente impactada pelo cenário econômico desfavorável, com crescimento econômico desacelerado e incertezas políticas.",
+          "problem": "A afirmação de que o retorno negativo das ações foi possivelmente impactado pelo cenário econômico desfavorável não está diretamente suportada pelos dados fornecidos. O cenário macroeconômico da XP menciona um cenário desfavorável para ações brasileiras, mas não há uma ligação direta estabelecida com o desempenho específico da classe de ações no portfólio.",
+          "fix": "Reformule a frase para indicar que o desempenho negativo das ações pode estar alinhado com a visão macroeconômica da XP sobre o cenário desfavorável para ações brasileiras, sem afirmar uma causalidade direta."
+        },
+        {
+          "severity": "medium",
+          "rule": "linguagem",
+          "quote": "A diversificação em títulos atrelados à inflação é considerada uma estratégia neutra, mas potencialmente interessante para um perfil arrojado.",
+          "problem": "A frase pode ser interpretada como uma recomendação direta, o que não é adequado.",
+          "fix": "Reformule para: 'A diversificação em títulos atrelados à inflação é vista como neutra pela XP, mas pode ser discutida como uma possibilidade interessante para um perfil arrojado.'"
+        }
+      ]
+    }
+  ],
+  "model": "gpt-4o",
+  "writer_model": "gpt-4o"
+}

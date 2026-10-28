@@ -11,6 +11,7 @@ clients at once in threads: 300 clients take about as long as ~15-20 sequential 
 from __future__ import annotations
 
 import json
+import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -112,6 +113,8 @@ def generate_letter(slug: str, month: str | None = None) -> dict:
     """Profitability (if missing) -> Rivet letter -> PDF, with the status saved in the CRM."""
     month = month or current_month()
     folder = month_dir(slug, month)
+    start = time.time()
+    crm.set_letter(slug, month, "generating")
     try:
         if not (folder / "profitability_market.json").exists():
             run_profitability(folder, "market")
@@ -119,7 +122,7 @@ def generate_letter(slug: str, month: str | None = None) -> dict:
         build_pdf(folder)
         status = "generated" if doc["status"] == "approved" else "needs_review"
         crm.set_letter(slug, month, status, _cost(doc), len(doc.get("advisor_notes", [])))
-        return {"slug": slug, "status": status}
+        return {"slug": slug, "status": status, "seconds": round(time.time() - start)}
     except Exception as exc:  # one client's failure never stops the batch
         crm.set_letter(slug, month, "error", error=f"{exc}"[:500])
         return {"slug": slug, "status": "error", "error": str(exc), "trace": traceback.format_exc()}

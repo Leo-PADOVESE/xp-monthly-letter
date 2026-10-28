@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -27,7 +28,7 @@ load_env()
 SETTINGS = load_settings()
 MONTH = pipeline.current_month()
 PROFILE_PT = {"conservative": "Conservador", "moderate": "Moderado", "aggressive": "Arrojado"}
-STATUS_ICON = {"pending": "⚪", "generated": "🟢", "needs_review": "🟠", "approved": "✅", "sent": "📨", "error": "🔴"}
+STATUS_ICON = {"pending": "⚪", "generating": "⏳", "generated": "🟢", "needs_review": "🟠", "approved": "✅", "sent": "📨", "error": "🔴"}
 
 st.set_page_config(page_title="Carta Mensal XP · Assessor", page_icon="📈", layout="wide")
 st.markdown("""
@@ -59,7 +60,46 @@ def gate() -> None:
 @st.cache_resource
 def boot() -> int:
     """Register the clients already in data/clients (the demo clients) once per server start."""
+    crm.reset_interrupted()
     return pipeline.sync_clients()
+
+
+@st.cache_resource
+def jobs() -> dict:
+    """Batches run in a server thread, so the advisor can leave the page (or close it) while letters are written."""
+    return {"current": None}
+
+
+def start_batch(slugs: list[str], workers: int) -> None:
+    job = {"total": len(slugs), "done": [], "start": time.time(), "end": None}
+
+    def run() -> None:
+        try:
+            pipeline.generate_batch(slugs, MONTH, workers, job["done"].append)
+        finally:
+            job["end"] = time.time()
+
+    jobs()["current"] = job
+    threading.Thread(target=run, daemon=True).start()
+
+
+@st.fragment(run_every=3)
+def batch_progress() -> None:
+    job = jobs()["current"]
+    if not job:
+        return
+    done, total = job["done"], job["total"]
+    elapsed = (job["end"] or time.time()) - job["start"]
+    st.progress(len(done) / total, f"{len(done)} de {total} prontas · {elapsed:.0f} s")
+    for r in done:
+        st.write(f"{STATUS_ICON[r['status']]} {crm.client(r['slug'])['name']}: {crm.STATUS_PT[r['status']]}"
+                 + (f" em {r['seconds']} s" if r.get("seconds") else "")
+                 + (f" — {r['error'][:200]}" if r.get("error") else ""))
+    if job["end"]:
+        st.success("Lote concluído. Revise em **Revisão e envio**.")
+        if not st.session_state.get(f"seen_{job['start']}"):
+            st.session_state[f"seen_{job['start']}"] = True
+            st.rerun(scope="app")
 
 
 def pdf_pages(path: Path) -> list:
@@ -150,20 +190,14 @@ elif page == "Gerar cartas":
                              "mesmo tempo que uma. O limite é a cota da OpenAI.")
     st.caption("No servidor, o lote do mês também roda sozinho no fechamento (python -m app.batch), e o assessor "
                "encontra as cartas na fila de revisão.")
-    if st.button(f"Gerar {len(selected)} carta(s)", type="primary", disabled=not selected):
-        progress, log = st.progress(0.0, "Preparando o cenário macro do mês..."), st.empty()
-        done: list[dict] = []
-        start = time.time()
-
-        def on_done(result: dict) -> None:
-            done.append(result)
-            progress.progress(len(done) / len(selected), f"{len(done)} de {len(selected)} prontas")
-            log.write("\n".join(f"{STATUS_ICON[r['status']]} {crm.client(r['slug'])['name']}: "
-                                f"{crm.STATUS_PT[r['status']]}{' — ' + r['error'][:160] if r.get('error') else ''}"
-                                for r in done))
-
-        pipeline.generate_batch([names[k] for k in selected], MONTH, workers, on_done)
-        st.success(f"{len(done)} carta(s) em {time.time() - start:.0f} s. Revise em **Revisão e envio**.")
+    job = jobs()["current"]
+    running = bool(job and not job["end"])
+    if st.button(f"Gerar {len(selected)} carta(s)", type="primary", disabled=running or not selected):
+        start_batch([names[k] for k in selected], workers)
+        st.rerun()
+    if running:
+        st.caption("As cartas estão sendo escritas no servidor. Pode trocar de página: o lote continua.")
+    batch_progress()
 
 # ---------------------------------------------------------- Revisão e envio
 elif page == "Revisão e envio":

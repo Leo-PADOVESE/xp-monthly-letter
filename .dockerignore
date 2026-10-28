@@ -3,6 +3,7 @@
 **/__pycache__/
 .pytest_cache/
 rivet/node_modules/
-data/cache/
+data/cache/*
+!data/cache/macro_digest_*.json
 data/crm.db
 output/
