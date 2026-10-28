@@ -289,8 +289,7 @@ if page == "Clientes":
 
     table = st.dataframe(
         [{"Conta": r["account"], "Cliente": r["name"], "Perfil": PROFILE_PT.get(r["profile"], "—"),
-          "CPF": format_cpf(r["cpf"]), "E-mail": r["email"] or "—"}
-         for r in rows],
+          "CPF": format_cpf(r["cpf"]), "E-mail": r["email"] or "—"} for r in rows],
         width="stretch", hide_index=True, on_select="rerun", selection_mode="single-row", key="clients_table")
     picked = table.selection.rows
     st.caption(f"{len(rows)} clientes · selecione uma linha para ver documentos, editar ou excluir")
@@ -388,7 +387,7 @@ def batch_progress() -> None:
             st.rerun(scope="app")
 
 
-FILTERS = ["Todos", "Gerar carta", "Prontas para revisão", "Enviadas", "Pendentes"]
+FILTERS = ["Todas", "Enviadas", "Prontas para revisão", "Gerar carta", "Pendentes"]
 
 
 def letter_stage(row: dict) -> tuple[str, list[str]]:
@@ -403,19 +402,19 @@ def letter_stage(row: dict) -> tuple[str, list[str]]:
     to_send = [label for value, label in [(row["cpf"], "CPF"), (row["email"], "e-mail")] if not value]
     if row["status"] == "sent":
         return "Enviadas", []
-    if row["status"] in ("generated", "needs_review", "approved"):
-        return "Prontas para revisão", to_send
+    ready = row["status"] in ("generated", "needs_review", "approved")
+    missing = to_send if ready else missing + to_send        # a ready letter only lacks what sending needs
     if missing:
-        return "Pendentes", missing + to_send
-    return "Gerar carta", to_send
+        return "Pendentes", missing
+    return ("Prontas para revisão" if ready else "Gerar carta"), []
 
 
 def generate_tab() -> None:
     stages = {r["slug"]: letter_stage(r) for r in rows}
-    counts = {f: sum(1 for s, _ in stages.values() if f == "Todos" or s == f) for f in FILTERS}
-    choice = st.segmented_control("Filtro", FILTERS, default="Todos", format_func=lambda f: f"{f} ({counts[f]})",
-                                  label_visibility="collapsed", key="letters_filter") or "Todos"
-    shown = [r for r in rows if choice == "Todos" or stages[r["slug"]][0] == choice]
+    counts = {f: sum(1 for s, _ in stages.values() if f == "Todas" or s == f) for f in FILTERS}
+    choice = st.segmented_control("Filtro", FILTERS, default="Todas", format_func=lambda f: f"{f} ({counts[f]})",
+                                  label_visibility="collapsed", key="letters_filter") or "Todas"
+    shown = [r for r in rows if choice == "Todas" or stages[r["slug"]][0] == choice]
     if not shown:
         st.info("Nenhum cliente nesse filtro.")
     else:
@@ -431,7 +430,7 @@ def generate_tab() -> None:
         running = bool(job and not job["end"])
         can_generate = [r for r in (picked or shown) if stages[r["slug"]][0] in ("Gerar carta", "Prontas para revisão")
                         and r["status"] != "generating"]
-        if choice in ("Gerar carta", "Todos", "Prontas para revisão"):
+        if choice in ("Gerar carta", "Todas", "Prontas para revisão"):
             label = (f"Gerar {len(can_generate)} carta(s) selecionada(s)" if picked
                      else f"Gerar {len([r for r in shown if stages[r['slug']][0] == 'Gerar carta'])} carta(s)")
             targets = can_generate if picked else [r for r in shown if stages[r["slug"]][0] == "Gerar carta"]
@@ -458,7 +457,7 @@ def generate_tab() -> None:
                         except Exception as exc:
                             st.error(str(exc))
         if choice == "Pendentes":
-            st.caption("Suitability, CPF e e-mail: em Clientes › Editar. Macro research: na tela Macro.")
+            st.caption("Suitability, CPF e e-mail: em Clientes > Editar. Macro research: na tela Macro.")
 
 
 def review_tab() -> None:
@@ -538,7 +537,7 @@ if page == "Relatórios":
         st.rerun()
     st.caption(f"Carta de {PERIOD.letter_date:%d/%m/%Y} · desempenho de {PERIOD.start:%d/%m/%Y} a {PERIOD.end:%d/%m/%Y}"
                f" · macro research {'anexado' if PERIOD.macro_report.exists() else 'pendente'}")
-    generate, review = st.tabs(["Gerar cartas", "Revisar e enviar"])
+    generate, review = st.tabs(["Cartas do mês", "Revisar e enviar"])
     with generate:
         generate_tab()
     with review:
