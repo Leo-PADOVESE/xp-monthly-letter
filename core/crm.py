@@ -12,11 +12,13 @@ life cycle:
 from __future__ import annotations
 
 import hashlib
+import hmac
 import re
 import secrets
 import sqlite3
 import unicodedata
 from contextlib import contextmanager
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -128,6 +130,33 @@ def login(email: str, password: str, path: Path = DB_PATH) -> dict | None:
     with connect(path) as conn:
         row = conn.execute("SELECT * FROM advisors WHERE email = ?", (email.strip().lower(),)).fetchone()
     if row and secrets.compare_digest(row["password_hash"], _hash(password, row["salt"])):
+        return {"email": row["email"], "name": row["name"], "code": row["code"]}
+    return None
+
+
+SESSION_DAYS = 7
+
+
+def session_token(email: str, path: Path = DB_PATH) -> str:
+    """Keeps the advisor signed in across page reloads for SESSION_DAYS; a new password revokes it."""
+    with connect(path) as conn:
+        row = conn.execute("SELECT password_hash FROM advisors WHERE email = ?", (email,)).fetchone()
+    payload = f"{email}|{int(time.time()) + SESSION_DAYS * 86400}"
+    return f"{payload}|{hmac.new(row['password_hash'].encode(), payload.encode(), 'sha256').hexdigest()}"
+
+
+def advisor_from_token(token: str, path: Path = DB_PATH) -> dict | None:
+    """The advisor a session_token belongs to, or None when it is forged, expired or revoked."""
+    try:
+        email, expires, signature = token.split("|")
+        if int(expires) < time.time():
+            return None
+    except ValueError:
+        return None
+    with connect(path) as conn:
+        row = conn.execute("SELECT * FROM advisors WHERE email = ?", (email,)).fetchone()
+    expected = row and hmac.new(row["password_hash"].encode(), f"{email}|{expires}".encode(), "sha256").hexdigest()
+    if expected and hmac.compare_digest(expected, signature):
         return {"email": row["email"], "name": row["name"], "code": row["code"]}
     return None
 

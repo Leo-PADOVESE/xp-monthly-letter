@@ -66,3 +66,14 @@ def test_advisor_login_and_own_clients(tmp_path: Path):
     crm.set_letter("ana_souza", "2025-05", "generated", path=db)
     crm.delete_client("ana_souza", path=db)
     assert crm.client("ana_souza", path=db) is None and crm.clients("2025-05", "A7699", path=db) == []
+
+
+def test_session_token_survives_reload_until_password_changes(tmp_path):
+    db = tmp_path / "crm.db"
+    crm.set_advisor("a@xp.com", "Ana", "A1", "secret", path=db)
+    token = crm.session_token("a@xp.com", path=db)
+    assert crm.advisor_from_token(token, path=db)["code"] == "A1"
+    assert crm.advisor_from_token(token.rsplit("|", 1)[0] + "|" + "0" * 64, path=db) is None
+    assert crm.advisor_from_token("garbage", path=db) is None
+    crm.set_advisor("a@xp.com", "Ana", "A1", "new", path=db)
+    assert crm.advisor_from_token(token, path=db) is None

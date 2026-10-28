@@ -152,6 +152,7 @@ def login_page() -> None:
                 advisor = crm.login(email, password)
                 if advisor:
                     st.session_state.advisor = advisor
+                    st.query_params["s"] = crm.session_token(advisor["email"])
                     st.rerun()
                 st.error("E-mail ou senha incorretos.")
         if not APP_PASSWORD:
@@ -159,22 +160,30 @@ def login_page() -> None:
 
 
 boot()
+if "advisor" not in st.session_state and (advisor := crm.advisor_from_token(st.query_params.get("s", ""))):
+    st.session_state.advisor = advisor            # page reload: the signed token in the URL keeps the login
 if "advisor" not in st.session_state:
     login_page()
     st.stop()
 
 ADVISOR = st.session_state.advisor
-MONTH = st.session_state.setdefault("folder", pipeline.current_month())   # letters' folder, e.g. 2025-05
+MONTH = st.session_state.setdefault("folder",
+                                     st.query_params["m"] if re.fullmatch(r"\d{4}-\d{2}", st.query_params.get("m", ""))
+                                     else pipeline.current_month())   # letters' folder, e.g. 2025-05
 PERIOD = periods.from_folder(MONTH)
 rows = crm.clients(MONTH, ADVISOR["code"])
 
 with st.sidebar:
     st.markdown('<div class="xp-logo" style="font-size:2.4rem">XP<small>INVESTIMENTOS</small></div>'
                 '<div style="height:28px"></div>', unsafe_allow_html=True)
-    page = st.radio("Menu", ["Macro", "Clientes", "Relatórios"], label_visibility="collapsed")
+    pages = ["Macro", "Clientes", "Relatórios"]
+    page = st.radio("Menu", pages, index=pages.index(st.query_params.get("p", "Macro")) if
+                    st.query_params.get("p") in pages else 0, label_visibility="collapsed")
+    st.query_params["p"] = page
     st.markdown('<div style="height:40vh"></div>', unsafe_allow_html=True)
     if st.button("Sair", width="stretch"):
         del st.session_state.advisor
+        st.query_params.clear()
         st.rerun()
 
 st.markdown(f'<div class="xp-advisor">{ADVISOR["name"]}</div><div class="xp-advisor-sub">Assessor de investimentos · '
@@ -525,6 +534,7 @@ if page == "Relatórios":
                             format_func=lambda f: month_label(options[f]))
     if chosen != MONTH:
         st.session_state.folder = chosen
+        st.query_params["m"] = chosen
         st.rerun()
     st.caption(f"Carta de {PERIOD.letter_date:%d/%m/%Y} · desempenho de {PERIOD.start:%d/%m/%Y} a {PERIOD.end:%d/%m/%Y}"
                f" · macro research {'anexado' if PERIOD.macro_report.exists() else 'pendente'}")
