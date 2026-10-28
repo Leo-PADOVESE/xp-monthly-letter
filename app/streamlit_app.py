@@ -280,12 +280,11 @@ if page == "Clientes":
 
     table = st.dataframe(
         [{"Conta": r["account"], "Cliente": r["name"], "Perfil": PROFILE_PT.get(r["profile"], "—"),
-          "CPF": format_cpf(r["cpf"]), "E-mail": r["email"] or "—",
-          "Carta do mês": f"{STATUS_ICON[r['status']]} {crm.STATUS_PT[r['status']]}"} for r in rows],
+          "CPF": format_cpf(r["cpf"]), "E-mail": r["email"] or "—"}
+         for r in rows],
         width="stretch", hide_index=True, on_select="rerun", selection_mode="single-row", key="clients_table")
     picked = table.selection.rows
-    st.caption(f"{len(rows)} clientes · carta de referência {month_label(PERIOD)} · selecione uma linha para ver "
-               "documentos, editar ou excluir")
+    st.caption(f"{len(rows)} clientes · selecione uma linha para ver documentos, editar ou excluir")
     if picked:
         chosen = rows[picked[0]]
         docs, edit, remove, _ = st.columns([1.2, 1, 1, 3])
