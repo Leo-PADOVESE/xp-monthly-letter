@@ -205,16 +205,29 @@ _CVM_FRAMES: dict[str, pd.DataFrame] = {}
 _CVM_LOCK = threading.Lock()
 
 
-def cvm_daily_report(yyyymm: str) -> pd.DataFrame:
-    """One month of CVM quotas, read once per process. The lock keeps parallel letters from downloading
-    and parsing the same (large) file at the same time, which ran a 512 MB server out of memory."""
+def _known_cnpjs() -> set[str]:
+    return {format_cnpj(e["cnpj"]) for e in fund_registry().values() if e.get("cnpj")}
+
+
+def cvm_daily_report(yyyymm: str, cnpj: str | None = None) -> pd.DataFrame:
+    """One month of CVM quotas, kept in memory per process for the funds in the registry (plus ``cnpj``).
+
+    A full CVM month has about half a million rows: reading it for every quota (72 times for one client's
+    12-month history) took minutes on a small server, and keeping whole months in memory does not fit in
+    512 MB. So a full month is read once and only the registered funds' rows are kept. The lock keeps
+    parallel letters from reading the same file at the same time."""
     with _CVM_LOCK:
-        if yyyymm in _CVM_FRAMES:
-            return _CVM_FRAMES[yyyymm]
-        frame = _load_cvm_daily_report(yyyymm)
-        if len(frame) <= 50_000:          # the trimmed demo files stay in memory; a full month is read again
+        frame = _CVM_FRAMES.get(yyyymm)
+        if frame is None or (cnpj and not frame.attrs["complete"] and cnpj not in frame.attrs["checked"]):
+            full = _load_cvm_daily_report(yyyymm)
+            if len(full) <= 50_000:          # the trimmed demo files are kept whole
+                frame, complete, checked = full, True, set()
+            else:                            # a full month: only the funds asked for so far are kept
+                checked = _known_cnpjs() | {cnpj} | (frame.attrs["checked"] if frame is not None else set())
+                frame, complete = full[full["CNPJ"].isin(checked)].copy(), False
+            frame.attrs.update(complete=complete, checked=checked)
             _CVM_FRAMES[yyyymm] = frame
-        return frame
+        return frame if cnpj is None else frame[frame["CNPJ"] == cnpj]
 
 
 def _load_cvm_daily_report(yyyymm: str) -> pd.DataFrame:
@@ -241,7 +254,7 @@ def _load_cvm_daily_report(yyyymm: str) -> pd.DataFrame:
 def fund_quota_point(cnpj: str, day: date) -> tuple[date, float]:
     """(date, quota value) on or before ``day``."""
     months = {day.strftime("%Y%m"), (day.replace(day=1) - timedelta(days=1)).strftime("%Y%m")}
-    frames = [cvm_daily_report(m) for m in sorted(months)]
+    frames = [cvm_daily_report(m, cnpj) for m in sorted(months)]
     frame = pd.concat(frames)
     rows = frame[(frame["CNPJ"] == cnpj) & (frame["DT_COMPTC"] <= day.isoformat())]
     if rows.empty:
@@ -303,7 +316,7 @@ def find_fund(query: str) -> pd.DataFrame:
 
 def fund_has_quotas(cnpj: str, day: date) -> bool:
     """True when the CVM daily report of ``day``'s month has quotas for ``cnpj``."""
-    return bool((cvm_daily_report(day.strftime("%Y%m"))["CNPJ"] == cnpj).any())
+    return not cvm_daily_report(day.strftime("%Y%m"), cnpj).empty
 
 
 def fund_entry(name: str, sub_class: str, day: date) -> tuple[dict, str]:

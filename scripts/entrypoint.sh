@@ -12,6 +12,9 @@ if [ -n "$RENDER" ] && [ -d /var/data ]; then
     for client in /app/data/clients/*/; do rm -rf "/var/data/clients/$(basename "$client")"; done
     cp -r /app/data/. /var/data/
   fi
+  # The market data cache always comes from the image: a full CVM month left on the disk by an older
+  # version is replaced by the file trimmed to the clients' funds.
+  mkdir -p /var/data/cache && cp -r /app/data/cache/. /var/data/cache/
   rm -rf /app/data
   ln -s /var/data /app/data
 fi
