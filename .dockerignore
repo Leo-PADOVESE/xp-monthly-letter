@@ -5,5 +5,10 @@
 rivet/node_modules/
 data/cache/*
 !data/cache/macro_digest_*.json
+# Demo clients' market data (CVM quotas trimmed to their funds): without it the server parses the full
+# CVM files for 13 months on the first letter and runs out of memory. Keep in sync with .gitignore.
+!data/cache/cvm_inf_diario_*.csv
+!data/cache/sgs_*.json
+!data/cache/yahoo_*.csv
 data/crm.db
 output/

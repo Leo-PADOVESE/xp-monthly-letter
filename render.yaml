@@ -11,6 +11,8 @@ services:
       mountPath: /var/data  # scripts/entrypoint.sh links data/ here
       sizeGB: 1
     envVars:
+      - key: BATCH_WORKERS  # letters written at once; 2 fit the Starter's 512 MB
+        value: "2"
       - key: OPENAI_API_KEY
         sync: false
       - key: APP_PASSWORD

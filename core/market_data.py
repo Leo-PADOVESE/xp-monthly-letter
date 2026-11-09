@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import threading
 import time
 import warnings
 import zipfile
@@ -200,7 +201,23 @@ def format_cnpj(value) -> str:
     return f"{digits[:2]}.{digits[2:5]}.{digits[5:8]}/{digits[8:12]}-{digits[12:]}"
 
 
+_CVM_FRAMES: dict[str, pd.DataFrame] = {}
+_CVM_LOCK = threading.Lock()
+
+
 def cvm_daily_report(yyyymm: str) -> pd.DataFrame:
+    """One month of CVM quotas, read once per process. The lock keeps parallel letters from downloading
+    and parsing the same (large) file at the same time, which ran a 512 MB server out of memory."""
+    with _CVM_LOCK:
+        if yyyymm in _CVM_FRAMES:
+            return _CVM_FRAMES[yyyymm]
+        frame = _load_cvm_daily_report(yyyymm)
+        if len(frame) <= 50_000:          # the trimmed demo files stay in memory; a full month is read again
+            _CVM_FRAMES[yyyymm] = frame
+        return frame
+
+
+def _load_cvm_daily_report(yyyymm: str) -> pd.DataFrame:
     path = _cache(f"cvm_inf_diario_{yyyymm}.csv")
     if path.exists():
         frame = pd.read_csv(path, dtype=str)
@@ -210,8 +227,10 @@ def cvm_daily_report(yyyymm: str) -> pd.DataFrame:
     response.raise_for_status()
     with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
         with archive.open(archive.namelist()[0]) as handle:
-            frame = pd.read_csv(handle, sep=";", dtype=str, encoding="latin-1")
-    # Since CVM Resolution 175 the CNPJ column is CNPJ_FUNDO_CLASSE; older files use CNPJ_FUNDO.
+            # Only the three columns used: the full file has a dozen and takes several times the memory.
+            # Since CVM Resolution 175 the CNPJ column is CNPJ_FUNDO_CLASSE; older files use CNPJ_FUNDO.
+            frame = pd.read_csv(handle, sep=";", dtype=str, encoding="latin-1",
+                                usecols=lambda c: c in ("CNPJ_FUNDO_CLASSE", "CNPJ_FUNDO", "DT_COMPTC", "VL_QUOTA"))
     cnpj_col = "CNPJ_FUNDO_CLASSE" if "CNPJ_FUNDO_CLASSE" in frame.columns else "CNPJ_FUNDO"
     frame = frame.rename(columns={cnpj_col: "CNPJ"})[["CNPJ", "DT_COMPTC", "VL_QUOTA"]]
     frame["CNPJ"] = frame["CNPJ"].map(format_cnpj)

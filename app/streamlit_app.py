@@ -8,6 +8,7 @@ come from environment variables set as secrets; locally they come from .env.
 
 from __future__ import annotations
 
+import io
 import json
 import os
 import re
@@ -98,12 +99,24 @@ def start_batch(slugs: list[str], month: str, workers: int) -> None:
     threading.Thread(target=run, daemon=True).start()
 
 
-def pdf_pages(path: Path) -> list:
+def pdf_pages(path: Path) -> list[bytes]:
+    """The letter's pages as images. Cached by file and modification time: Streamlit runs every tab on each
+    click, so without the cache each click on Relatórios rendered the PDF again (slow on a small server)."""
+    return _pdf_pages(str(path), path.stat().st_mtime)
+
+
+@st.cache_data(max_entries=16, show_spinner=False)
+def _pdf_pages(path: str, mtime: float) -> list[bytes]:
     import pypdfium2 as pdfium
 
-    doc = pdfium.PdfDocument(str(path))
+    doc = pdfium.PdfDocument(path)
     try:
-        return [doc[i].render(scale=1.6).to_pil() for i in range(len(doc))]
+        pages = []
+        for i in range(len(doc)):
+            buffer = io.BytesIO()
+            doc[i].render(scale=1.4).to_pil().save(buffer, format="PNG", optimize=True)
+            pages.append(buffer.getvalue())
+        return pages
     finally:
         doc.close()
 
