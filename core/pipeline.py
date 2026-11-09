@@ -148,15 +148,22 @@ def generate_letter(slug: str, month: str | None = None) -> dict:
     start = time.time()
     crm.set_letter(slug, month, "generating")
     try:
+        def step(name: str) -> None:   # one line per step in the server log, to see where the time goes
+            print(f"[letter] {slug} {month}: {name} at {time.time() - start:.0f} s", flush=True)
+
         if not (folder / "profitability_market.json").exists():
             run_profitability(folder, "market")
+        step("profitability ready")
         if not (folder / "history.json").exists():
             try:
                 history.run(folder)
             except Exception:  # the 12-month chart is context; the month's letter goes out without it
                 traceback.print_exc()
+        step("12-month history ready")
         doc = generate(folder)
+        step(f"letter written in {len(doc.get('attempts', []))} round(s)")
         _, pages = build_pdf(folder)
+        step("PDF ready")
         if pages > MAX_PAGES:     # did not fit even the tightest layout: the advisor shortens it before sending
             doc["status"] = "needs_review"
             doc.setdefault("advisor_notes", []).append(
