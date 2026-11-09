@@ -50,6 +50,21 @@ const GRAPHS = [
     outputs: { analysis: 'analyst', letter: 'letter_writer', critic: 'critic' },
   },
   {
+    id: 'letter_rewrite',
+    name: '2b. Letter rewrite (per client)',
+    description: 'When the code checks reject a letter, the Writer redoes it from the same analysis, with the '
+      + 'revision notes, and the Reviewer reads it again. The Analyst is not run again.',
+    inputs: ['briefing', 'analysis', 'revision_notes', 'writer_model'],
+    steps: [
+      { id: 'letter_writer', role: 'Writer', vars: { briefing: 'input:briefing', analysis: 'input:analysis',
+          revision_notes: 'input:revision_notes' },
+        temperature: 0.4, maxTokens: 2500, model: 'writer_model' },
+      { id: 'critic', role: 'Reviewer', vars: { briefing: 'input:briefing', letter: 'step:letter_writer' },
+        temperature: 0, maxTokens: 1200, model: 'writer_model' },
+    ],
+    outputs: { letter: 'letter_writer', critic: 'critic' },
+  },
+  {
     id: 'portfolio_extraction',
     name: '3. Statement extraction (fallback)',
     description: 'Used only when the code reader does not recognise a statement; the result goes through the same sum checks.',

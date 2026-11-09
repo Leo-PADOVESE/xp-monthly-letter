@@ -11,6 +11,7 @@ clients at once in threads: 300 clients take about as long as ~15-20 sequential 
 from __future__ import annotations
 
 import json
+import os
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -26,7 +27,9 @@ from core.letter_pdf import MAX_PAGES, build_pdf
 from core.profitability import load_settings
 from core.profitability import run as run_profitability
 
-BATCH_WORKERS = 8
+# Letters written at once. Each one runs a Node process and pandas/matplotlib: 8 fit a laptop, but a
+# 512 MB server needs fewer (set BATCH_WORKERS in the environment).
+BATCH_WORKERS = int(os.environ.get("BATCH_WORKERS", "8"))
 
 
 def current_month() -> str:

@@ -46,7 +46,8 @@ def build_message(to: str, subject: str, first_name: str, advisor: str, pdf: Pat
 def send_letter(month_dir: Path, to: str, cpf: str, subject: str, first_name: str, advisor: str,
                 password_digits: int = 6) -> None:
     """Protect a copy of letter.pdf with the CPF digits and send it."""
-    user, password = os.environ.get("SMTP_USER"), os.environ.get("SMTP_PASSWORD")
+    user = (os.environ.get("SMTP_USER") or "").strip()
+    password = (os.environ.get("SMTP_PASSWORD") or "").replace(" ", "")  # Gmail shows app passwords in groups of 4
     if not (user and password):
         raise MailError("Envio de e-mail não configurado no servidor (SMTP_USER e SMTP_PASSWORD)")
     with tempfile.TemporaryDirectory() as tmp:
@@ -56,10 +57,20 @@ def send_letter(month_dir: Path, to: str, cpf: str, subject: str, first_name: st
         msg = build_message(to, subject, first_name, advisor, pdf, password_digits)
         host, port = os.environ.get("SMTP_HOST", "smtp.gmail.com"), int(os.environ.get("SMTP_PORT", "587"))
         try:
-            with smtplib.SMTP(host, port, timeout=30) as smtp:
+            if port == 465:                              # implicit TLS (SMTPS)
+                smtp = smtplib.SMTP_SSL(host, port, timeout=20)
+            else:                                        # 587: plain connection upgraded with STARTTLS
+                smtp = smtplib.SMTP(host, port, timeout=20)
                 smtp.starttls()
+            with smtp:
                 smtp.login(user, password)
                 smtp.send_message(msg)
-        except (smtplib.SMTPAuthenticationError, smtplib.SMTPServerDisconnected) as exc:
+        except smtplib.SMTPAuthenticationError as exc:
             raise MailError("O Gmail recusou o login: SMTP_PASSWORD precisa ser uma senha de app de 16 letras "
                             "(myaccount.google.com/apppasswords), não a senha da conta") from exc
+        except smtplib.SMTPRecipientsRefused as exc:
+            raise MailError(f"O servidor de e-mail recusou o destinatário {to}") from exc
+        except (TimeoutError, ConnectionError, smtplib.SMTPServerDisconnected) as exc:
+            raise MailError(f"Sem conexão com {host}:{port} ({exc.__class__.__name__}). O servidor pode estar "
+                            "bloqueando a porta SMTP (o plano Free do Render bloqueia 25, 465 e 587): "
+                            "confira se o serviço está num plano pago") from exc

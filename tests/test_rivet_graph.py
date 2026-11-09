@@ -36,13 +36,19 @@ LETTER = {"subject_pt": "Sua carta de abril", "greeting_pt": "Prezado Albert,", 
 
 class FakeOpenAI(BaseHTTPRequestHandler):
     prompts: list[str] = []
+    letters: list[dict] = []        # replies for the Writer, in order; LETTER once they run out
+    critic: dict = {"approved": True, "issues": []}
 
     def do_POST(self):
         body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
         text = json.dumps(body["messages"], ensure_ascii=False)
         FakeOpenAI.prompts.append(text)
-        reply = (ANALYSIS if "analyze the client" in text else LETTER if "write the monthly letter" in text
-                 else {"approved": True, "issues": []})
+        if "analyze the client" in text:
+            reply = ANALYSIS
+        elif "write the monthly letter" in text:
+            reply = FakeOpenAI.letters.pop(0) if FakeOpenAI.letters else LETTER
+        else:
+            reply = FakeOpenAI.critic
         chunk = {"id": "x", "object": "chat.completion.chunk", "created": 0, "model": body["model"],
                  "choices": [{"index": 0, "delta": {"role": "assistant", "content": json.dumps(reply)},
                               "finish_reason": "stop"}]}
@@ -63,16 +69,22 @@ def fake_openai(monkeypatch):
     threading.Thread(target=server.serve_forever, daemon=True).start()
     monkeypatch.setenv("OPENAI_API_KEY", "test")
     monkeypatch.setenv("OPENAI_ENDPOINT", f"http://127.0.0.1:{server.server_port}/v1/chat/completions")
-    FakeOpenAI.prompts = []
+    FakeOpenAI.prompts, FakeOpenAI.letters = [], []
+    FakeOpenAI.critic = {"approved": True, "issues": []}
     yield FakeOpenAI
     server.shutdown()
 
 
-def test_letter_graph_reads_one_briefing(fake_openai, tmp_path):
+def albert_month(tmp_path) -> Path:
     month = tmp_path / "albert" / "2025-05"
     shutil.copytree(ROOT / "data" / "clients" / "albert_da_silva" / "2025-05", month,
                     ignore=shutil.ignore_patterns("letter*", "briefing.json", "history.json"))
     shutil.copy(ROOT / "data" / "clients" / "albert_da_silva" / "risk_profile.pdf", month.parent)
+    return month
+
+
+def test_letter_graph_reads_one_briefing(fake_openai, tmp_path):
+    month = albert_month(tmp_path)
     doc = generate(month, max_rewrites=0)
 
     assert len(fake_openai.prompts) == 3                     # Analyst, Writer, Reviewer
@@ -84,3 +96,32 @@ def test_letter_graph_reads_one_briefing(fake_openai, tmp_path):
     assert doc["letter"]["class_views"][0]["asset_class"] == "Ações"
     assert doc["letter"]["assessment_pt"].startswith("Seu portfólio")     # third person and jargon tidied
     assert "relatório macro da XP" in doc["letter"]["assessment_pt"]
+
+
+def test_rewrite_reuses_the_analysis(fake_openai, tmp_path):
+    """A letter rejected by the code checks is rewritten by the Writer alone, from the same analysis."""
+    wrong = json.loads(json.dumps(LETTER))
+    wrong["performance_pt"][0] = wrong["performance_pt"][0].replace("+3,95%", "+9,99%")    # a figure not in the data
+    fake_openai.letters = [wrong]
+    doc = generate(albert_month(tmp_path))
+
+    assert len(doc["attempts"]) == 2
+    assert "números" in [i["rule"] for i in doc["attempts"][0]["issues"]]
+    assert sum("analyze the client" in p for p in fake_openai.prompts) == 1      # Analyst ran once
+    assert len(fake_openai.prompts) == 5                                         # A, W, R, then W, R
+    assert "9,99" in fake_openai.prompts[3]                                      # the Writer got the revision notes
+    assert doc["status"] == "approved"
+    assert doc["letter"]["class_views"][0]["asset_class"] == "Ações"
+
+
+def test_reviewer_findings_do_not_force_a_rewrite(fake_openai, tmp_path):
+    """The Reviewer's findings reach the advisor as notes; only the code checks send the letter back."""
+    quote = "Sua carteira rendeu +3,95% no mês"
+    fake_openai.critic = {"approved": False, "issues": [
+        {"severity": "high", "rule": "fatos", "quote": quote, "problem": "p", "fix": "f"},
+        {"severity": "high", "rule": "fatos", "quote": "Uma frase que não está na carta de jeito nenhum", "problem": "p"}]}
+    doc = generate(albert_month(tmp_path))
+
+    assert len(doc["attempts"]) == 1 and len(fake_openai.prompts) == 3
+    assert doc["status"] == "approved"
+    assert [n["quote"] for n in doc["advisor_notes"]] == [quote]                 # the made-up quote is dropped

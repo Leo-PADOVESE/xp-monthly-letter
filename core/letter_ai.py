@@ -46,9 +46,6 @@ PROMISE = re.compile(
 NUMBER = re.compile(r"R\$\s?-?[\d.]+,\d{2}|[+-]?\d+(?:,\d+)?\s?%|[+-]?\d+(?:,\d+)?\s?p\.p\.")
 
 
-BLOCKING_RULES = ("fatos", "período", "coerência", "nomes")
-
-
 def _plain(text: str) -> str:
     """Lower case, single spaces and straight quotes, to find a quoted passage in the letter."""
     text = text.replace("“", '"').replace("”", '"').replace("’", "'").strip(' ."\'…')
@@ -258,7 +255,7 @@ def word_count(letter: dict) -> int:
 
 # ---------------------------------------------------------------------- letter
 
-def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
+def generate(month_dir: Path, max_rewrites: int = 1) -> dict:
     load_env()
     settings = load_settings()
     llm = settings.get("llm", {})
@@ -307,7 +304,14 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
 
     attempts = []
     for attempt in range(max_rewrites + 1):
-        outputs, usage = run_graph("monthly_letter", inputs)
+        if attempt == 0:
+            outputs, usage = run_graph("monthly_letter", inputs)
+            analysis_raw = outputs["analysis"]
+        else:   # a rewrite reuses the analysis: only the Writer and the Reviewer run again
+            outputs, usage = run_graph("letter_rewrite", {
+                "briefing": inputs["briefing"], "analysis": analysis_raw,
+                "revision_notes": inputs["revision_notes"], "writer_model": writer_model})
+            outputs["analysis"] = analysis_raw
         steps = {name: parse_json(raw, name) for name, raw in outputs.items()}
         letter, critic = tidy(steps["letter"], client["name"]), steps["critic"]
         # The class table comes from the Analyst's assessment; weights are laid out from the facts by the PDF.
@@ -315,15 +319,13 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         unknown = check_numbers(letter, results, facts, digest_for_llm)
         words = word_count(letter)
         # Figures are verified by check_numbers; the critic judges meaning and tone.
-        notes = critic.get("issues", [])
-        # The critic's high findings force a rewrite only on meaning (facts, time frames, coherence, names) and only
-        # when the passage it quotes is really in the letter: in tests it contradicted itself ("+0,41 p.p., não
-        # +0,41 p.p.") and blocked every letter. Structure and style stay as notes for the advisor; the outlook is
-        # checked in code.
+        # Critic findings that quote a passage not in the letter are dropped: the advisor sees only real ones.
         text = _plain(letter_text(letter))
-        flagged = [{**n, "rule": n.get("rule", "fatos")} for n in notes
-                   if n.get("severity") == "high" and n.get("rule") in BLOCKING_RULES and _quoted(n.get("quote", ""), text)]
-        issues: list[dict] = list(flagged)
+        notes = [n for n in critic.get("issues", []) if not n.get("quote") or _quoted(n["quote"], text)]
+        # Only the code checks below force a rewrite. The critic's findings go to the advisor as notes: in tests it
+        # flagged correct sentences ("ARZZ3 teve o melhor desempenho" when LREN3 contributed more in reais) and each
+        # rewrite it forced ran the whole graph again (about 45 s with gpt-4o).
+        issues: list[dict] = []
         if unknown:
             issues.append({"severity": "high", "rule": "números",
                            "problem": f"Valores que não existem nos dados: {', '.join(unknown)}",
@@ -360,11 +362,8 @@ def generate(month_dir: Path, max_rewrites: int = 2) -> dict:
         if not 300 <= words <= 600:
             issues.append({"severity": "high", "rule": "tamanho", "problem": f"{words} palavras",
                            "fix": "Ajuste o texto para ficar entre 330 e 480 palavras."})
-        # Code checks are the gate. After the last rewrite, findings left only by the critic go to the advisor as
-        # notes (the advisor reviews every letter): in tests it kept flagging correct sentences ("ARZZ3 teve o melhor
-        # desempenho" when LREN3 contributed more in reais) and held every letter.
-        last = attempt == max_rewrites
-        approved = not issues or (last and len(issues) == len(flagged))
+        # Code checks are the gate: a letter that still fails them after the last rewrite goes to the advisor.
+        approved = not issues
         attempts.append({"attempt": attempt + 1, "usage": usage, "words": words, "unknown_numbers": unknown,
                          "critic": critic, "issues": issues, "advisor_notes": notes})
         if approved:
